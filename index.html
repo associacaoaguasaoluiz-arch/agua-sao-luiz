@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal do Morador - São Luiz</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 300px; text-align: center; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold;}
+        button:hover { background-color: #218838; }
+        #mensagem { font-size: 14px; margin-top: 15px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <h2>Portal do Morador</h2>
+        <p style="color: #666; font-size: 14px;">Distrito de São Luiz</p>
+        
+        <form id="loginForm">
+            <input type="text" id="cpf" placeholder="Digite o seu CPF" required>
+            <input type="password" id="senha" placeholder="Senha" required>
+            <button type="submit">Entrar</button>
+        </form>
+        
+        <p id="mensagem" style="display: none;"></p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // Suas chaves do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ",
+            authDomain: "sistema-agua-sao-luiz.firebaseapp.com",
+            projectId: "sistema-agua-sao-luiz",
+            storageBucket: "sistema-agua-sao-luiz.firebasestorage.app",
+            messagingSenderId: "815174423700",
+            appId: "1:815174423700:web:d1ffa58c09738c29a99081",
+            measurementId: "G-K300HKHY2J"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const cpf = document.getElementById('cpf').value;
+            const senha = document.getElementById('senha').value;
+            const mensagem = document.getElementById('mensagem');
+            const botao = document.querySelector('button');
+            
+            mensagem.style.display = "none";
+            botao.innerText = "Carregando...";
+            botao.disabled = true;
+
+            try {
+                const familiasRef = collection(db, "familias");
+                const q = query(familiasRef, where("cpf", "==", cpf), where("senha", "==", senha));
+                const querySnapshot = await getDocs(q);
+
+                if (!querySnapshot.empty) {
+                    let idMorador = "";
+                    let nomeMorador = "";
+                    querySnapshot.forEach((doc) => {
+                        idMorador = doc.id; // Pega o ID único gerado pelo Firebase
+                        nomeMorador = doc.data().nome;
+                    });
+                    
+                    // Guarda as informações na memória do navegador para a próxima página
+                    localStorage.setItem("moradorId", idMorador);
+                    localStorage.setItem("moradorNome", nomeMorador);
+                    localStorage.setItem("moradorSenhaAtual", senha); // Guarda a senha para sabermos se é a padrão
+                    
+                    mensagem.style.color = "green";
+                    mensagem.innerText = "Acesso autorizado! Redirecionando...";
+                    mensagem.style.display = "block";
+
+                    // Redireciona para o painel após 1 segundo
+                    setTimeout(() => {
+                        window.location.href = "painel.html";
+                    }, 1000);
+
+                } else {
+                    mensagem.style.color = "red";
+                    mensagem.innerText = "CPF ou senha incorretos!";
+                    mensagem.style.display = "block";
+                }
+            } catch (error) {
+                console.error("Erro completo:", error);
+                mensagem.style.color = "red";
+                mensagem.innerText = "Erro ao conectar ao banco. Veja o console.";
+                mensagem.style.display = "block";
+            } finally {
+                botao.innerText = "Entrar";
+                botao.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

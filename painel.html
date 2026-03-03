@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Painel - São Luiz</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 20px; text-align: center;}
+        .container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 500px; margin: auto; }
+        
+        /* Estilo da Caixinha de Aviso (Modal) */
+        #modalSenha { display: none; background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .input-senha { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .btn-salvar { background-color: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-ignorar { background-color: #6c757d; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        
+        button { margin: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2 id="boasVindas">Carregando...</h2>
+        <p>Aqui ficará a sua fatura de água.</p>
+
+        <div id="modalSenha">
+            <h3>Aviso de Segurança 🔒</h3>
+            <p>Notamos que você está usando a senha padrão. Para a sua segurança, cadastre uma nova senha.</p>
+            
+            <input type="password" id="novaSenha" class="input-senha" placeholder="Digite sua nova senha">
+            
+            <button class="btn-salvar" id="btnSalvarSenha">Salvar Nova Senha</button>
+            <button class="btn-ignorar" id="btnManterSenha">Manter Senha Padrão</button>
+            <p id="msgSenha" style="font-size: 14px; font-weight: bold;"></p>
+        </div>
+
+        <br><br>
+        <button onclick="sair()" style="background-color: #dc3545; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer;">Sair da Conta</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        // Importamos o "doc" e o "updateDoc" para podermos alterar os dados no banco
+        import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // COLOQUE SUAS CHAVES DO FIREBASE AQUI
+        const firebaseConfig = {
+            apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ",
+            authDomain: "sistema-agua-sao-luiz.firebaseapp.com",
+            projectId: "sistema-agua-sao-luiz",
+            storageBucket: "sistema-agua-sao-luiz.firebasestorage.app",
+            messagingSenderId: "815174423700",
+            appId: "1:815174423700:web:d1ffa58c09738c29a99081",
+            measurementId: "G-K300HKHY2J"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // 1. Pega os dados que o index.html guardou na memória
+        const moradorId = localStorage.getItem("moradorId");
+        const moradorNome = localStorage.getItem("moradorNome");
+        const moradorSenhaAtual = localStorage.getItem("moradorSenhaAtual");
+
+        // 2. Se não tiver ninguém logado, manda de volta pra tela de login
+        if (!moradorId) {
+            window.location.href = "index.html";
+        }
+
+        // 3. Mostra o nome do morador na tela
+        document.getElementById("boasVindas").innerText = "Olá, " + moradorNome + "!";
+
+        // 4. Se a senha for a padrão, mostra a caixinha de aviso
+        if (moradorSenhaAtual === "123456") {
+            document.getElementById("modalSenha").style.display = "block";
+        }
+
+        // 5. Ação do botão "Manter Senha"
+        document.getElementById("btnManterSenha").addEventListener("click", () => {
+            document.getElementById("modalSenha").style.display = "none";
+        });
+
+        // 6. Ação do botão "Salvar Nova Senha"
+        document.getElementById("btnSalvarSenha").addEventListener("click", async () => {
+            const novaSenha = document.getElementById("novaSenha").value;
+            const msgSenha = document.getElementById("msgSenha");
+
+            if(novaSenha.length < 6) {
+                msgSenha.style.color = "red";
+                msgSenha.innerText = "A senha deve ter no mínimo 6 caracteres.";
+                return;
+            }
+
+            try {
+                // Vai lá no Firebase e atualiza o documento específico desse morador
+                const moradorRef = doc(db, "familias", moradorId);
+                await updateDoc(moradorRef, {
+                    senha: novaSenha
+                });
+
+                // Atualiza a memória do navegador para ele não pedir de novo
+                localStorage.setItem("moradorSenhaAtual", novaSenha);
+                
+                msgSenha.style.color = "green";
+                msgSenha.innerText = "Senha atualizada com sucesso!";
+                
+                // Esconde a caixinha depois de 2 segundos
+                setTimeout(() => {
+                    document.getElementById("modalSenha").style.display = "none";
+                }, 2000);
+
+            } catch (error) {
+                console.error("Erro ao atualizar senha:", error);
+                msgSenha.style.color = "red";
+                msgSenha.innerText = "Erro ao atualizar. Tente novamente.";
+            }
+        });
+
+        // 7. Função de sair
+        window.sair = function() {
+            localStorage.clear(); // Limpa a memória
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>
