@@ -33,10 +33,10 @@
         <!-- A imagem carregará se o ficheiro capanema.jpg estiver no GitHub -->
         <img src="capanema.jpg" alt="Capanema" class="w-full max-w-[280px] md:max-w-sm h-auto rounded-2xl shadow-md mb-2" onerror="this.style.display='none'">
         <div>
-            <h1 class="text-xl md:text-3xl font-black text-blue-900 tracking-tight uppercase">Associação de Água do São Luiz</h1>
+            <h1 class="text-xl md:text-3xl font-black text-blue-900 tracking-tight uppercase">Associação de Água Distrito São Luiz</h1>
             <p class="text-slate-500 font-bold uppercase text-[9px] md:text-xs tracking-widest mt-1 md:mt-2">Portal Transparente do Morador</p>
         </div>
-        <div id="botoesHeader" class="hidden sm:flex w-full justify-center gap-3 no-print mt-4">
+        <div id="botoesHeader" class="hidden flex w-full justify-center gap-3 no-print mt-4">
             <button onclick="window.print()" class="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold py-2 px-4 rounded-xl transition shadow-sm text-sm">🖨️ Imprimir Extrato</button>
             <button onclick="sairConta()" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold py-2 px-4 rounded-xl transition shadow-sm text-sm">🚪 Sair</button>
         </div>
@@ -65,14 +65,9 @@
         <div id="painelCliente" class="hidden space-y-6 md:space-y-8">
             
             <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 p-5 md:p-6 rounded-3xl flex flex-col md:flex-row justify-between items-center no-print shadow-sm gap-4">
-                <div class="text-center md:text-left">
+                <div class="text-center md:text-left w-full">
                     <p class="text-[10px] md:text-xs text-blue-500 font-bold uppercase tracking-wider">Bem-vindo(a)</p>
                     <h2 class="text-xl md:text-2xl font-black text-blue-900" id="nomeCliente">---</h2>
-                </div>
-                <!-- Botões Mobile -->
-                <div class="flex sm:hidden gap-2 w-full mt-2">
-                    <button onclick="window.print()" class="flex-1 bg-white border border-slate-200 text-slate-700 font-bold py-3 rounded-xl text-xs shadow-sm">🖨️ Imprimir</button>
-                    <button onclick="sairConta()" class="flex-1 bg-red-50 border border-red-100 text-red-600 font-bold py-3 rounded-xl text-xs shadow-sm">🚪 Sair</button>
                 </div>
             </div>
 
@@ -264,7 +259,6 @@
             document.getElementById("loginArea").classList.add('hidden');
             document.getElementById("painelCliente").classList.remove('hidden');
             document.getElementById("botoesHeader").classList.remove('hidden');
-            document.getElementById("botoesHeader").classList.add('sm:flex');
             document.getElementById("nomeCliente").innerText = nome;
         }
 
