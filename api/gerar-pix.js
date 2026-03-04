@@ -9,7 +9,7 @@ export default async function handler(req, res) {
         const respostaMP = await fetch("https://api.mercadopago.com/v1/payments", {
             method: "POST",
             headers: {
-                "Authorization": "Bearer APP_USR-eba78170-d746-4f52-aba5-1fad3d747573",
+                "Authorization": "Bearer APP_USR-2580827848136768-030318-b6bdef0c84cf3c2d64774dcd8a687e17-155547253",
                 "Content-Type": "application/json",
                 "X-Idempotency-Key": "pix-" + Date.now()
             },
