@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>App Gestão 6.0 - Água São Luiz</title>
+    <title>App Gestão 7.0 - Água São Luiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; -webkit-tap-highlight-color: transparent; }
@@ -12,37 +12,29 @@
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* COLUNA FIXA COMPACTA */
         .coluna-fixa {
             position: sticky;
             left: 0;
             z-index: 20;
             background-color: white;
             border-right: 2px solid #e5e7eb;
-            max-width: 140px; /* Nome mais estreito */
+            max-width: 140px; 
             min-width: 140px;
-            white-space: normal; /* Quebra linha se o nome for grande */
+            white-space: normal; 
             font-size: 0.8rem;
             line-height: 1.1;
         }
         th.coluna-fixa { background-color: #f8fafc; }
         .scroll-suave::-webkit-scrollbar { height: 8px; }
         .scroll-suave::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .conteudo-principal { padding-bottom: 80px; }
-        
-        /* Estilo para inputs focados (estilo planilha) */
-        .input-leitura:focus {
-            background-color: #fffbeb;
-            border-color: #f59e0b;
-            box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
-        }
+        .conteudo-principal { padding-bottom: 90px; }
+        .input-leitura:focus { background-color: #fffbeb; border-color: #f59e0b; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2); }
     </style>
 </head>
 <body class="text-gray-800 h-screen flex overflow-hidden">
 
     <div id="loading" class="loading-overlay"><div class="spinner"></div><p id="loadingMsg" class="mt-4 font-bold text-gray-700 font-mono">Processando...</p></div>
 
-    <!-- TELA DE LOGIN -->
     <div id="loginAdmin" class="fixed inset-0 bg-slate-900 flex justify-center items-center z-50 p-4">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center">
             <span class="text-5xl">💧</span>
@@ -53,29 +45,26 @@
         </div>
     </div>
 
-    <!-- DASHBOARD -->
     <div id="painelAdmin" class="flex w-full h-full tela-oculta relative">
-        <!-- SIDEBAR DESKTOP -->
         <aside class="w-64 bg-slate-900 text-white flex-col hidden md:flex shadow-xl z-30">
             <div class="p-6 text-center border-b border-slate-700"><h1 class="text-xl font-bold">💧 São Luiz</h1></div>
             <nav class="flex-1 p-4 space-y-2">
                 <button onclick="mudarAba('aba-moradores', this)" class="menu-btn w-full flex items-center p-3 rounded-xl bg-blue-600 text-white font-bold transition">👥 Moradores</button>
                 <button onclick="mudarAba('aba-leituras', this); carregarLoteFaturas();" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition">📝 Lançar</button>
+                <button onclick="mudarAba('aba-abertas', this); carregarAbertas();" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition">⏳ Abertas/Excluir</button>
                 <button onclick="mudarAba('aba-recebimentos', this); carregarPagamentos();" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition">✅ Pagos</button>
-                <button onclick="mudarAba('aba-inadimplentes', this); carregarInadimplentes();" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition">🚨 Atrasos</button>
+                <button onclick="mudarAba('aba-config', this);" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition">⚙️ Config / Backup</button>
             </nav>
         </aside>
 
-        <!-- CONTEÚDO -->
         <main class="flex-1 overflow-y-auto bg-gray-100 conteudo-principal w-full">
             <div class="md:hidden bg-slate-900 text-white p-4 text-center sticky top-0 z-40 shadow-md font-bold">💧 Gestão São Luiz</div>
             
             <div class="p-4 md:p-8 max-w-7xl mx-auto w-full">
 
-                <!-- ABA MORADORES -->
                 <div id="aba-moradores" class="conteudo-aba">
                     <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-                        <h2 class="text-2xl font-bold">👥 Gestão de Moradores</h2>
+                        <h2 class="text-2xl font-bold">👥 Moradores</h2>
                         <button onclick="abrirModalCadastro()" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg">➕ Novo Cadastro</button>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
@@ -84,13 +73,12 @@
                     </div>
                 </div>
 
-                <!-- ABA LEITURAS (A PARTE QUE VOCÊ USA MAIS) -->
                 <div id="aba-leituras" class="conteudo-aba tela-oculta">
-                    <div class="mb-4 flex justify-between items-end">
-                        <h2 class="text-2xl font-bold">📝 Lançamento <span class="text-blue-600" id="txtRef">03/2026</span></h2>
+                    <div class="mb-4 flex justify-between items-end flex-wrap gap-2">
+                        <h2 class="text-2xl font-bold">📝 Lançamento</h2>
                         <div class="flex gap-2 text-xs">
-                            <input type="text" id="mesReferencia" value="03/2026" class="w-20 p-2 border rounded">
-                            <input type="date" id="dataVencimento" value="2026-03-20" class="p-2 border rounded">
+                            <input type="text" id="mesReferencia" value="03/2026" class="w-20 p-2 border rounded font-bold text-center">
+                            <input type="date" id="dataVencimento" value="2026-03-20" class="p-2 border rounded font-bold text-center">
                         </div>
                     </div>
                     
@@ -105,8 +93,9 @@
                                         <th class="p-3 text-center">Ant.</th>
                                         <th class="p-3 text-center">Atual</th>
                                         <th class="p-3 text-center">Cons.</th>
-                                        <th class="p-3 text-right">Multa</th>
-                                        <th class="p-3 text-right">Total R$</th>
+                                        <th class="p-3 text-center text-blue-600">+ Avulso R$</th>
+                                        <th class="p-3 text-right text-red-600">Multa</th>
+                                        <th class="p-3 text-right text-green-700">Total R$</th>
                                         <th class="p-3 text-center">Status</th>
                                     </tr>
                                 </thead>
@@ -114,34 +103,71 @@
                             </table>
                         </div>
                     </div>
-                    <p class="text-[10px] text-gray-400 mt-2 text-center">Dica: Use a tecla **ENTER** para pular para o próximo campo rapidamente.</p>
+                    <p class="text-[10px] text-gray-400 mt-2 text-center">Dica: Digite o número e aperte **ENTER** para pular de campo automaticamente.</p>
                 </div>
 
-                <!-- ABA RECEBIMENTOS -->
+                <div id="aba-abertas" class="conteudo-aba tela-oculta">
+                    <h2 class="text-2xl font-bold text-amber-600 mb-6">⏳ Contas Abertas (Pendentes)</h2>
+                    <p class="text-xs text-gray-500 mb-4">Aqui você vê todas as contas geradas que ainda não foram pagas. Use a lixeira para apagar erros.</p>
+                    <div class="bg-white rounded-2xl shadow-sm border border-amber-100 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left whitespace-nowrap">
+                                <thead>
+                                    <tr class="bg-amber-50 text-amber-800 text-xs uppercase tracking-wider border-b">
+                                        <th class="p-4 font-bold">Vencimento</th>
+                                        <th class="p-4 font-bold">Morador / Ref</th>
+                                        <th class="p-4 font-bold text-right">Valor R$</th>
+                                        <th class="p-4 font-bold text-center">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabelaAbertas" class="divide-y"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="aba-recebimentos" class="conteudo-aba tela-oculta">
                     <h2 class="text-2xl font-bold text-green-700 mb-6">✅ Recebidos</h2>
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden"><table class="w-full text-left whitespace-nowrap"><tbody id="tabelaPagos" class="divide-y"></tbody></table></div>
                 </div>
 
-                <!-- ABA INADIMPLENTES -->
-                <div id="aba-inadimplentes" class="conteudo-aba tela-oculta">
-                    <h2 class="text-2xl font-bold text-red-600 mb-6">🚨 Atrasados</h2>
-                    <div class="bg-white rounded-2xl shadow-sm border border-red-100 overflow-hidden"><table class="w-full text-left whitespace-nowrap"><tbody id="tabelaAtrasados" class="divide-y"></tbody></table></div>
+                <div id="aba-config" class="conteudo-aba tela-oculta">
+                    <h2 class="text-2xl font-bold text-slate-700 mb-6">⚙️ Configurações e Banco de Dados</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-blue-100">
+                            <h3 class="font-bold text-lg text-blue-700 mb-2">💾 Salvar Base (Backup)</h3>
+                            <p class="text-sm text-gray-500 mb-4">Baixe todas as famílias e faturas para o seu computador/celular por segurança.</p>
+                            <button onclick="exportarBase()" class="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-3 rounded-xl transition">Exportar Arquivo JSON</button>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-100">
+                            <h3 class="font-bold text-lg text-emerald-700 mb-2">📂 Importar Base</h3>
+                            <p class="text-sm text-gray-500 mb-4">Restaure um backup salvo anteriormente. (Não apaga os atuais, apenas adiciona).</p>
+                            <input type="file" id="fileImport" accept=".json" class="mb-3 w-full text-sm">
+                            <button onclick="importarBase()" class="w-full bg-emerald-100 hover:bg-emerald-200 text-emerald-700 font-bold py-3 rounded-xl transition">Importar Dados</button>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-red-100 md:col-span-2">
+                            <h3 class="font-bold text-lg text-red-600 mb-2">🗑️ Limpar Base de Testes</h3>
+                            <p class="text-sm text-gray-500 mb-4">Exclui TODAS as faturas geradas até agora. Ótimo para usar antes de começar a cobrar de verdade. (As famílias cadastradas serão mantidas).</p>
+                            <button onclick="limparFaturas()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-md transition">Apagar Todas as Faturas</button>
+                        </div>
+                    </div>
                 </div>
 
             </div>
         </main>
 
-        <!-- MENU MOBILE -->
         <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t flex justify-around items-center z-50 pb-2 shadow-inner">
-            <button onclick="mudarAba('aba-moradores', this)" class="w-full p-3 flex flex-col items-center text-blue-600 font-bold"><span class="text-2xl">👥</span><span class="text-[10px]">Moradores</span></button>
-            <button onclick="mudarAba('aba-leituras', this); carregarLoteFaturas();" class="w-full p-3 flex flex-col items-center text-gray-400 font-bold"><span class="text-2xl">📝</span><span class="text-[10px]">Lançar</span></button>
-            <button onclick="mudarAba('aba-recebimentos', this); carregarPagamentos();" class="w-full p-3 flex flex-col items-center text-gray-400 font-bold"><span class="text-2xl">✅</span><span class="text-[10px]">Pagos</span></button>
-            <button onclick="mudarAba('aba-inadimplentes', this); carregarInadimplentes();" class="w-full p-3 flex flex-col items-center text-gray-400 font-bold"><span class="text-2xl">🚨</span><span class="text-[10px]">Atrasos</span></button>
+            <button onclick="mudarAba('aba-moradores', this)" class="w-full p-2 flex flex-col items-center text-blue-600 font-bold"><span class="text-xl">👥</span><span class="text-[9px]">Moradores</span></button>
+            <button onclick="mudarAba('aba-leituras', this); carregarLoteFaturas();" class="w-full p-2 flex flex-col items-center text-gray-400 font-bold"><span class="text-xl">📝</span><span class="text-[9px]">Lançar</span></button>
+            <button onclick="mudarAba('aba-abertas', this); carregarAbertas();" class="w-full p-2 flex flex-col items-center text-gray-400 font-bold"><span class="text-xl">⏳</span><span class="text-[9px]">Abertas</span></button>
+            <button onclick="mudarAba('aba-recebimentos', this); carregarPagamentos();" class="w-full p-2 flex flex-col items-center text-gray-400 font-bold"><span class="text-xl">✅</span><span class="text-[9px]">Pagos</span></button>
+            <button onclick="mudarAba('aba-config', this);" class="w-full p-2 flex flex-col items-center text-gray-400 font-bold"><span class="text-xl">⚙️</span><span class="text-[9px]">Config</span></button>
         </nav>
     </div>
 
-    <!-- MODAL CADASTRO -->
     <div id="modalMorador" class="modal-fundo">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm mx-auto overflow-hidden">
             <div class="bg-slate-900 p-5 flex justify-between items-center text-white"><h3 id="tituloModal" class="font-bold">Morador</h3><button onclick="fecharModal()" class="text-2xl">×</button></div>
@@ -161,7 +187,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ",
@@ -190,20 +216,17 @@
             if(el) { el.classList.add('bg-blue-600', 'text-white'); }
         };
 
-        // --- LÓGICA DO ENTER (MUITO IMPORTANTE PARA VOCÊ) ---
+        // --- LÓGICA DO ENTER (PULO DE CAMPO RÁPIDO) ---
         window.handleEnter = (event, id, type) => {
             if (event.key === "Enter") {
                 event.preventDefault();
                 let next;
-                if (type === 'ant') {
-                    next = document.getElementById('atu-' + id);
-                } else {
-                    // Se estiver no campo 'atual', pula para o campo 'anterior' do próximo morador
+                if (type === 'ant') next = document.getElementById('atu-' + id);
+                else if (type === 'atu') next = document.getElementById('taxa-' + id);
+                else {
                     const inputsAnt = Array.from(document.querySelectorAll('input[id^="ant-"]'));
                     const currentIndex = inputsAnt.findIndex(i => i.id === 'ant-' + id);
-                    if (currentIndex < inputsAnt.length - 1) {
-                        next = inputsAnt[currentIndex + 1];
-                    }
+                    if (currentIndex < inputsAnt.length - 1) next = inputsAnt[currentIndex + 1];
                 }
                 if (next) next.focus();
             }
@@ -212,22 +235,28 @@
         // --- MORADORES ---
         window.carregarFamilias = async () => {
             const tbody = document.getElementById("tabelaMoradores");
-            tbody.innerHTML = "<tr><td class='p-8 text-center'>Buscando...</td></tr>";
+            tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center'>Buscando...</td></tr>";
             try {
                 const snap = await getDocs(collection(db, "familias"));
                 let html = "";
                 snap.forEach(d => {
                     const data = d.data();
-                    html += `<tr><td class="p-4"><strong>${data.nome}</strong><br><small>${data.lote_endereco}</small></td><td class="p-4 text-center"><button onclick="abrirModalEdicao('${d.id}','${data.nome}','${data.cpf}','${data.telefone}','${data.lote_endereco}')" class="text-blue-600 font-bold px-3 py-1 bg-blue-50 rounded">Editar</button></td></tr>`;
+                    html += `<tr><td class="p-4"><strong>${data.nome}</strong><br><small>${data.lote_endereco}</small></td><td class="p-4 text-xs font-mono text-gray-500">${data.cpf}</td><td class="p-4 text-xs font-mono text-gray-500">${data.telefone}</td><td class="p-4 text-center"><button onclick="abrirModalEdicao('${d.id}','${data.nome}','${data.cpf}','${data.telefone}','${data.lote_endereco}')" class="text-blue-600 font-bold px-3 py-1 bg-blue-50 rounded">Editar</button></td></tr>`;
                 });
                 tbody.innerHTML = html;
             } catch (e) { tbody.innerHTML = "Erro"; }
         };
 
+        window.filtrarTabela = (inputId, tabelaId) => {
+            const filtro = document.getElementById(inputId).value.toLowerCase();
+            const linhas = document.getElementById(tabelaId).getElementsByTagName('tr');
+            for (let i = 0; i < linhas.length; i++) linhas[i].style.display = linhas[i].innerText.toLowerCase().includes(filtro) ? "" : "none";
+        };
+
         // --- LANÇAMENTO DE LEITURAS ---
         window.carregarLoteFaturas = async () => {
             const corpo = document.getElementById("corpoTabelaLote");
-            corpo.innerHTML = "<tr><td colspan='7' class='p-8 text-center'>Calculando inadimplentes...</td></tr>";
+            corpo.innerHTML = "<tr><td colspan='8' class='p-8 text-center'>Preparando planilha...</td></tr>";
             try {
                 const famSnap = await getDocs(collection(db, "familias"));
                 const fatSnap = await getDocs(collection(db, "faturas"));
@@ -242,19 +271,21 @@
                     const famId = docFam.id;
                     const temAtraso = faturas.some(fat => fat.familia_id === famId && fat.status === 'pendente' && new Date(fat.vencimento + "T00:00:00") < hoje);
                     const multa = temAtraso ? 25.0 : 0.0;
+                    const seloAtraso = temAtraso ? `<span class="bg-red-100 text-red-700 px-1 rounded text-[9px] uppercase">Atraso</span>` : ``;
 
                     html += `
-                        <tr id="linha-${famId}">
-                            <td class="p-3 coluna-fixa"><strong>${f.nome}</strong><br><small>${f.lote_endereco}</small></td>
-                            <td class="p-2 text-center"><input type="number" id="ant-${famId}" onkeyup="calcularLinha('${famId}', ${multa})" onkeydown="handleEnter(event, '${famId}', 'ant')" class="w-16 p-2 border rounded-lg text-center outline-none"></td>
-                            <td class="p-2 text-center"><input type="number" id="atu-${famId}" onkeyup="calcularLinha('${famId}', ${multa})" onkeydown="handleEnter(event, '${famId}', 'atu')" class="w-16 p-2 border-2 border-blue-400 bg-blue-50 rounded-lg text-center font-bold outline-none"></td>
-                            <td class="p-2 text-center font-bold text-blue-600"><span id="cons-${famId}">0</span></td>
-                            <td class="p-2 text-right text-red-500 font-bold">R$ ${multa.toFixed(2)}</td>
-                            <td class="p-2 text-right font-black text-green-700 text-lg">R$ <span id="valTotal-${famId}">0,00</span>
+                        <tr id="linha-${famId}" class="hover:bg-blue-50">
+                            <td class="p-2 coluna-fixa"><strong>${f.nome}</strong><br><small class="text-gray-500">${f.lote_endereco}</small> ${seloAtraso}</td>
+                            <td class="p-2 text-center"><input type="number" id="ant-${famId}" onkeyup="calcularLinha('${famId}', ${multa})" onkeydown="handleEnter(event, '${famId}', 'ant')" class="w-16 p-2 border rounded-lg text-center outline-none input-leitura"></td>
+                            <td class="p-2 text-center"><input type="number" id="atu-${famId}" onkeyup="calcularLinha('${famId}', ${multa})" onkeydown="handleEnter(event, '${famId}', 'atu')" class="w-16 p-2 border-2 border-blue-400 bg-blue-50 rounded-lg text-center font-bold outline-none input-leitura"></td>
+                            <td class="p-2 text-center font-bold text-blue-600"><span id="cons-${famId}">0</span><span class="text-[10px] font-normal">m³</span></td>
+                            <td class="p-2 text-center"><input type="number" id="taxa-${famId}" onkeyup="calcularLinha('${famId}', ${multa})" onkeydown="handleEnter(event, '${famId}', 'taxa')" value="0" class="w-16 p-2 border rounded-lg text-center text-blue-600 font-bold outline-none input-leitura" placeholder="R$"></td>
+                            <td class="p-2 text-right text-red-500 font-bold text-xs">R$ ${multa.toFixed(2)}</td>
+                            <td class="p-2 text-right font-black text-green-700 text-base">R$ <span id="valTotal-${famId}">0,00</span>
                                 <input type="hidden" id="h-total-${famId}" value="0" data-multa="${multa}" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}">
                                 <input type="hidden" id="h-agua-${famId}" value="0">
                             </td>
-                            <td class="p-2 text-center" id="status-${famId}"><small class="text-gray-400">---</small></td>
+                            <td class="p-2 text-center" id="status-${famId}"><small class="bg-gray-200 px-2 py-1 rounded-full text-[10px] text-gray-500 font-bold uppercase">Espera</small></td>
                         </tr>
                     `;
                 });
@@ -265,6 +296,8 @@
         window.calcularLinha = (id, multa) => {
             const ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0;
             const atu = parseFloat(document.getElementById(`atu-${id}`).value) || 0;
+            const taxaExtra = parseFloat(document.getElementById(`taxa-${id}`).value) || 0;
+            
             let consumo = (atu >= ant && atu > 0) ? atu - ant : 0;
             document.getElementById(`cons-${id}`).innerText = consumo;
 
@@ -274,7 +307,7 @@
                 else if (consumo <= 30) vAgua = 50.0;
                 else vAgua = 100.0;
             }
-            const total = vAgua > 0 ? vAgua + multa : 0;
+            const total = vAgua > 0 ? vAgua + multa + taxaExtra : 0;
             document.getElementById(`valTotal-${id}`).innerText = total.toFixed(2).replace('.', ',');
             document.getElementById(`h-agua-${id}`).value = vAgua;
             document.getElementById(`h-total-${id}`).value = total;
@@ -283,7 +316,7 @@
         window.gerarFaturasEmLote = async () => {
             const inputs = document.querySelectorAll('input[id^="h-total-"]');
             const linhas = Array.from(inputs).filter(i => parseFloat(i.value) > 0);
-            if(linhas.length === 0) return alert("Preencha alguém!");
+            if(linhas.length === 0) return alert("Preencha a leitura atual de pelo menos um morador!");
             
             mostrarLoading(`Gerando ${linhas.length} faturas...`);
             const mes = document.getElementById("mesReferencia").value;
@@ -294,6 +327,7 @@
                 const id = input.id.replace('h-total-', '');
                 const vAgua = parseFloat(document.getElementById(`h-agua-${id}`).value);
                 const vMulta = parseFloat(input.dataset.multa);
+                const vExtra = parseFloat(document.getElementById(`taxa-${id}`).value) || 0;
                 const nome = input.dataset.nome;
                 const cpf = input.dataset.cpf.replace(/\D/g, '');
                 const tel = input.dataset.tel;
@@ -309,57 +343,166 @@
                     if(pix.sucesso) {
                         await addDoc(collection(db, "faturas"), {
                             familia_id: id, mes_referencia: mes, leitura_anterior: l_ant, leitura_atual: l_atu,
-                            consumo_m3: l_atu - l_ant, valor_agua: vAgua, valor_multa: vMulta, valor_total: total, 
+                            consumo_m3: l_atu - l_ant, valor_agua: vAgua, valor_multa: vMulta, taxa_extra: vExtra, valor_total: total, 
                             vencimento: venc, status: "pendente", pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64,
                             pix_txid: String(pix.txid), data_lancamento: new Date().toISOString()
                         });
-                        const zap = `Olá *${nome}*! Fatura ${mes} liberada.\n💰 Valor: R$ ${total.toFixed(2)}\n📅 Venc: ${venc.split('-').reverse().join('/')}\n\n👉 https://agua-sao-luiz.vercel.app`;
-                        document.getElementById(`status-${id}`).innerHTML = `<button onclick="window.open('https://wa.me/${tel}?text=${encodeURIComponent(zap)}')" class="bg-green-500 text-white font-bold p-2 rounded-lg">ZAP</button>`;
+                        
+                        let txtExtra = vExtra > 0 ? `\n🔧 Taxa Avulsa: R$${vExtra.toFixed(2)}` : "";
+                        const zap = `💧 *ÁGUA SÃO LUIZ*\nOlá *${nome}*!\nA fatura de ${mes} já está no sistema.\n\n💰 *Total:* R$ ${total.toFixed(2)}${txtExtra}\n📅 *Venc:* ${venc.split('-').reverse().join('/')}\n\n👉 Acesse o link para ver o QR Code e copiar o PIX:\nhttps://agua-sao-luiz.vercel.app`;
+                        
+                        document.getElementById(`status-${id}`).innerHTML = `<button onclick="window.open('https://wa.me/${tel}?text=${encodeURIComponent(zap)}')" class="bg-green-500 text-white font-bold p-2 rounded-lg text-xs shadow">📲 ZAP</button>`;
                         document.getElementById(`linha-${id}`).style.backgroundColor = "#f0fdf4";
+                        document.getElementById(`atu-${id}`).disabled = true;
                     }
-                } catch(e) { document.getElementById(`status-${id}`).innerText = "Erro"; }
+                } catch(e) { document.getElementById(`status-${id}`).innerHTML = "<span class='text-red-500 font-bold'>Erro</span>"; }
             }
             esconderLoading();
-            alert("✅ Concluído!");
+            alert("✅ Faturas geradas com sucesso!");
         };
 
-        // --- EXCLUIR FATURA (ETAPA 2) ---
-        window.carregarInadimplentes = async () => {
-            const tbody = document.getElementById("tabelaAtrasados");
-            tbody.innerHTML = "<tr><td class='p-8 text-center'>Buscando...</td></tr>";
+        // --- ABA CONTAS ABERTAS (LIXEIRA E BAIXA) ---
+        window.carregarAbertas = async () => {
+            const tbody = document.getElementById("tabelaAbertas");
+            tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center'>Buscando...</td></tr>";
             try {
                 const famSnap = await getDocs(collection(db, "familias"));
                 const dict = {}; famSnap.forEach(d => dict[d.id] = d.data().nome);
+                
                 const fatSnap = await getDocs(collection(db, "faturas"));
                 const hoje = new Date(); hoje.setHours(0,0,0,0);
-                let html = "";
+                
+                let abertas = [];
                 fatSnap.forEach(d => {
-                    const f = d.data();
-                    if(f.status === 'pendente' && new Date(f.vencimento + "T00:00:00") < hoje) {
-                        html += `<tr><td class="p-4"><strong>${dict[f.familia_id]}</strong><br><small>${f.mes_referencia}</small></td><td class="p-4 text-red-600 font-bold">R$ ${f.valor_total.toFixed(2)}</td><td class="p-4 text-right flex gap-2 justify-end"><button onclick="marcarComoPagoManual('${d.id}')" class="bg-blue-600 text-white p-2 rounded-lg text-xs font-bold">Pago</button><button onclick="excluirFatura('${d.id}')" class="bg-red-100 text-red-600 p-2 rounded-lg text-xs font-bold">🗑️</button></td></tr>`;
-                    }
+                    if(d.data().status === 'pendente') abertas.push({id: d.id, ...d.data()});
                 });
-                tbody.innerHTML = html || "<tr><td class='p-8 text-center'>Nenhum atraso.</td></tr>";
+                abertas.sort((a,b) => new Date(a.vencimento) - new Date(b.vencimento));
+
+                let html = "";
+                for(let f of abertas) {
+                    const isOverdue = new Date(f.vencimento + "T00:00:00") < hoje;
+                    const rowClass = isOverdue ? "bg-red-50" : "hover:bg-amber-50";
+                    const icon = isOverdue ? "🚨 " : "⏳ ";
+                    
+                    html += `<tr class="${rowClass} border-b">
+                        <td class="p-4 font-mono text-sm">${icon}${f.vencimento.split('-').reverse().join('/')}</td>
+                        <td class="p-4"><strong>${dict[f.familia_id]}</strong><br><small class="text-gray-500">Ref: ${f.mes_referencia}</small></td>
+                        <td class="p-4 text-right font-bold text-amber-700">R$ ${f.valor_total.toFixed(2)}</td>
+                        <td class="p-4 text-center space-x-2">
+                            <button onclick="marcarComoPagoManual('${f.id}')" class="bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-bold shadow active:scale-95">Pago</button>
+                            <button onclick="excluirFatura('${f.id}')" class="bg-red-100 text-red-600 px-3 py-2 rounded-lg text-xs font-bold shadow active:scale-95">🗑️ Apagar</button>
+                        </td>
+                    </tr>`;
+                }
+                tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center text-green-600 font-bold'>Todas as contas estão pagas!</td></tr>";
             } catch(e) { tbody.innerHTML = "Erro"; }
         };
 
         window.excluirFatura = async (id) => {
-            if(!confirm("⚠️ ATENÇÃO: Deseja realmente EXCLUIR este boleto? Esta ação não pode ser desfeita!")) return;
-            mostrarLoading("Excluindo...");
+            if(!confirm("⚠️ DESEJA REALMENTE EXCLUIR ESTA FATURA?\nEla sumirá do portal do morador na mesma hora.")) return;
+            mostrarLoading("Deletando fatura...");
             try {
                 await deleteDoc(doc(db, "faturas", id));
-                carregarInadimplentes();
-                alert("Boleto excluído com sucesso.");
+                carregarAbertas();
             } catch(e) { alert("Erro ao excluir."); }
             esconderLoading();
         };
 
         window.marcarComoPagoManual = async (id) => {
+            if(!confirm("Registrar pagamento manualmente?")) return;
+            mostrarLoading("Processando...");
             await updateDoc(doc(db, "faturas", id), { status: "pago", data_pagamento: new Date().toISOString() });
-            carregarInadimplentes();
+            carregarAbertas();
+            esconderLoading();
         };
 
-        // Funções de Modal e UI helpers
+        // --- ABA RECEBIMENTOS ---
+        window.carregarPagamentos = async () => {
+            const tbody = document.getElementById("tabelaPagos");
+            tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center'>Buscando...</td></tr>";
+            try {
+                const famSnap = await getDocs(collection(db, "familias"));
+                const dict = {}; famSnap.forEach(d => dict[d.id] = d.data().nome);
+                
+                const fatSnap = await getDocs(collection(db, "faturas"));
+                const pagas = [];
+                fatSnap.forEach(d => { if(d.data().status === 'pago') pagas.push({id: d.id, ...d.data()}); });
+                pagas.sort((a,b) => new Date(b.data_pagamento) - new Date(a.data_pagamento));
+
+                let html = "";
+                for(let p of pagas) {
+                    const dataObj = new Date(p.data_pagamento);
+                    const dtFormat = dataObj.toLocaleDateString('pt-BR') + ' ' + dataObj.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+                    html += `<tr class="border-b"><td class="p-4 text-xs font-mono text-gray-500">${dtFormat}</td><td class="p-4 font-bold">${dict[p.familia_id]}</td><td class="p-4 text-right font-black text-green-600">R$ ${p.valor_total.toFixed(2)}</td><td class="p-4 text-center"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold uppercase">Recebido</span></td></tr>`;
+                }
+                tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center'>Nenhum pagamento.</td></tr>";
+            } catch(e) { tbody.innerHTML = "Erro"; }
+        };
+
+        // --- CONFIGURAÇÕES: EXPORTAR E IMPORTAR ---
+        window.exportarBase = async () => {
+            mostrarLoading("Criando arquivo de backup...");
+            try {
+                const famSnap = await getDocs(collection(db, "familias"));
+                const fatSnap = await getDocs(collection(db, "faturas"));
+                const data = { familias: [], faturas: [] };
+                famSnap.forEach(d => data.familias.push({id: d.id, ...d.data()}));
+                fatSnap.forEach(d => data.faturas.push({id: d.id, ...d.data()}));
+
+                const blob = new Blob([JSON.stringify(data)], {type: "application/json"});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url; a.download = `backup_saoluiz_${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+            } catch(e) { alert("Erro ao exportar"); }
+            esconderLoading();
+        };
+
+        window.importarBase = async () => {
+            const file = document.getElementById("fileImport").files[0];
+            if(!file) return alert("Por favor, selecione um arquivo JSON primeiro.");
+            if(!confirm("Atenção: Os dados do arquivo serão ADICIONADOS ao banco atual. Deseja continuar?")) return;
+
+            mostrarLoading("Importando dados para o servidor...");
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if(data.familias) {
+                        for(let f of data.familias) {
+                            const {id, ...rest} = f;
+                            await setDoc(doc(db, "familias", id), rest);
+                        }
+                    }
+                    if(data.faturas) {
+                        for(let f of data.faturas) {
+                            const {id, ...rest} = f;
+                            await setDoc(doc(db, "faturas", id), rest);
+                        }
+                    }
+                    alert("Importação concluída com sucesso!");
+                    carregarFamilias();
+                } catch(err) { alert("Erro ao ler arquivo. Arquivo inválido."); }
+                esconderLoading();
+            };
+            reader.readAsText(file);
+        };
+
+        window.limparFaturas = async () => {
+            if(!confirm("⚠️ ALERTA VERMELHO: Você tem certeza que deseja APAGAR TODAS as faturas geradas no sistema? Isso afeta o portal de todos os moradores e não tem volta! (As famílias serão mantidas)")) return;
+            mostrarLoading("Limpando banco de faturas...");
+            try {
+                const snap = await getDocs(collection(db, "faturas"));
+                const deletePromises = [];
+                snap.forEach(d => deletePromises.push(deleteDoc(doc(db, "faturas", d.id))));
+                await Promise.all(deletePromises);
+                alert("Limpeza concluída! O banco de faturas está vazio.");
+                carregarLoteFaturas();
+            } catch(e) { alert("Erro ao limpar base."); }
+            esconderLoading();
+        };
+
+        // Funções de Modal
         window.abrirModalCadastro = () => { document.getElementById("formMorador").reset(); document.getElementById("modId").value = ""; document.getElementById("modalMorador").style.display = "flex"; };
         window.abrirModalEdicao = (id, nome, cpf, tel, lote) => { document.getElementById("modId").value = id; document.getElementById("modNome").value = nome; document.getElementById("modCpf").value = cpf; document.getElementById("modTel").value = tel; document.getElementById("modLote").value = lote; document.getElementById("modalMorador").style.display = "flex"; };
         window.fecharModal = () => document.getElementById("modalMorador").style.display = "none";
@@ -370,10 +513,12 @@
             e.preventDefault();
             const id = document.getElementById("modId").value;
             const d = { nome: document.getElementById("modNome").value, cpf: document.getElementById("modCpf").value, telefone: document.getElementById("modTel").value, lote_endereco: document.getElementById("modLote").value };
+            mostrarLoading("Salvando morador...");
             if(id) await updateDoc(doc(db, "familias", id), d); else await addDoc(collection(db, "familias"), {...d, senha: "123456", status_ativo: true});
-            fecharModal(); carregarFamilias();
+            fecharModal(); carregarFamilias(); esconderLoading();
         });
     </script>
 </body>
 </html>
 
+    
