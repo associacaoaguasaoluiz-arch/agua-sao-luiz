@@ -3,124 +3,270 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Admin 3.1 - São Luiz</title>
+    <title>Dashboard Gestão - Água São Luiz</title>
+    <!-- Tailwind CSS para um design lindo e moderno -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Ícones FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; }
-        #loginAdmin { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #1c2b36; }
-        .login-box { background: white; padding: 2.5rem; border-radius: 12px; text-align: center; width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .login-box input { width: 100%; padding: 12px; margin: 15px 0; border: 1.5px solid #ddd; border-radius: 6px; }
-        .login-box button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        /* Estilos base */
+        body { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif; background-color: #f3f4f6; }
         
-        #painelAdmin { display: none; max-width: 1200px; margin: 20px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
-        h1 { color: #1c2b36; text-align: center; margin-bottom: 30px; }
-        
-        .abas { display: flex; border-bottom: 2px solid #eee; margin-bottom: 25px; overflow-x: auto; }
-        .aba { padding: 12px 25px; cursor: pointer; font-weight: 600; color: #666; white-space: nowrap; transition: 0.3s; }
-        .aba:hover { color: #007bff; }
-        .aba.ativa { border-bottom: 4px solid #007bff; color: #007bff; }
-        
-        .conteudo-aba { display: none; }
-        .conteudo-aba.ativo { display: block; }
+        /* Loading Overlay */
+        .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #2563eb; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Tabela Lote com Hidrômetro */
-        .tabela-lote { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; font-size: 14px; }
-        .tabela-lote th { background: #f8f9fa; padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6; color: #333; }
-        .tabela-lote td { padding: 10px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
-        .input-leitura { width: 80px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center; font-weight: bold; }
-        .input-leitura:focus { border-color: #007bff; outline: none; }
+        /* Esconder telas */
+        .tela-oculta { display: none !important; }
         
-        .destaque-valor { font-weight: bold; color: #28a745; font-size: 16px; }
-        .destaque-consumo { font-weight: bold; color: #17a2b8; }
-
-        .btn-acao { padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; transition: 0.3s; }
-        .btn-salvar-lote { background-color: #28a745; margin-bottom: 20px; width: 100%; font-size: 16px; }
-        .btn-zap-lote { background-color: #25D366; padding: 6px 10px; font-size: 12px; }
-        
-        .badge-status { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
-        .status-pendente { background: #fff3cd; color: #856404; }
-        .status-sucesso { background: #d4edda; color: #155724; }
-
-        .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
+        /* Modal */
+        .modal-fundo { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 50; justify-content: center; align-items: center; }
     </style>
 </head>
-<body>
+<body class="text-gray-800 h-screen flex overflow-hidden">
 
+    <!-- OVERLAY DE CARREGAMENTO -->
     <div id="loading" class="loading-overlay">
-        <div style="border: 5px solid #f3f3f3; border-top: 5px solid #28a745; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite;"></div>
-        <p style="margin-top: 15px; font-weight: bold; color: #333;" id="loadingMsg">Processando faturas...</p>
+        <div class="spinner"></div>
+        <p id="loadingMsg" class="mt-4 font-bold text-gray-700">Processando...</p>
     </div>
 
-    <div id="loginAdmin">
-        <div class="login-box">
-            <h2>Acesso Restrito</h2>
-            <input type="password" id="senhaAdmin" placeholder="Senha">
-            <button onclick="entrarAdmin()">Entrar</button>
+    <!-- TELA DE LOGIN -->
+    <div id="loginAdmin" class="fixed inset-0 bg-slate-900 flex justify-center items-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-2xl w-96 text-center">
+            <div class="bg-blue-600 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                <i class="fa-solid fa-droplet"></i>
+            </div>
+            <h2 class="text-2xl font-bold mb-2">Água São Luiz</h2>
+            <p class="text-gray-500 mb-6 text-sm">Acesso exclusivo do administrador</p>
+            <input type="password" id="senhaAdmin" placeholder="Digite a senha" class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button onclick="entrarAdmin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition">Entrar no Sistema</button>
+            <p id="erroLogin" class="text-red-500 text-sm font-bold mt-3 hidden">Senha Incorreta!</p>
         </div>
     </div>
 
-    <div id="painelAdmin">
-        <h1>⚙️ Sistema de Água São Luiz</h1>
+    <!-- DASHBOARD PRINCIPAL -->
+    <div id="painelAdmin" class="flex w-full h-full tela-oculta">
         
-        <div class="abas">
-            <div class="aba ativa" onclick="mudarAba('cadastro', this)">Cadastrar Família</div>
-            <div class="aba" onclick="mudarAba('lista', this); carregarFamilias();">Lista de Moradores</div>
-            <div class="aba" onclick="mudarAba('lote', this); carregarLoteFaturas();">Leituras do Mês</div>
-        </div>
+        <!-- MENU LATERAL (SIDEBAR) -->
+        <aside class="w-64 bg-slate-900 text-white flex flex-col hidden md:flex">
+            <div class="p-6 text-center border-b border-slate-700">
+                <h1 class="text-xl font-bold text-blue-400"><i class="fa-solid fa-tint mr-2"></i>São Luiz</h1>
+                <p class="text-xs text-slate-400 mt-1">Gestão de Saneamento</p>
+            </div>
+            <nav class="flex-1 p-4 space-y-2">
+                <button onclick="mudarAba('aba-moradores', this)" class="menu-btn w-full flex items-center p-3 rounded-lg bg-blue-600 text-white transition"><i class="fa-solid fa-users w-6"></i> Moradores</button>
+                <button onclick="mudarAba('aba-leituras', this); carregarLoteFaturas();" class="menu-btn w-full flex items-center p-3 rounded-lg hover:bg-slate-800 text-slate-300 transition"><i class="fa-solid fa-file-invoice-dollar w-6"></i> Lançar Leituras</button>
+                <button onclick="mudarAba('aba-recebimentos', this); carregarPagamentos();" class="menu-btn w-full flex items-center p-3 rounded-lg hover:bg-slate-800 text-slate-300 transition"><i class="fa-solid fa-hand-holding-dollar w-6"></i> Recebimentos</button>
+                <button onclick="mudarAba('aba-inadimplentes', this); carregarInadimplentes();" class="menu-btn w-full flex items-center p-3 rounded-lg hover:bg-slate-800 text-slate-300 transition"><i class="fa-solid fa-triangle-exclamation w-6"></i> Inadimplentes</button>
+            </nav>
+            <div class="p-4 border-t border-slate-700 text-center text-xs text-slate-500">
+                Versão 4.0 Pro
+            </div>
+        </aside>
 
-        <div id="cadastro" class="conteudo-aba ativo">
-            <h3>Novo Cadastro</h3>
-            <form id="formCadastro">
-                <input type="text" id="cadNome" required placeholder="Nome Completo" style="width:100%; padding:10px; margin-bottom:10px;">
-                <input type="text" id="cadCpf" required placeholder="CPF (Só números)" style="width:100%; padding:10px; margin-bottom:10px;">
-                <input type="text" id="cadTelefone" required placeholder="WhatsApp (DDD+Numero)" style="width:100%; padding:10px; margin-bottom:10px;">
-                <input type="text" id="cadEndereco" required placeholder="Lote / Endereço" style="width:100%; padding:10px; margin-bottom:10px;">
-                <button type="submit" class="btn-acao" style="background:#007bff; width:100%;">Salvar Morador</button>
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="flex-1 overflow-y-auto bg-gray-50">
+            
+            <!-- HEADER MOBILE -->
+            <div class="md:hidden bg-slate-900 text-white p-4 flex justify-between items-center">
+                <h1 class="font-bold"><i class="fa-solid fa-tint text-blue-400 mr-2"></i> São Luiz</h1>
+                <!-- Menu dropdown simplificado para celular -->
+                <select onchange="mudarAbaMobile(this.value)" class="bg-slate-800 text-white border-none p-2 rounded">
+                    <option value="aba-moradores">Moradores</option>
+                    <option value="aba-leituras">Lançar Leituras</option>
+                    <option value="aba-recebimentos">Recebimentos</option>
+                    <option value="aba-inadimplentes">Inadimplentes</option>
+                </select>
+            </div>
+
+            <div class="p-6 md:p-10 max-w-7xl mx-auto">
+
+                <!-- ================= ABA MORADORES ================= -->
+                <div id="aba-moradores" class="conteudo-aba">
+                    <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
+                        <h2 class="text-2xl font-bold text-gray-800">Gestão de Moradores</h2>
+                        <button onclick="abrirModalCadastro()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold shadow-sm"><i class="fa-solid fa-plus mr-2"></i>Novo Morador</button>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <div class="relative mb-4">
+                            <i class="fa-solid fa-search absolute left-3 top-3 text-gray-400"></i>
+                            <input type="text" id="buscaMorador" onkeyup="filtrarTabela('buscaMorador', 'tabelaMoradores')" placeholder="Buscar por nome, lote ou CPF..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-gray-50 text-gray-600 text-sm border-b border-gray-200">
+                                        <th class="p-4 font-semibold">Nome do Responsável</th>
+                                        <th class="p-4 font-semibold">CPF</th>
+                                        <th class="p-4 font-semibold">Lote / Endereço</th>
+                                        <th class="p-4 font-semibold">WhatsApp</th>
+                                        <th class="p-4 font-semibold text-center">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabelaMoradores" class="text-sm divide-y divide-gray-100">
+                                    <tr><td colspan="5" class="p-4 text-center text-gray-500">Carregando dados...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= ABA LANÇAR LEITURAS ================= -->
+                <div id="aba-leituras" class="conteudo-aba tela-oculta">
+                    <div class="flex flex-col md:flex-row justify-between md:items-center mb-6 gap-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800">Lançamento em Lote</h2>
+                            <p class="text-gray-500 text-sm">O sistema calcula R$25(Até 10m³), R$50(Até 30m³) e R$100(>30m³). Multa de R$25 aplicada a atrasados.</p>
+                        </div>
+                        <div class="flex gap-2 items-end">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Mês (Ex: 03/2026)</label>
+                                <input type="text" id="mesReferencia" value="03/2026" class="w-24 p-2 border border-gray-300 rounded text-center">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-1">Vencimento</label>
+                                <input type="date" id="dataVencimento" value="2026-03-20" class="p-2 border border-gray-300 rounded">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <div class="flex flex-col md:flex-row justify-between mb-4 gap-4">
+                            <div class="relative flex-1">
+                                <i class="fa-solid fa-search absolute left-3 top-3 text-gray-400"></i>
+                                <input type="text" id="buscaLeitura" onkeyup="filtrarTabela('buscaLeitura', 'corpoTabelaLote')" placeholder="Filtrar morador para lançar..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <button onclick="gerarFaturasEmLote()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-bold shadow-md"><i class="fa-solid fa-bolt mr-2"></i>Gerar Faturas Preenchidas</button>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse whitespace-nowrap">
+                                <thead>
+                                    <tr class="bg-blue-50 text-blue-800 text-sm border-b border-blue-200">
+                                        <th class="p-3 font-semibold">Morador / Lote</th>
+                                        <th class="p-3 font-semibold text-center">Leitura Ant.</th>
+                                        <th class="p-3 font-semibold text-center">Leitura Atual</th>
+                                        <th class="p-3 font-semibold text-center">Consumo</th>
+                                        <th class="p-3 font-semibold text-right">Água (R$)</th>
+                                        <th class="p-3 font-semibold text-right text-red-600">Multa (R$)</th>
+                                        <th class="p-3 font-semibold text-right">Total (R$)</th>
+                                        <th class="p-3 font-semibold text-center">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="corpoTabelaLote" class="text-sm divide-y divide-gray-100">
+                                    <tr><td colspan="8" class="p-4 text-center">Carregando...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= ABA RECEBIMENTOS ================= -->
+                <div id="aba-recebimentos" class="conteudo-aba tela-oculta">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800 text-green-700"><i class="fa-solid fa-check-circle mr-2"></i>Contas Pagas</h2>
+                        <p class="text-gray-500 text-sm">Histórico de faturas baixadas no sistema.</p>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                         <div class="relative mb-4">
+                            <i class="fa-solid fa-search absolute left-3 top-3 text-gray-400"></i>
+                            <input type="text" id="buscaPago" onkeyup="filtrarTabela('buscaPago', 'tabelaPagos')" placeholder="Buscar pagamento por nome ou mês..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg">
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-green-50 text-green-800 text-sm border-b border-green-200">
+                                        <th class="p-4 font-semibold">Data do Pagamento</th>
+                                        <th class="p-4 font-semibold">Morador</th>
+                                        <th class="p-4 font-semibold">Referência</th>
+                                        <th class="p-4 font-semibold">Valor Recebido</th>
+                                        <th class="p-4 font-semibold">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabelaPagos" class="text-sm divide-y divide-gray-100">
+                                    <tr><td colspan="5" class="p-4 text-center">Buscando pagamentos...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= ABA INADIMPLENTES ================= -->
+                <div id="aba-inadimplentes" class="conteudo-aba tela-oculta">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-red-600"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Contas Atrasadas</h2>
+                        <p class="text-gray-500 text-sm">Faturas que já passaram da data de vencimento e continuam pendentes.</p>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-red-100 p-6">
+                        <div class="relative mb-4">
+                            <i class="fa-solid fa-search absolute left-3 top-3 text-gray-400"></i>
+                            <input type="text" id="buscaAtrasado" onkeyup="filtrarTabela('buscaAtrasado', 'tabelaAtrasados')" placeholder="Buscar devedor..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg">
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-red-50 text-red-800 text-sm border-b border-red-200">
+                                        <th class="p-4 font-semibold">Vencimento</th>
+                                        <th class="p-4 font-semibold">Morador</th>
+                                        <th class="p-4 font-semibold">Referência</th>
+                                        <th class="p-4 font-semibold">Valor Devido</th>
+                                        <th class="p-4 font-semibold text-center">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabelaAtrasados" class="text-sm divide-y divide-gray-100">
+                                    <tr><td colspan="5" class="p-4 text-center">Buscando...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL DE CADASTRO / EDIÇÃO DE MORADOR -->
+    <div id="modalMorador" class="modal-fundo">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden animate-[fade-in_0.2s_ease-out]">
+            <div class="bg-slate-900 px-6 py-4 flex justify-between items-center text-white">
+                <h3 id="tituloModal" class="font-bold text-lg">Novo Morador</h3>
+                <button onclick="fecharModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form id="formMorador" class="p-6">
+                <input type="hidden" id="modId">
+                <div class="mb-4">
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Nome Completo</label>
+                    <input type="text" id="modNome" required class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-bold text-gray-700 mb-1">CPF (Apenas números)</label>
+                    <input type="text" id="modCpf" required class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Telefone / WhatsApp</label>
+                    <input type="text" id="modTel" required class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Lote / Endereço</label>
+                    <input type="text" id="modLote" required class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div class="flex gap-3">
+                    <button type="button" onclick="fecharModal()" class="flex-1 bg-gray-200 text-gray-800 font-bold py-2 rounded hover:bg-gray-300">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-blue-600 text-white font-bold py-2 rounded hover:bg-blue-700">Salvar Dados</button>
+                </div>
             </form>
         </div>
-
-        <div id="lista" class="conteudo-aba">
-            <h3>Moradores Ativos</h3>
-            <div id="tabelaLista"></div>
-        </div>
-
-        <div id="lote" class="conteudo-aba">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-                <h3>Lançamento de Leituras</h3>
-                <div>
-                    <label>Mês:</label>
-                    <input type="text" id="mesReferencia" value="03/2026" style="padding: 5px; width: 80px;">
-                    <label style="margin-left: 10px;">Vencimento:</label>
-                    <input type="date" id="dataVencimento" value="2026-03-20" style="padding: 5px;">
-                </div>
-            </div>
-            
-            <button onclick="gerarFaturasEmLote()" class="btn-acao btn-salvar-lote" id="btnProcessarTudo">
-                🚀 GERAR TODAS AS FATURAS PREENCHIDAS
-            </button>
-
-            <div style="overflow-x: auto;">
-                <table class="tabela-lote">
-                    <thead>
-                        <tr>
-                            <th>Morador / Lote</th>
-                            <th>Leitura Anterior</th>
-                            <th>Leitura Atual</th>
-                            <th>Consumo (m³)</th>
-                            <th>Valor R$</th>
-                            <th>Status / Ação</th>
-                        </tr>
-                    </thead>
-                    <tbody id="corpoTabelaLote">
-                        <tr><td colspan="6" style="text-align:center;">Carregando moradores...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
     </div>
 
+    <!-- Scripts do Firebase e Lógica -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ",
@@ -135,206 +281,347 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // LOGIN
+        // --- SISTEMA DE NAVEGAÇÃO ---
         window.entrarAdmin = () => {
             if(document.getElementById("senhaAdmin").value === "admin123") {
                 document.getElementById("loginAdmin").style.display = "none";
-                document.getElementById("painelAdmin").style.display = "block";
-            } else { alert("Senha incorreta"); }
+                document.getElementById("painelAdmin").classList.remove('tela-oculta');
+                carregarFamilias(); // Carrega tela inicial
+            } else { 
+                document.getElementById("erroLogin").classList.remove('hidden'); 
+            }
         };
 
-        // MUDAR ABA
-        window.mudarAba = (id, el) => {
-            document.querySelectorAll('.conteudo-aba').forEach(a => a.classList.remove('ativo'));
-            document.querySelectorAll('.aba').forEach(a => a.classList.remove('ativa'));
-            document.getElementById(id).classList.add('ativo');
-            el.classList.add('ativa');
+        window.mudarAba = (id, elemento) => {
+            document.querySelectorAll('.conteudo-aba').forEach(a => a.classList.add('tela-oculta'));
+            document.querySelectorAll('.menu-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white');
+                btn.classList.add('hover:bg-slate-800', 'text-slate-300');
+            });
+            document.getElementById(id).classList.remove('tela-oculta');
+            if(elemento) {
+                elemento.classList.remove('hover:bg-slate-800', 'text-slate-300');
+                elemento.classList.add('bg-blue-600', 'text-white');
+            }
+        };
+        window.mudarAbaMobile = (id) => {
+            document.querySelectorAll('.conteudo-aba').forEach(a => a.classList.add('tela-oculta'));
+            document.getElementById(id).classList.remove('tela-oculta');
+            if(id === 'aba-moradores') carregarFamilias();
+            if(id === 'aba-leituras') carregarLoteFaturas();
+            if(id === 'aba-recebimentos') carregarPagamentos();
+            if(id === 'aba-inadimplentes') carregarInadimplentes();
         };
 
-        // --- CÓDIGO CORRIGIDO QUE TINHA SUMIDO: CADASTRAR FAMÍLIA ---
-        document.getElementById("formCadastro").addEventListener("submit", async (e) => {
-            e.preventDefault(); // Impede a página de recarregar
-            const btn = document.querySelector("#formCadastro button");
-            btn.innerText = "Salvando no banco de dados...";
-            btn.disabled = true;
+        // --- SISTEMA DE BUSCA GERAL ---
+        window.filtrarTabela = (inputId, tabelaId) => {
+            const filtro = document.getElementById(inputId).value.toLowerCase();
+            const linhas = document.getElementById(tabelaId).getElementsByTagName('tr');
+            for (let i = 0; i < linhas.length; i++) {
+                const textoLinha = linhas[i].innerText.toLowerCase();
+                linhas[i].style.display = textoLinha.includes(filtro) ? "" : "none";
+            }
+        };
+
+        // --- MODAL E CADASTRO/EDIÇÃO ---
+        window.abrirModalCadastro = () => {
+            document.getElementById("formMorador").reset();
+            document.getElementById("modId").value = "";
+            document.getElementById("tituloModal").innerText = "Novo Morador";
+            document.getElementById("modalMorador").style.display = "flex";
+        };
+
+        window.abrirModalEdicao = (id, nome, cpf, tel, lote) => {
+            document.getElementById("modId").value = id;
+            document.getElementById("modNome").value = nome;
+            document.getElementById("modCpf").value = cpf;
+            document.getElementById("modTel").value = tel;
+            document.getElementById("modLote").value = lote;
+            document.getElementById("tituloModal").innerText = "Editar Morador";
+            document.getElementById("modalMorador").style.display = "flex";
+        };
+
+        window.fecharModal = () => { document.getElementById("modalMorador").style.display = "none"; };
+
+        document.getElementById("formMorador").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            mostrarLoading("Salvando dados...");
+            const id = document.getElementById("modId").value;
+            const dados = {
+                nome: document.getElementById("modNome").value,
+                cpf: document.getElementById("modCpf").value,
+                telefone: document.getElementById("modTel").value,
+                lote_endereco: document.getElementById("modLote").value
+            };
 
             try {
-                await addDoc(collection(db, "familias"), {
-                    nome: document.getElementById("cadNome").value,
-                    cpf: document.getElementById("cadCpf").value,
-                    telefone: document.getElementById("cadTelefone").value,
-                    lote_endereco: document.getElementById("cadEndereco").value,
-                    senha: "123456",
-                    status_ativo: true
-                });
-                alert("Família cadastrada com sucesso!");
-                document.getElementById("formCadastro").reset();
-            } catch (error) {
-                console.error("Erro ao cadastrar:", error);
-                alert("Erro ao cadastrar. Verifique a internet.");
-            } finally {
-                btn.innerText = "Salvar Morador";
-                btn.disabled = false;
-            }
+                if(id) {
+                    await updateDoc(doc(db, "familias", id), dados);
+                } else {
+                    dados.senha = "123456"; dados.status_ativo = true;
+                    await addDoc(collection(db, "familias"), dados);
+                }
+                fecharModal();
+                carregarFamilias();
+            } catch (error) { alert("Erro ao salvar."); }
+            esconderLoading();
         });
 
-        // --- CÓDIGO CORRIGIDO QUE TINHA SUMIDO: VER A LISTA ---
+        // --- ABA 1: MORADORES ---
         window.carregarFamilias = async () => {
-            const divTabela = document.getElementById("tabelaLista");
-            divTabela.innerHTML = "Buscando dados no Firebase...";
-            
-            try {
-                const snap = await getDocs(collection(db, "familias"));
-                let html = `
-                    <table class="tabela-lote">
-                        <thead>
-                            <tr><th>Nome</th><th>CPF</th><th>Lote</th><th>Telefone</th></tr>
-                        </thead>
-                        <tbody>
-                `;
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    html += `<tr><td>${d.nome}</td><td>${d.cpf}</td><td>${d.lote_endereco}</td><td>${d.telefone}</td></tr>`;
-                });
-                html += "</tbody></table>";
-                divTabela.innerHTML = html;
-            } catch (error) {
-                divTabela.innerHTML = "<span style='color:red;'>Erro ao carregar lista.</span>";
-            }
-        };
-
-        // Carregar Tabela com Lógica do Hidrômetro
-        window.carregarLoteFaturas = async () => {
-            const corpo = document.getElementById("corpoTabelaLote");
-            corpo.innerHTML = "<tr><td colspan='6' style='text-align:center;'>Buscando moradores no banco...</td></tr>";
-            
+            const tbody = document.getElementById("tabelaMoradores");
+            tbody.innerHTML = "<tr><td colspan='5' class='p-4 text-center'>Buscando...</td></tr>";
             try {
                 const snap = await getDocs(collection(db, "familias"));
                 let html = "";
                 snap.forEach(doc => {
                     const d = doc.data();
                     html += `
-                        <tr id="linha-${doc.id}">
-                            <td><strong>${d.nome}</strong><br><small style="color:#666;">Lote: ${d.lote_endereco}</small></td>
-                            <td><input type="number" class="input-leitura" id="ant-${doc.id}" onkeyup="calcularLinha('${doc.id}')" placeholder="Ex: 100"></td>
-                            <td><input type="number" class="input-leitura" id="atu-${doc.id}" onkeyup="calcularLinha('${doc.id}')" placeholder="Ex: 115"></td>
-                            <td><span class="destaque-consumo" id="cons-${doc.id}">0</span> m³</td>
-                            <td>
-                                R$ <span class="destaque-valor" id="val-${doc.id}">0,00</span>
-                                <input type="hidden" id="val-hidden-${doc.id}" value="0" data-nome="${d.nome}" data-cpf="${d.cpf}" data-tel="${d.telefone}">
+                        <tr class="hover:bg-gray-50">
+                            <td class="p-4 font-medium">${d.nome}</td>
+                            <td class="p-4 text-gray-600">${d.cpf}</td>
+                            <td class="p-4 text-gray-600">${d.lote_endereco}</td>
+                            <td class="p-4 text-gray-600">${d.telefone}</td>
+                            <td class="p-4 text-center">
+                                <button onclick="abrirModalEdicao('${doc.id}', '${d.nome}', '${d.cpf}', '${d.telefone}', '${d.lote_endereco}')" class="text-blue-500 hover:text-blue-700 bg-blue-50 p-2 rounded"><i class="fa-solid fa-pen"></i> Editar</button>
                             </td>
-                            <td id="status-${doc.id}"><span class="badge-status">Pendente</span></td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = html || "<tr><td colspan='5' class='p-4 text-center'>Nenhum morador.</td></tr>";
+            } catch (error) { tbody.innerHTML = "<tr><td colspan='5' class='text-red-500'>Erro ao carregar.</td></tr>"; }
+        };
+
+        // --- ABA 2: LEITURAS E MULTA (CÉREBRO) ---
+        window.carregarLoteFaturas = async () => {
+            const corpo = document.getElementById("corpoTabelaLote");
+            corpo.innerHTML = "<tr><td colspan='8' class='p-4 text-center'>Analisando contas e multas...</td></tr>";
+            
+            try {
+                // Puxa tudo pra cruzar os dados no Javascript (Regra 2)
+                const famSnap = await getDocs(collection(db, "familias"));
+                const fatSnap = await getDocs(collection(db, "faturas"));
+                
+                const todasFaturas = [];
+                fatSnap.forEach(d => todasFaturas.push({ id_fatura: d.id, ...d.data() }));
+
+                let html = "";
+                const hoje = new Date();
+                hoje.setHours(0,0,0,0); // Zera a hora para comparar só a data
+
+                famSnap.forEach(docFam => {
+                    const f = docFam.data();
+                    const famId = docFam.id;
+
+                    // LÓGICA DA MULTA: Acha se tem conta pendente e vencida
+                    const faturasDestaFam = todasFaturas.filter(fat => fat.familia_id === famId && fat.status === 'pendente');
+                    let temMulta = false;
+                    
+                    for(let fat of faturasDestaFam) {
+                        const dataVenc = new Date(fat.vencimento + "T00:00:00");
+                        if (dataVenc < hoje) { temMulta = true; break; }
+                    }
+
+                    const valorMulta = temMulta ? 25.00 : 0.00;
+                    const badgeMulta = temMulta ? `<span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-bold">Atrasado (+R$25)</span>` : ``;
+
+                    html += `
+                        <tr id="linha-${famId}" class="hover:bg-blue-50/50">
+                            <td class="p-3">
+                                <div class="font-bold text-gray-800">${f.nome}</div>
+                                <div class="text-xs text-gray-500">${f.lote_endereco} ${badgeMulta}</div>
+                            </td>
+                            <td class="p-3 text-center"><input type="number" id="ant-${famId}" onkeyup="calcularLinha('${famId}', ${valorMulta})" class="w-16 p-1 border rounded text-center" placeholder="0"></td>
+                            <td class="p-3 text-center"><input type="number" id="atu-${famId}" onkeyup="calcularLinha('${famId}', ${valorMulta})" class="w-16 p-1 border rounded text-center border-blue-300 bg-blue-50" placeholder="0"></td>
+                            <td class="p-3 text-center font-bold text-blue-600"><span id="cons-${famId}">0</span></td>
+                            <td class="p-3 text-right">R$ <span id="valAgua-${famId}">0,00</span></td>
+                            <td class="p-3 text-right text-red-500 font-bold">R$ ${valorMulta.toFixed(2).replace('.',',')}</td>
+                            <td class="p-3 text-right font-bold text-green-600 text-lg">
+                                R$ <span id="valTotal-${famId}">0,00</span>
+                                <input type="hidden" id="hidden-agua-${famId}" value="0">
+                                <input type="hidden" id="hidden-total-${famId}" value="0" data-multa="${valorMulta}" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}">
+                            </td>
+                            <td class="p-3 text-center" id="status-${famId}"><span class="bg-gray-200 text-gray-600 px-2 py-1 rounded text-xs">Aguardando</span></td>
                         </tr>
                     `;
                 });
                 corpo.innerHTML = html;
-            } catch (error) {
-                corpo.innerHTML = "<tr><td colspan='6' style='color:red;'>Erro ao carregar dados.</td></tr>";
-            }
+            } catch (error) { corpo.innerHTML = "<tr><td colspan='8' class='text-red-500'>Erro ao carregar dados.</td></tr>"; }
         };
 
-        // LÓGICA DE PREÇOS (O CÉREBRO DO HIDRÔMETRO)
-        window.calcularLinha = (id) => {
+        window.calcularLinha = (id, multa) => {
             const ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0;
             const atu = parseFloat(document.getElementById(`atu-${id}`).value) || 0;
-            
-            let consumo = 0;
-            if (atu >= ant && atu > 0) {
-                consumo = atu - ant;
-            }
+            let consumo = (atu >= ant && atu > 0) ? atu - ant : 0;
             
             document.getElementById(`cons-${id}`).innerText = consumo;
 
-            // Regras de Preço
-            let valor = 0;
+            let valorAgua = 0;
             if (consumo > 0) {
-                if (consumo <= 10) {
-                    valor = 25.00;
-                } else if (consumo <= 30) {
-                    valor = 50.00;
-                } else {
-                    valor = 100.00;
-                }
+                if (consumo <= 10) valorAgua = 25.00;
+                else if (consumo <= 30) valorAgua = 50.00;
+                else valorAgua = 100.00;
             }
 
-            document.getElementById(`val-${id}`).innerText = valor.toFixed(2).replace('.', ',');
-            document.getElementById(`val-hidden-${id}`).value = valor;
+            const valorTotal = valorAgua > 0 ? valorAgua + multa : 0;
+
+            document.getElementById(`valAgua-${id}`).innerText = valorAgua.toFixed(2).replace('.', ',');
+            document.getElementById(`valTotal-${id}`).innerText = valorTotal.toFixed(2).replace('.', ',');
+            
+            document.getElementById(`hidden-agua-${id}`).value = valorAgua;
+            document.getElementById(`hidden-total-${id}`).value = valorTotal;
         };
 
-        // Gerar Faturas Prontas
         window.gerarFaturasEmLote = async () => {
-            const inputs = document.querySelectorAll('input[id^="val-hidden-"]');
-            const linhasParaProcessar = Array.from(inputs).filter(i => parseFloat(i.value) > 0);
-            const total = linhasParaProcessar.length;
+            const inputs = document.querySelectorAll('input[id^="hidden-total-"]');
+            const linhas = Array.from(inputs).filter(i => parseFloat(i.value) > 0);
             
-            if(total === 0) return alert("Preencha a Leitura Atual de pelo menos um morador para gerar consumo!");
-            if(!confirm(`Deseja gerar e enviar para o banco as faturas de ${total} moradores?`)) return;
+            if(linhas.length === 0) return alert("Preencha a Leitura Atual de alguém!");
+            if(!confirm(`Gerar ${linhas.length} faturas?`)) return;
 
-            document.getElementById("loading").style.display = "flex";
-            let processados = 0;
+            mostrarLoading("Conectando ao Mercado Pago...");
             const mes = document.getElementById("mesReferencia").value;
             const venc = document.getElementById("dataVencimento").value;
 
-            for(let input of linhasParaProcessar) {
-                processados++;
-                document.getElementById("loadingMsg").innerText = `Processando ${processados} de ${total}...`;
-                
-                const valor = parseFloat(input.value);
-                const id = input.id.replace('val-hidden-', '');
+            for(let input of linhas) {
+                const total = parseFloat(input.value);
+                const id = input.id.replace('hidden-total-', '');
+                const valorAgua = parseFloat(document.getElementById(`hidden-agua-${id}`).value);
+                const valorMulta = parseFloat(input.dataset.multa);
                 const nome = input.dataset.nome;
                 const cpf = input.dataset.cpf.replace(/\D/g, '');
                 const tel = input.dataset.tel;
                 
-                const leitura_ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0;
-                const leitura_atu = parseFloat(document.getElementById(`atu-${id}`).value) || 0;
-                const consumo_calc = leitura_atu - leitura_ant;
+                const l_ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0;
+                const l_atu = parseFloat(document.getElementById(`atu-${id}`).value) || 0;
+                const cons = l_atu - l_ant;
 
                 try {
                     const res = await fetch("/api/gerar-pix", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ valor, descricao: `Água ${mes} - L.Atual: ${leitura_atu}`, nome, cpf })
+                        body: JSON.stringify({ valor: total, descricao: `Água ${mes}`, nome, cpf })
                     });
                     const pix = await res.json();
 
                     if(pix.sucesso) {
                         await addDoc(collection(db, "faturas"), {
-                            familia_id: id, 
-                            mes_referencia: mes,
-                            leitura_anterior: leitura_ant,
-                            leitura_atual: leitura_atu,
-                            consumo_m3: consumo_calc,
-                            valor_total: valor, 
-                            vencimento: venc, 
-                            status: "pendente",
-                            pix_copia_cola: pix.copiaECola,
-                            data_lancamento: new Date().toISOString()
+                            familia_id: id, mes_referencia: mes, leitura_anterior: l_ant, leitura_atual: l_atu,
+                            consumo_m3: cons, valor_agua: valorAgua, valor_multa: valorMulta, valor_total: total, 
+                            vencimento: venc, status: "pendente", pix_copia_cola: pix.copiaECola, data_lancamento: new Date().toISOString()
                         });
 
-                        const texto = `Olá ${nome}! Segue a fatura da Água de ${mes}.\n\n💧 Consumo: ${consumo_calc}m³\n💰 Valor: R$ ${valor.toFixed(2)}\n📅 Vencimento: ${venc.split('-').reverse().join('/')}\n\n*Pix Copia e Cola (toque e segure abaixo para copiar):*\n\n${pix.copiaECola}`;
-                        const link = `https://wa.me/${tel}?text=${encodeURIComponent(texto)}`;
-
-                        document.getElementById(`status-${id}`).innerHTML = `
-                            <span class="badge-status status-sucesso">Gerado!</span><br>
-                            <button onclick="window.open('${link}', '_blank')" class="btn-acao btn-zap-lote" style="margin-top:5px;">📲 Enviar Zap</button>
-                        `;
+                        const txzap = `Olá ${nome}! Fatura da Água de ${mes}.\n💧 Consumo: ${cons}m³\n💰 Água: R$${valorAgua.toFixed(2)}\n⚠️ Multa: R$${valorMulta.toFixed(2)}\n💵 Total: R$ ${total.toFixed(2)}\n📅 Venc: ${venc.split('-').reverse().join('/')}\n\n*Pix Copia e Cola:*\n\n${pix.copiaECola}`;
                         
-                        document.getElementById(`ant-${id}`).disabled = true;
+                        document.getElementById(`status-${id}`).innerHTML = `<button onclick="window.open('https://wa.me/${tel}?text=${encodeURIComponent(txzap)}')" class="bg-green-500 text-white px-2 py-1 rounded text-xs"><i class="fa-brands fa-whatsapp"></i> Enviar</button>`;
                         document.getElementById(`atu-${id}`).disabled = true;
-                        document.getElementById(`linha-${id}`).style.backgroundColor = "#e8f5e9";
+                        document.getElementById(`linha-${id}`).classList.add('bg-green-50');
                     }
-                } catch (e) {
-                    console.error(e);
-                    document.getElementById(`status-${id}`).innerHTML = `<span style="color:red; font-size:11px; font-weight:bold;">ERRO DE CONEXÃO</span>`;
-                }
+                } catch(e) { document.getElementById(`status-${id}`).innerHTML = `<span class="text-red-500 text-xs">Erro</span>`; }
             }
-            document.getElementById("loading").style.display = "none";
-            alert("Lote processado com sucesso! As faturas já estão no painel dos moradores.");
+            esconderLoading();
+            alert("Lote concluído!");
         };
 
-        const style = document.createElement('style');
-        style.innerHTML = `@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`;
-        document.head.appendChild(style);
+        // --- ABA 3: RECEBIMENTOS ---
+        window.carregarPagamentos = async () => {
+            const tbody = document.getElementById("tabelaPagos");
+            tbody.innerHTML = "<tr><td colspan='5' class='p-4 text-center'>Buscando...</td></tr>";
+            
+            try {
+                const famSnap = await getDocs(collection(db, "familias"));
+                const dictFamilias = {};
+                famSnap.forEach(d => dictFamilias[d.id] = d.data().nome);
+
+                const fatSnap = await getDocs(collection(db, "faturas"));
+                const pagas = [];
+                fatSnap.forEach(d => {
+                    if(d.data().status === 'pago') pagas.push({id: d.id, ...d.data()});
+                });
+
+                // Ordena por data de pagamento (mais recente primeiro)
+                pagas.sort((a,b) => new Date(b.data_pagamento || 0) - new Date(a.data_pagamento || 0));
+
+                let html = "";
+                for(let p of pagas) {
+                    const nome = dictFamilias[p.familia_id] || "Desconhecido";
+                    const dataPag = p.data_pagamento ? new Date(p.data_pagamento).toLocaleString('pt-BR') : "Data Indisponível";
+                    html += `
+                        <tr class="hover:bg-green-50/50">
+                            <td class="p-4">${dataPag}</td>
+                            <td class="p-4 font-bold text-gray-700">${nome}</td>
+                            <td class="p-4">${p.mes_referencia}</td>
+                            <td class="p-4 font-bold text-green-600">R$ ${parseFloat(p.valor_total).toFixed(2).replace('.',',')}</td>
+                            <td class="p-4"><span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold"><i class="fa-solid fa-check"></i> Recebido</span></td>
+                        </tr>
+                    `;
+                }
+                tbody.innerHTML = html || "<tr><td colspan='5' class='p-4 text-center text-gray-500'>Nenhum pagamento registrado ainda.</td></tr>";
+            } catch(e) { tbody.innerHTML = "<tr><td colspan='5' class='text-red-500'>Erro.</td></tr>"; }
+        };
+
+        // --- ABA 4: INADIMPLENTES (E BAIXA MANUAL) ---
+        window.carregarInadimplentes = async () => {
+            const tbody = document.getElementById("tabelaAtrasados");
+            tbody.innerHTML = "<tr><td colspan='5' class='p-4 text-center'>Analisando vencimentos...</td></tr>";
+            
+            try {
+                const famSnap = await getDocs(collection(db, "familias"));
+                const dictFamilias = {};
+                famSnap.forEach(d => dictFamilias[d.id] = d.data().nome);
+
+                const fatSnap = await getDocs(collection(db, "faturas"));
+                const hoje = new Date();
+                hoje.setHours(0,0,0,0);
+
+                const atrasadas = [];
+                fatSnap.forEach(d => {
+                    const f = d.data();
+                    if(f.status === 'pendente') {
+                        const dataVenc = new Date(f.vencimento + "T00:00:00");
+                        if(dataVenc < hoje) atrasadas.push({id: d.id, data_venc: dataVenc, ...f});
+                    }
+                });
+
+                atrasadas.sort((a,b) => a.data_venc - b.data_venc);
+
+                let html = "";
+                for(let a of atrasadas) {
+                    const nome = dictFamilias[a.familia_id] || "Desconhecido";
+                    const vencBr = a.vencimento.split('-').reverse().join('/');
+                    html += `
+                        <tr class="hover:bg-red-50/50">
+                            <td class="p-4 font-bold text-red-600">${vencBr}</td>
+                            <td class="p-4 font-bold">${nome}</td>
+                            <td class="p-4">${a.mes_referencia}</td>
+                            <td class="p-4 font-bold">R$ ${parseFloat(a.valor_total).toFixed(2).replace('.',',')}</td>
+                            <td class="p-4 text-center">
+                                <button onclick="marcarComoPagoManual('${a.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs shadow"><i class="fa-solid fa-check-double"></i> Dar Baixa Manual</button>
+                            </td>
+                        </tr>
+                    `;
+                }
+                tbody.innerHTML = html || "<tr><td colspan='5' class='p-4 text-center text-green-600 font-bold'>Parabéns! Ninguém está devendo.</td></tr>";
+            } catch(e) { tbody.innerHTML = "<tr><td colspan='5' class='text-red-500'>Erro.</td></tr>"; }
+        };
+
+        // FUNÇÃO DE BAIXA MANUAL (Até criarmos o Webhook)
+        window.marcarComoPagoManual = async (faturaId) => {
+            if(!confirm("Tem certeza que este morador pagou? Isso mudará o status para PAGO.")) return;
+            mostrarLoading("Registrando pagamento...");
+            try {
+                await updateDoc(doc(db, "faturas", faturaId), {
+                    status: "pago",
+                    data_pagamento: new Date().toISOString()
+                });
+                carregarInadimplentes();
+            } catch(e) { alert("Erro ao dar baixa."); }
+            esconderLoading();
+        };
+
+        // UI Helpers
+        const mostrarLoading = (msg) => { document.getElementById("loadingMsg").innerText = msg; document.getElementById("loading").style.display = "flex"; };
+        const esconderLoading = () => { document.getElementById("loading").style.display = "none"; };
     </script>
 </body>
 </html>
