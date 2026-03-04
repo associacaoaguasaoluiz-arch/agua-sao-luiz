@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>App Gestão 11.0 - Água São Luiz</title>
+    <title>App Gestão 12.0 - Água São Luiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -132,10 +132,15 @@
                                     <option value="pix_agora">⚡ Gerar um PIX Separado Agora</option>
                                 </select>
                             </div>
+                            
+                            <!-- MELHORIA AQUI: BUSCA DE CLIENTES E NOVO LABEL -->
                             <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Selecione o Alvo</label>
-                                <select id="avulsoFamilia" required class="w-full p-3 bg-gray-50 border rounded-xl outline-none font-bold text-gray-700"></select>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Selecione o Cliente</label>
+                                <input type="text" id="buscaClienteAvulso" onkeyup="if(window.filtrarAvulso) window.filtrarAvulso()" placeholder="🔍 Digite para pesquisar cliente ou lote..." class="w-full p-3 mb-2 bg-gray-100 border border-gray-200 rounded-xl outline-none focus:border-blue-500 transition text-sm">
+                                <select id="avulsoFamilia" required class="w-full p-3 bg-gray-50 border rounded-xl outline-none font-bold text-gray-700">
+                                </select>
                             </div>
+
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Título do Serviço</label>
                                 <input type="text" id="avulsoDescricao" required placeholder="Ex: Conserto do encanamento" class="w-full p-3 bg-gray-50 border rounded-xl outline-none">
@@ -287,7 +292,6 @@
             if(id === 'aba-avulso') window.carregarSelectAvulso();
             if(id === 'aba-relatorios') window.carregarRelatorio();
             
-            // As abas Abertas e Pagos agora carregam sozinhas via Listener
             if(id === 'aba-abertas' && window.iniciarListenerAbertas) window.iniciarListenerAbertas();
             if(id === 'aba-recebimentos' && window.iniciarListenerPagos) window.iniciarListenerPagos();
         };
@@ -365,6 +369,24 @@
             };
             recognition.start();
         };
+
+        // --- RENDERIZA O SELECT DE BUSCA DOS AVULSOS ---
+        window.renderizarSelectAvulso = (filtro = "") => {
+            const select = document.getElementById("avulsoFamilia");
+            let html = "<option value='TODOS' class='font-bold text-blue-700 bg-blue-50'>🌟 RATEIO: COBRAR TODOS</option>";
+            Object.entries(window.familiasGlobal).forEach(([id, f]) => {
+                const texto = `${f.nome} ${f.lote_endereco}`.toLowerCase();
+                if(texto.includes(filtro.toLowerCase())) {
+                    html += `<option value="${id}" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}">${f.nome} (${f.lote_endereco})</option>`;
+                }
+            });
+            select.innerHTML = html;
+        };
+
+        window.filtrarAvulso = () => {
+            const termo = document.getElementById("buscaClienteAvulso").value;
+            window.renderizarSelectAvulso(termo);
+        };
     </script>
 
     <!-- SCRIPT 2: FIREBASE E NEGÓCIO -->
@@ -397,7 +419,6 @@
             window.fecharModal(); window.carregarFamilias(); window.esconderLoading();
         };
 
-        // EXCLUIR MORADOR (NOVO)
         window.excluirMorador = async (id, nome) => {
             if(confirm(`⚠️ ATENÇÃO: Deseja apagar definitivamente o morador ${nome} do sistema?\n\nAs faturas dele continuarão no histórico de relatórios, mas ele não poderá mais acessar o portal.`)) {
                 window.mostrarLoading("Excluindo...");
@@ -417,7 +438,6 @@
             tbody.innerHTML = html;
         };
 
-        // HODÔMETRO (LEITURA ANTERIOR SALVA) + TAXAS SOMADAS
         window.carregarLoteFaturas = async () => {
             const corpo = document.getElementById("corpoTabelaLote");
             try {
@@ -433,8 +453,8 @@
                     const temAtraso = faturas.some(fat => fat.familia_id === famId && fat.status === 'pendente' && new Date(fat.vencimento + "T00:00:00") < hoje);
                     const multa = temAtraso ? 25.0 : 0.0;
                     
-                    const ultimaLeitura = f.ultima_leitura || 0; // NOVO: Puxa o Hodômetro Anterior
-                    const taxaPendente = f.taxa_pendente_valor || 0; // NOVO: Puxa Taxa agendada
+                    const ultimaLeitura = f.ultima_leitura || 0;
+                    const taxaPendente = f.taxa_pendente_valor || 0;
                     const descTaxa = f.taxa_pendente_desc || "";
                     
                     const avisoTaxa = taxaPendente > 0 ? `<br><span class="text-blue-600 font-bold text-[10px]">+ R$${taxaPendente} (${descTaxa})</span>` : "";
@@ -465,7 +485,7 @@
 
         window.gerarFaturasEmLote = async () => {
             const inputs = document.querySelectorAll('input[id^="h-total-"]');
-            const linhas = Array.from(inputs).filter(i => parseFloat(i.value) > 0); // Só processa quem teve consumo digitado ou taxa a pagar
+            const linhas = Array.from(inputs).filter(i => parseFloat(i.value) > 0);
             if(linhas.length === 0) return alert("Preencha a leitura atual!");
             
             window.mostrarLoading(`Gerando e salvando...`);
@@ -496,7 +516,6 @@
                             familia_id: id, mes_referencia: descFinal, leitura_anterior: l_ant, leitura_atual: l_atu, consumo_m3: (l_atu > l_ant ? l_atu - l_ant : 0), valor_agua: vAgua, valor_multa: vMulta, taxa_extra: taxaPendente, valor_total: total, vencimento: venc, status: "pendente", pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), data_lancamento: new Date().toISOString(), telefone: input.dataset.tel, nome_morador: nome 
                         });
                         
-                        // ATUALIZA O HODÔMETRO (Leitura atual vira anterior) e ZERA TAXAS PENDENTES
                         await updateDoc(doc(db, "familias", id), { ultima_leitura: l_atu, taxa_pendente_valor: 0, taxa_pendente_desc: "" });
 
                         document.getElementById(`status-${id}`).innerHTML = `<span class="bg-green-100 text-green-700 px-2 rounded text-xs font-bold">Salvo!</span>`;
@@ -507,15 +526,13 @@
             window.esconderLoading(); alert("Lote Concluído!");
         };
 
-        // --- ABA TAXAS AVULSAS (NOVO FLUXO) ---
+        // --- ABA TAXAS AVULSAS (MELHORADA COM BUSCA E NOVO TEXTO WPP) ---
         window.carregarSelectAvulso = async () => {
             const select = document.getElementById("avulsoFamilia");
             select.innerHTML = "<option value=''>Buscando...</option>";
             try {
                 if(Object.keys(window.familiasGlobal).length === 0) await window.atualizarCacheFamilias();
-                let html = "<option value='TODOS' class='font-bold text-blue-700 bg-blue-50'>🌟 COBRAR TODOS</option>";
-                Object.entries(window.familiasGlobal).forEach(([id, f]) => { html += `<option value="${id}" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}">${f.nome} (${f.lote_endereco})</option>`; });
-                select.innerHTML = html;
+                window.renderizarSelectAvulso();
             } catch(e) { }
         };
 
@@ -531,7 +548,6 @@
 
             window.mostrarLoading("Processando...");
 
-            // OPÇÃO 1: SOMAR NA PRÓXIMA FATURA (Não gera PIX agora, apenas agenda no cadastro do cliente)
             if(tipo === 'somar_proxima') {
                 if(familiaId === 'TODOS') {
                     if(!confirm(`Somar R$ ${valor} na conta de água de TODOS?`)) { window.esconderLoading(); return; }
@@ -547,7 +563,6 @@
                 return;
             }
 
-            // OPÇÃO 2: GERAR PIX SEPARADO AGORA (Comportamento Clássico)
             if(familiaId === 'TODOS') {
                 if(!confirm(`Gerar PIX SEPARADO de R$ ${valor} para TODOS?`)) { window.esconderLoading(); return; }
                 for(let [id, f] of Object.entries(window.familiasGlobal)) {
@@ -572,14 +587,14 @@
                         await addDoc(collection(db, "faturas"), {
                             familia_id: familiaId, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: opt.dataset.tel, nome_morador: nome, data_lancamento: new Date().toISOString()
                         });
-                        window.esconderLoading(); alert("Fatura Pix avulsa gerada com sucesso!");
+                        window.esconderLoading(); alert("Fatura Pix avulsa gerada com sucesso! Você pode enviá-la através da aba Pendentes.");
                     } else { window.esconderLoading(); alert("Erro do Banco."); }
                 } catch(e) { window.esconderLoading(); alert("Erro de conexão."); }
             }
             document.getElementById("formAvulso").reset();
         };
 
-        // --- TEMPO REAL: ABERTAS ---
+        // --- TEMPO REAL: ABERTAS (COM NOVO TEXTO WHATSAPP) ---
         window.iniciarListenerAbertas = async () => {
             if(unsubAbertas) unsubAbertas();
             const tbody = document.getElementById("tabelaAbertas");
@@ -601,12 +616,15 @@
                     const nomeReal = f.nome_morador || window.familiasGlobal[f.familia_id]?.nome || "Morador";
                     const tel = f.telefone || window.familiasGlobal[f.familia_id]?.telefone;
                     
-                    const zap = `💧 *ÁGUA SÃO LUIZ*\nOlá *${nomeReal}*!\nSua fatura de ${f.mes_referencia} está disponível.\n\n💰 *Total:* R$ ${f.valor_total.toFixed(2)}\n📅 *Venc:* ${f.vencimento.split('-').reverse().join('/')}\n\n👉 Acesse o site para ver e pagar o PIX:\nhttps://agua-sao-luiz.vercel.app`;
+                    // NOVA MENSAGEM WHATSAPP (Emojis e Negrito corrigido)
+                    const nomeLimpo = nomeReal.trim();
+                    const zap = `💧 *ÁGUA SÃO LUIZ*\nOlá *${nomeLimpo}*! 👋\n\nA sua fatura de ${f.mes_referencia} já está disponível. 🏠✨\n\n💰 *Total:* R$ ${f.valor_total.toFixed(2)}\n📅 *Venc:* ${f.vencimento.split('-').reverse().join('/')}\n\n👉 *Acesse o site para ver e pagar o PIX:*\nhttps://agua-sao-luiz.vercel.app\n\n🔐 *Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456 (caso não tenha alterado).*`;
+                    
                     const btnZap = `<button onclick="window.open('https://wa.me/${tel}?text=${encodeURIComponent(zap)}')" class="bg-green-500 text-white px-3 py-2 rounded-lg text-xs font-bold shadow mr-1"><i class="fa-brands fa-whatsapp"></i></button>`;
 
                     html += `<tr class="${rowClass} border-b">
                         <td class="p-4 font-mono text-sm">${isOverdue ? "🚨 " : "⏳ "}${f.vencimento.split('-').reverse().join('/')}</td>
-                        <td class="p-4"><strong>${nomeReal}</strong><br><small class="text-gray-500">${f.mes_referencia}</small></td>
+                        <td class="p-4"><strong>${nomeLimpo}</strong><br><small class="text-gray-500">${f.mes_referencia}</small></td>
                         <td class="p-4 text-right font-bold text-amber-700">R$ ${f.valor_total.toFixed(2)}</td>
                         <td class="p-4 text-right whitespace-nowrap">${btnZap} <button onclick="window.marcarPago('${f.id}')" class="bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-bold mr-1">Baixa</button> <button onclick="window.excluirFatura('${f.id}')" class="bg-red-100 text-red-600 px-3 py-2 rounded-lg text-xs font-bold">🗑️</button></td>
                     </tr>`;
