@@ -3,129 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel do Administrador - São Luiz</title>
+    <title>Painel Admin 3.0 - São Luiz</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #e9ecef; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; }
+        #loginAdmin { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #1c2b36; }
+        .login-box { background: white; padding: 2.5rem; border-radius: 12px; text-align: center; width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .login-box input { width: 100%; padding: 12px; margin: 15px 0; border: 1.5px solid #ddd; border-radius: 6px; }
+        .login-box button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
         
-        #loginAdmin { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #343a40; }
-        .login-box { background: white; padding: 2rem; border-radius: 8px; text-align: center; width: 300px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-        .login-box input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        .login-box button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px;}
-        .login-box button:hover { background-color: #0056b3; }
+        #painelAdmin { display: none; max-width: 1200px; margin: 20px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
+        h1 { color: #1c2b36; text-align: center; margin-bottom: 30px; }
         
-        #painelAdmin { display: none; max-width: 800px; margin: 20px auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h1 { color: #333; text-align: center; }
-        
-        .abas { display: flex; margin-bottom: 20px; border-bottom: 2px solid #ccc; flex-wrap: wrap; }
-        .aba { padding: 10px 20px; cursor: pointer; font-weight: bold; color: #555; }
-        .aba:hover { background-color: #f8f9fa; }
-        .aba.ativa { border-bottom: 3px solid #007bff; color: #007bff; margin-bottom: -2px; }
+        .abas { display: flex; border-bottom: 2px solid #eee; margin-bottom: 25px; overflow-x: auto; }
+        .aba { padding: 12px 25px; cursor: pointer; font-weight: 600; color: #666; white-space: nowrap; transition: 0.3s; }
+        .aba:hover { color: #007bff; }
+        .aba.ativa { border-bottom: 4px solid #007bff; color: #007bff; }
         
         .conteudo-aba { display: none; }
         .conteudo-aba.ativo { display: block; }
+
+        /* Tabela Lote com Hidrômetro */
+        .tabela-lote { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; font-size: 14px; }
+        .tabela-lote th { background: #f8f9fa; padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6; color: #333; }
+        .tabela-lote td { padding: 10px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
+        .input-leitura { width: 80px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; text-align: center; font-weight: bold; }
+        .input-leitura:focus { border-color: #007bff; outline: none; }
         
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #333; }
-        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        .btn-sucesso { background-color: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px;}
-        .btn-sucesso:hover { background-color: #218838; }
+        .destaque-valor { font-weight: bold; color: #28a745; font-size: 16px; }
+        .destaque-consumo { font-weight: bold; color: #17a2b8; }
+
+        .btn-acao { padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; transition: 0.3s; }
+        .btn-salvar-lote { background-color: #28a745; margin-bottom: 20px; width: 100%; font-size: 16px; }
+        .btn-zap-lote { background-color: #25D366; padding: 6px 10px; font-size: 12px; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        table, th, td { border: 1px solid #ddd; }
-        th, td { padding: 12px; text-align: left; }
-        th { background-color: #f4f4f4; color: #333;}
+        .badge-status { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .status-pendente { background: #fff3cd; color: #856404; }
+        .status-sucesso { background: #d4edda; color: #155724; }
+
+        .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
     </style>
 </head>
 <body>
 
+    <div id="loading" class="loading-overlay">
+        <div style="border: 5px solid #f3f3f3; border-top: 5px solid #28a745; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite;"></div>
+        <p style="margin-top: 15px; font-weight: bold; color: #333;" id="loadingMsg">Processando faturas...</p>
+    </div>
+
     <div id="loginAdmin">
         <div class="login-box">
-            <h2 style="margin-top:0;">Acesso Restrito</h2>
-            <p style="color: #666; font-size: 14px;">Área do Administrador</p>
-            <input type="password" id="senhaAdmin" placeholder="Senha de Admin">
-            <button onclick="entrarAdmin()">Entrar no Painel</button>
-            <p id="erroLogin" style="color: red; font-size: 14px; display: none; font-weight: bold;">Senha incorreta!</p>
+            <h2>Acesso Restrito</h2>
+            <input type="password" id="senhaAdmin" placeholder="Senha">
+            <button onclick="entrarAdmin()">Entrar</button>
         </div>
     </div>
 
     <div id="painelAdmin">
-        <h1>⚙️ Administração - São Luiz</h1>
+        <h1>⚙️ Sistema de Água São Luiz</h1>
         
         <div class="abas">
             <div class="aba ativa" onclick="mudarAba('cadastro', this)">Cadastrar Família</div>
-            <div class="aba" onclick="mudarAba('lista', this); carregarFamilias();">Lista de Famílias</div>
-            <div class="aba" onclick="mudarAba('faturas', this); carregarSelectFamilias();">Lançar Faturas</div>
+            <div class="aba" onclick="mudarAba('lista', this); carregarFamilias();">Lista de Moradores</div>
+            <div class="aba" onclick="mudarAba('lote', this); carregarLoteFaturas();">Leituras do Mês</div>
         </div>
 
         <div id="cadastro" class="conteudo-aba ativo">
-            <h3 style="color: #333;">Nova Família</h3>
+            <h3>Novo Cadastro</h3>
             <form id="formCadastro">
-                <div class="form-group">
-                    <label>Nome Completo</label>
-                    <input type="text" id="cadNome" required placeholder="Ex: Maria Souza">
-                </div>
-                <div class="form-group">
-                    <label>CPF (Apenas números)</label>
-                    <input type="text" id="cadCpf" required placeholder="Ex: 00011122233">
-                </div>
-                <div class="form-group">
-                    <label>Telefone WhatsApp</label>
-                    <input type="text" id="cadTelefone" required placeholder="55469...">
-                </div>
-                <div class="form-group">
-                    <label>Endereço / Lote</label>
-                    <input type="text" id="cadEndereco" required placeholder="Ex: Casa 02">
-                </div>
-                <button type="submit" class="btn-sucesso">Salvar Família</button>
-                <p id="msgCadastro" style="font-weight: bold; text-align: center; margin-top: 15px;"></p>
+                <input type="text" id="cadNome" required placeholder="Nome Completo" style="width:100%; padding:10px; margin-bottom:10px;">
+                <input type="text" id="cadCpf" required placeholder="CPF (Só números)" style="width:100%; padding:10px; margin-bottom:10px;">
+                <input type="text" id="cadTelefone" required placeholder="WhatsApp (DDD+Nmero)" style="width:100%; padding:10px; margin-bottom:10px;">
+                <input type="text" id="cadEndereco" required placeholder="Lote / Endereço" style="width:100%; padding:10px; margin-bottom:10px;">
+                <button type="submit" class="btn-acao" style="background:#007bff; width:100%;">Salvar Morador</button>
             </form>
         </div>
 
         <div id="lista" class="conteudo-aba">
-            <h3 style="color: #333;">Famílias Cadastradas</h3>
-            <p style="color: #555; font-weight: bold;">Total: <span id="totalFamilias">0</span> famílias</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>CPF</th>
-                        <th>WhatsApp</th>
-                    </tr>
-                </thead>
-                <tbody id="tabelaFamilias">
-                    <tr><td colspan="3" style="text-align: center;">Buscando dados no Firebase...</td></tr>
-                </tbody>
-            </table>
+            <h3>Moradores Ativos</h3>
+            <div id="tabelaLista"></div>
         </div>
 
-        <div id="faturas" class="conteudo-aba">
-            <h3 style="color: #333;">Lançar Conta de Água</h3>
-            <form id="formFatura">
-                <div class="form-group">
-                    <label>Selecione a Família</label>
-                    <select id="fatFamilia" required>
-                        <option value="">Carregando famílias...</option>
-                    </select>
+        <div id="lote" class="conteudo-aba">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                <h3>Lançamento de Leituras</h3>
+                <div>
+                    <label>Mês:</label>
+                    <input type="text" id="mesReferencia" value="03/2026" style="padding: 5px; width: 80px;">
+                    <label style="margin-left: 10px;">Vencimento:</label>
+                    <input type="date" id="dataVencimento" value="2026-03-20" style="padding: 5px;">
                 </div>
-                <div class="form-group">
-                    <label>Mês de Referência</label>
-                    <input type="text" id="fatMes" value="03/2026" required>
-                </div>
-                <div class="form-group">
-                    <label>Valor do Consumo (R$)</label>
-                    <input type="number" step="0.01" id="fatValor" placeholder="Ex: 45.50" required>
-                </div>
-                <button type="submit" class="btn-sucesso" id="btnGerarFatura">Gerar Pix e Salvar</button>
-            </form>
+            </div>
+            
+            <button onclick="gerarFaturasEmLote()" class="btn-acao btn-salvar-lote" id="btnProcessarTudo">
+                🚀 GERAR TODAS AS FATURAS PREENCHIDAS
+            </button>
 
-            <div id="resultadoFatura" style="display:none; margin-top: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 8px; text-align: center; background-color: #f8f9fa;">
-                <p style="color: green; font-weight: bold; font-size: 18px;">✅ Fatura Gerada com Sucesso!</p>
-                <img id="imgQrCode" src="" style="width: 200px; height: 200px; margin: 10px auto; display: block; border: 1px solid #ddd;">
-                <textarea id="txtCopiaCola" rows="3" style="width: 100%; font-size: 12px; padding: 5px; border-radius: 4px;" readonly></textarea>
-                <br>
-                <button id="btnZap" style="background-color: #25D366; color: white; padding: 12px; border: none; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 15px; font-weight: bold; font-size: 16px;">
-                    📲 Enviar Cobrança por WhatsApp
-                </button>
+            <div style="overflow-x: auto;">
+                <table class="tabela-lote">
+                    <thead>
+                        <tr>
+                            <th>Morador / Lote</th>
+                            <th>Leitura Anterior</th>
+                            <th>Leitura Atual</th>
+                            <th>Consumo (m³)</th>
+                            <th>Valor R$</th>
+                            <th>Status / Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoTabelaLote">
+                        <tr><td colspan="6" style="text-align:center;">Carregando moradores...</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -147,165 +135,160 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        window.entrarAdmin = function() {
-            const senha = document.getElementById("senhaAdmin").value;
-            if (senha === "admin123") { 
+        window.entrarAdmin = () => {
+            if(document.getElementById("senhaAdmin").value === "admin123") {
                 document.getElementById("loginAdmin").style.display = "none";
                 document.getElementById("painelAdmin").style.display = "block";
-            } else {
-                document.getElementById("erroLogin").style.display = "block";
-            }
-        }
+            } else { alert("Senha incorreta"); }
+        };
 
-        window.mudarAba = function(idAba, elementoClicado) {
-            document.querySelectorAll('.conteudo-aba').forEach(aba => aba.classList.remove('ativo'));
-            document.querySelectorAll('.aba').forEach(aba => aba.classList.remove('ativa'));
-            document.getElementById(idAba).classList.add('ativo');
-            elementoClicado.classList.add('ativa');
-        }
+        window.mudarAba = (id, el) => {
+            document.querySelectorAll('.conteudo-aba').forEach(a => a.classList.remove('ativo'));
+            document.querySelectorAll('.aba').forEach(a => a.classList.remove('ativa'));
+            document.getElementById(id).classList.add('ativo');
+            el.classList.add('ativa');
+        };
 
-        document.getElementById("formCadastro").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const msg = document.getElementById("msgCadastro");
-            const btn = document.querySelector("#cadastro .btn-sucesso");
-            btn.innerText = "Salvando...";
-            btn.disabled = true;
-
+        // Carregar Tabela com Lógica do Hidrômetro
+        window.carregarLoteFaturas = async () => {
+            const corpo = document.getElementById("corpoTabelaLote");
+            corpo.innerHTML = "<tr><td colspan='6' style='text-align:center;'>Buscando moradores no banco...</td></tr>";
+            
             try {
-                await addDoc(collection(db, "familias"), {
-                    nome: document.getElementById("cadNome").value,
-                    cpf: document.getElementById("cadCpf").value,
-                    telefone: document.getElementById("cadTelefone").value,
-                    lote_endereco: document.getElementById("cadEndereco").value,
-                    senha: "123456",
-                    status_ativo: true
+                const snap = await getDocs(collection(db, "familias"));
+                let html = "";
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    // Colocamos eventos onkeyup para calcular automaticamente
+                    html += `
+                        <tr id="linha-${doc.id}">
+                            <td><strong>${d.nome}</strong><br><small style="color:#666;">Lote: ${d.lote_endereco}</small></td>
+                            <td><input type="number" class="input-leitura" id="ant-${doc.id}" onkeyup="calcularLinha('${doc.id}')" placeholder="Ex: 100"></td>
+                            <td><input type="number" class="input-leitura" id="atu-${doc.id}" onkeyup="calcularLinha('${doc.id}')" placeholder="Ex: 115"></td>
+                            <td><span class="destaque-consumo" id="cons-${doc.id}">0</span> m³</td>
+                            <td>
+                                R$ <span class="destaque-valor" id="val-${doc.id}">0,00</span>
+                                <input type="hidden" id="val-hidden-${doc.id}" value="0" data-nome="${d.nome}" data-cpf="${d.cpf}" data-tel="${d.telefone}">
+                            </td>
+                            <td id="status-${doc.id}"><span class="badge-status">Pendente</span></td>
+                        </tr>
+                    `;
                 });
-                msg.style.color = "green";
-                msg.innerText = "Família cadastrada!";
-                document.getElementById("formCadastro").reset();
-                setTimeout(() => { msg.innerText = ""; }, 3000);
+                corpo.innerHTML = html;
             } catch (error) {
-                msg.style.color = "red";
-                msg.innerText = "Erro ao cadastrar.";
-            } finally {
-                btn.innerText = "Salvar Família";
-                btn.disabled = false;
+                corpo.innerHTML = "<tr><td colspan='6' style='color:red;'>Erro ao carregar dados.</td></tr>";
             }
-        });
+        };
 
-        window.carregarFamilias = async function() {
-            const tabela = document.getElementById("tabelaFamilias");
-            try {
-                const querySnapshot = await getDocs(collection(db, "familias"));
-                let htmlTabela = "";
-                let contador = 0;
-                querySnapshot.forEach((doc) => {
-                    const dados = doc.data();
-                    contador++;
-                    htmlTabela += `<tr><td>${dados.nome}</td><td>${dados.cpf}</td><td>${dados.telefone}</td></tr>`;
-                });
-                document.getElementById("totalFamilias").innerText = contador;
-                tabela.innerHTML = contador === 0 ? "<tr><td colspan='3'>Nenhuma família.</td></tr>" : htmlTabela;
-            } catch (error) {
-                tabela.innerHTML = "<tr><td colspan='3' style='color:red;'>Erro ao carregar dados.</td></tr>";
+        // LÓGICA DE PREÇOS (O CÉREBRO DO HIDRÔMETRO)
+        window.calcularLinha = (id) => {
+            const ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0;
+            const atu = parseFloat(document.getElementById(`atu-${id}`).value) || 0;
+            
+            // Só calcula se a atual for maior que a anterior e não for zero
+            let consumo = 0;
+            if (atu >= ant && atu > 0) {
+                consumo = atu - ant;
             }
-        }
-
-        window.carregarSelectFamilias = async function() {
-            const select = document.getElementById("fatFamilia");
-            select.innerHTML = "<option value=''>Buscando famílias no banco...</option>";
-            try {
-                const querySnapshot = await getDocs(collection(db, "familias"));
-                let htmlOptions = "<option value=''>-- Selecione a família --</option>";
-                querySnapshot.forEach((doc) => {
-                    const dados = doc.data();
-                    htmlOptions += `<option value="${doc.id}" data-nome="${dados.nome}" data-cpf="${dados.cpf}" data-telefone="${dados.telefone}">
-                        ${dados.nome} (Lote: ${dados.lote_endereco})
-                    </option>`;
-                });
-                select.innerHTML = htmlOptions;
-            } catch (error) {
-                select.innerHTML = "<option value=''>Erro ao carregar famílias</option>";
-            }
-        }
-
-        document.getElementById("formFatura").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById("btnGerarFatura");
-            const select = document.getElementById("fatFamilia");
-            const familiaSelecionada = select.options[select.selectedIndex];
             
-            const familiaId = select.value;
-            const nome = familiaSelecionada.getAttribute("data-nome");
-            let cpfOriginal = familiaSelecionada.getAttribute("data-cpf");
-            
-            // MÁGICA DE LIMPEZA AQUI: Tira qualquer ponto ou traço do CPF antes de mandar pro banco
-            const cpfLimpo = cpfOriginal.replace(/\D/g, ''); 
-            
-            const telefone = familiaSelecionada.getAttribute("data-telefone");
-            const mes = document.getElementById("fatMes").value;
-            const valor = parseFloat(document.getElementById("fatValor").value);
-            
-            btn.innerText = "Gerando Pix no Mercado Pago...";
-            btn.disabled = true;
+            document.getElementById(`cons-${id}`).innerText = consumo;
 
-            try {
-                const resposta = await fetch("/api/gerar-pix", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        valor: valor,
-                        descricao: "Conta de Água - " + mes,
-                        nome: nome,
-                        cpf: cpfLimpo
-                    })
-                });
-
-                const dadosPix = await resposta.json();
-
-                if (dadosPix.sucesso) {
-                    await addDoc(collection(db, "faturas"), {
-                        familia_id: familiaId,
-                        mes_referencia: mes,
-                        valor_agua: valor,
-                        valor_multa: 0,
-                        valor_total: valor,
-                        vencimento: "2026-03-20",
-                        status: "pendente",
-                        pix_txid: dadosPix.txid,
-                        pix_copia_cola: dadosPix.copiaECola,
-                        qr_code_base64: dadosPix.qrCodeBase64,
-                        data_criacao: new Date().toISOString()
-                    });
-
-                    document.getElementById("resultadoFatura").style.display = "block";
-                    document.getElementById("imgQrCode").src = "data:image/jpeg;base64," + dadosPix.qrCodeBase64;
-                    document.getElementById("txtCopiaCola").value = dadosPix.copiaECola;
-
-                    const textoZap = `Olá ${nome}! Segue a fatura da água de ${mes}. \n\n💰 *Valor:* R$ ${valor.toFixed(2)} \n📅 *Vencimento:* 20/03/2026 \n\n*Pix Copia e Cola:*\n${dadosPix.copiaECola}`;
-                    const linkZap = `https://wa.me/${telefone}?text=${encodeURIComponent(textoZap)}`;
-                    
-                    document.getElementById("btnZap").onclick = () => window.open(linkZap, '_blank');
-                    document.getElementById("formFatura").reset();
-
+            // Regras de Preço da Água São Luiz
+            let valor = 0;
+            if (consumo > 0) {
+                if (consumo <= 10) {
+                    valor = 25.00;
+                } else if (consumo <= 30) {
+                    valor = 50.00;
                 } else {
-                    // CÓDIGO NOVO QUE VAI NOS DIZER O ERRO EXATO:
-                    let erroMotivo = "Desconhecido";
-                    if(dadosPix.detalhes && dadosPix.detalhes.message) {
-                        erroMotivo = dadosPix.detalhes.message;
-                    } else if (dadosPix.detalhes && dadosPix.detalhes.cause && dadosPix.detalhes.cause.length > 0) {
-                        erroMotivo = dadosPix.detalhes.cause[0].description;
-                    }
-                    alert("O Mercado Pago recusou! Motivo: " + erroMotivo);
+                    valor = 100.00;
                 }
-            } catch (error) {
-                console.error("Erro interno:", error);
-                alert("Erro ao conectar com a Vercel.");
-            } finally {
-                btn.innerText = "Gerar Pix e Salvar";
-                btn.disabled = false;
             }
-        });
+
+            document.getElementById(`val-${id}`).innerText = valor.toFixed(2).replace('.', ',');
+            document.getElementById(`val-hidden-${id}`).value = valor;
+        };
+
+        // Gerar Faturas Prontas
+        window.gerarFaturasEmLote = async () => {
+            // Pega todos os inputs ocultos que guardam o valor
+            const inputs = document.querySelectorAll('input[id^="val-hidden-"]');
+            // Filtra só as linhas que o valor for maior que 0
+            const linhasParaProcessar = Array.from(inputs).filter(i => parseFloat(i.value) > 0);
+            const total = linhasParaProcessar.length;
+            
+            if(total === 0) return alert("Preencha a Leitura Atual de pelo menos um morador para gerar consumo!");
+            if(!confirm(`Deseja gerar e enviar para o banco as faturas de ${total} moradores?`)) return;
+
+            document.getElementById("loading").style.display = "flex";
+            let processados = 0;
+            const mes = document.getElementById("mesReferencia").value;
+            const venc = document.getElementById("dataVencimento").value;
+
+            for(let input of linhasParaProcessar) {
+                processados++;
+                document.getElementById("loadingMsg").innerText = `Processando ${processados} de ${total}...`;
+                
+                const valor = parseFloat(input.value);
+                const id = input.id.replace('val-hidden-', '');
+                const nome = input.dataset.nome;
+                const cpf = input.dataset.cpf.replace(/\D/g, '');
+                const tel = input.dataset.tel;
+                
+                const leitura_ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0;
+                const leitura_atu = parseFloat(document.getElementById(`atu-${id}`).value) || 0;
+                const consumo_calc = leitura_atu - leitura_ant;
+
+                try {
+                    const res = await fetch("/api/gerar-pix", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ valor, descricao: `Água ${mes} - L.Atual: ${leitura_atu}`, nome, cpf })
+                    });
+                    const pix = await res.json();
+
+                    if(pix.sucesso) {
+                        // SALVA O HISTÓRICO COMPLETO NO FIREBASE
+                        await addDoc(collection(db, "faturas"), {
+                            familia_id: id, 
+                            mes_referencia: mes,
+                            leitura_anterior: leitura_ant,
+                            leitura_atual: leitura_atu,
+                            consumo_m3: consumo_calc,
+                            valor_total: valor, 
+                            vencimento: venc, 
+                            status: "pendente",
+                            pix_copia_cola: pix.copiaECola,
+                            data_lancamento: new Date().toISOString()
+                        });
+
+                        // Mensagem de WhatsApp isolando o código
+                        const texto = `Olá ${nome}! Segue a fatura da Água de ${mes}.\n\n💧 Consumo: ${consumo_calc}m³\n💰 Valor: R$ ${valor.toFixed(2)}\n📅 Vencimento: ${venc.split('-').reverse().join('/')}\n\n*Pix Copia e Cola (toque e segure abaixo para copiar):*\n\n${pix.copiaECola}`;
+                        const link = `https://wa.me/${tel}?text=${encodeURIComponent(texto)}`;
+
+                        document.getElementById(`status-${id}`).innerHTML = `
+                            <span class="badge-status status-sucesso">Gerado!</span><br>
+                            <button onclick="window.open('${link}', '_blank')" class="btn-acao btn-zap-lote" style="margin-top:5px;">📲 Enviar Zap</button>
+                        `;
+                        
+                        // Bloqueia as caixas para não editar mais
+                        document.getElementById(`ant-${id}`).disabled = true;
+                        document.getElementById(`atu-${id}`).disabled = true;
+                        document.getElementById(`linha-${id}`).style.backgroundColor = "#e8f5e9";
+                    }
+                } catch (e) {
+                    console.error(e);
+                    document.getElementById(`status-${id}`).innerHTML = `<span style="color:red; font-size:11px; font-weight:bold;">ERRO DE CONEXÃO</span>`;
+                }
+            }
+            document.getElementById("loading").style.display = "none";
+            alert("Lote processado com sucesso! As faturas já estão no painel dos moradores.");
+        };
+
+        const style = document.createElement('style');
+        style.innerHTML = `@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
+
