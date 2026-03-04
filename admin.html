@@ -134,7 +134,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // COLOQUE SUAS CHAVES DO FIREBASE AQUI
         const firebaseConfig = {
             apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ",
             authDomain: "sistema-agua-sao-luiz.firebaseapp.com",
@@ -148,7 +147,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Funções de Interface
         window.entrarAdmin = function() {
             const senha = document.getElementById("senhaAdmin").value;
             if (senha === "admin123") { 
@@ -166,7 +164,6 @@
             elementoClicado.classList.add('ativa');
         }
 
-        // Cadastrar Família
         document.getElementById("formCadastro").addEventListener("submit", async (e) => {
             e.preventDefault();
             const msg = document.getElementById("msgCadastro");
@@ -196,7 +193,6 @@
             }
         });
 
-        // Listar Famílias na Tabela
         window.carregarFamilias = async function() {
             const tabela = document.getElementById("tabelaFamilias");
             try {
@@ -215,7 +211,6 @@
             }
         }
 
-        // Carregar Famílias no Select da Aba de Faturas
         window.carregarSelectFamilias = async function() {
             const select = document.getElementById("fatFamilia");
             select.innerHTML = "<option value=''>Buscando famílias no banco...</option>";
@@ -224,7 +219,6 @@
                 let htmlOptions = "<option value=''>-- Selecione a família --</option>";
                 querySnapshot.forEach((doc) => {
                     const dados = doc.data();
-                    // Guardamos os dados escondidos no HTML para usarmos na hora de gerar o Pix e mandar o Zap
                     htmlOptions += `<option value="${doc.id}" data-nome="${dados.nome}" data-cpf="${dados.cpf}" data-telefone="${dados.telefone}">
                         ${dados.nome} (Lote: ${dados.lote_endereco})
                     </option>`;
@@ -235,7 +229,6 @@
             }
         }
 
-        // MOTOR: GERAR A FATURA COM O MERCADO PAGO E SALVAR
         document.getElementById("formFatura").addEventListener("submit", async (e) => {
             e.preventDefault();
             const btn = document.getElementById("btnGerarFatura");
@@ -244,9 +237,12 @@
             
             const familiaId = select.value;
             const nome = familiaSelecionada.getAttribute("data-nome");
-            const cpf = familiaSelecionada.getAttribute("data-cpf");
-            const telefone = familiaSelecionada.getAttribute("data-telefone");
+            let cpfOriginal = familiaSelecionada.getAttribute("data-cpf");
             
+            // MÁGICA DE LIMPEZA AQUI: Tira qualquer ponto ou traço do CPF antes de mandar pro banco
+            const cpfLimpo = cpfOriginal.replace(/\D/g, ''); 
+            
+            const telefone = familiaSelecionada.getAttribute("data-telefone");
             const mes = document.getElementById("fatMes").value;
             const valor = parseFloat(document.getElementById("fatValor").value);
             
@@ -254,7 +250,6 @@
             btn.disabled = true;
 
             try {
-                // 1. Chama a nossa API mágica na Vercel
                 const resposta = await fetch("/api/gerar-pix", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -262,14 +257,13 @@
                         valor: valor,
                         descricao: "Conta de Água - " + mes,
                         nome: nome,
-                        cpf: cpf
+                        cpf: cpfLimpo
                     })
                 });
 
                 const dadosPix = await resposta.json();
 
                 if (dadosPix.sucesso) {
-                    // 2. Salva o recibo completo no Firebase
                     await addDoc(collection(db, "faturas"), {
                         familia_id: familiaId,
                         mes_referencia: mes,
@@ -284,12 +278,10 @@
                         data_criacao: new Date().toISOString()
                     });
 
-                    // 3. Exibe o QR Code na tela
                     document.getElementById("resultadoFatura").style.display = "block";
                     document.getElementById("imgQrCode").src = "data:image/jpeg;base64," + dadosPix.qrCodeBase64;
                     document.getElementById("txtCopiaCola").value = dadosPix.copiaECola;
 
-                    // 4. Prepara a mensagem automática de WhatsApp
                     const textoZap = `Olá ${nome}! Segue a fatura da água de ${mes}. \n\n💰 *Valor:* R$ ${valor.toFixed(2)} \n📅 *Vencimento:* 20/03/2026 \n\n*Pix Copia e Cola:*\n${dadosPix.copiaECola}`;
                     const linkZap = `https://wa.me/${telefone}?text=${encodeURIComponent(textoZap)}`;
                     
@@ -297,11 +289,18 @@
                     document.getElementById("formFatura").reset();
 
                 } else {
-                    alert("Erro do Mercado Pago: " + (dadosPix.erro || "Verifique o CPF do morador."));
+                    // CÓDIGO NOVO QUE VAI NOS DIZER O ERRO EXATO:
+                    let erroMotivo = "Desconhecido";
+                    if(dadosPix.detalhes && dadosPix.detalhes.message) {
+                        erroMotivo = dadosPix.detalhes.message;
+                    } else if (dadosPix.detalhes && dadosPix.detalhes.cause && dadosPix.detalhes.cause.length > 0) {
+                        erroMotivo = dadosPix.detalhes.cause[0].description;
+                    }
+                    alert("O Mercado Pago recusou! Motivo: " + erroMotivo);
                 }
             } catch (error) {
                 console.error("Erro interno:", error);
-                alert("Erro ao conectar com a Vercel. Tem certeza que a pasta /api subiu pro GitHub?");
+                alert("Erro ao conectar com a Vercel.");
             } finally {
                 btn.innerText = "Gerar Pix e Salvar";
                 btn.disabled = false;
