@@ -3,8 +3,10 @@ export default async function handler(req, res) {
 
     const { valor, descricao, cpf, nome } = req.body;
     
-    // ⚠️ COLOQUE SEU ACCESS TOKEN DO MERCADO PAGO AQUI:
-    const TOKEN = "APP_USR-2580827848136768-030318-b6bdef0c84cf3c2d64774dcd8a687e17-155547253"; 
+    // 🔒 Agora ele busca a chave do cofre secreto da Vercel!
+    const TOKEN = process.env.MP_TOKEN; 
+
+    if (!TOKEN) return res.status(500).json({ erro: 'Chave do Mercado Pago não configurada na Vercel.' });
 
     try {
         const respostaMP = await fetch("https://api.mercadopago.com/v1/payments", {
@@ -23,7 +25,6 @@ export default async function handler(req, res) {
                     first_name: nome,
                     identification: { type: "CPF", number: String(cpf).replace(/\D/g, '') }
                 },
-                // MÁGICA 1: Avisa o Mercado Pago para nos ligar quando pagarem!
                 notification_url: "https://agua-sao-luiz.vercel.app/api/webhook"
             })
         });
@@ -35,12 +36,12 @@ export default async function handler(req, res) {
                 sucesso: true,
                 qrCodeBase64: dadosPix.point_of_interaction.transaction_data.qr_code_base64,
                 copiaECola: dadosPix.point_of_interaction.transaction_data.qr_code,
-                txid: String(dadosPix.id) // O RG dessa transação
+                txid: String(dadosPix.id)
             });
         } else {
             return res.status(400).json({ sucesso: false, detalhes: dadosPix });
         }
     } catch (error) {
-        return res.status(500).json({ sucesso: false });
+        return res.status(500).json({ sucesso: false, erro: error.message });
     }
 }
