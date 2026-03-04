@@ -4,10 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meu Consumo - Água São Luiz</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
+        
+        /* Modais */
         .modal-fundo { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; justify-content: center; align-items: center; padding: 1rem; backdrop-filter: blur(4px); }
+        
+        /* Rolagem Suave Mobile */
+        .scroll-suave::-webkit-scrollbar { height: 6px; }
+        .scroll-suave::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+        /* Regras de Impressão */
         .no-print { display: block; }
         @media print {
             .no-print { display: none !important; }
@@ -19,31 +28,31 @@
 </head>
 <body class="p-4 md:p-8 relative">
 
-    <!-- CABEÇALHO OFICIAL -->
-    <header class="max-w-5xl mx-auto mb-8 flex flex-col items-center border-b pb-6 gap-4 text-center">
+    <!-- CABEÇALHO OFICIAL COM FOTO DE CAPANEMA -->
+    <header class="max-w-5xl mx-auto mb-8 flex flex-col items-center border-b border-slate-200 pb-6 gap-4 text-center">
         <!-- A imagem carregará se o ficheiro capanema.jpg estiver no GitHub -->
-        <img src="capanema.jpg" alt="Capanema" class="h-32 md:h-48 w-full md:w-auto object-cover rounded-2xl shadow-md mb-2" onerror="this.style.display='none'">
+        <img src="capanema.jpg" alt="Capanema" class="h-28 md:h-40 w-full max-w-[250px] md:max-w-sm object-cover rounded-2xl shadow-md mb-2" onerror="this.style.display='none'">
         <div>
-            <h1 class="text-2xl md:text-4xl font-black text-blue-900 tracking-tight">ASSOCIAÇÃO DE ÁGUA DO SÃO LUIZ</h1>
-            <p class="text-slate-500 font-bold uppercase text-[10px] md:text-xs tracking-widest mt-2">Portal Transparente do Morador</p>
+            <h1 class="text-xl md:text-3xl font-black text-blue-900 tracking-tight uppercase">Associação de Água do São Luiz</h1>
+            <p class="text-slate-500 font-bold uppercase text-[9px] md:text-xs tracking-widest mt-1 md:mt-2">Portal Transparente do Morador</p>
         </div>
-        <div id="botoesHeader" class="hidden sm:flex w-full justify-center sm:justify-end gap-3 no-print mt-4">
-            <button onclick="window.print()" class="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold py-2 px-4 rounded-xl transition shadow-sm">🖨️ Imprimir Extrato</button>
-            <button onclick="sairConta()" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold py-2 px-4 rounded-xl transition shadow-sm">🚪 Sair</button>
+        <div id="botoesHeader" class="hidden sm:flex w-full justify-center gap-3 no-print mt-4">
+            <button onclick="window.print()" class="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold py-2 px-4 rounded-xl transition shadow-sm text-sm">🖨️ Imprimir Extrato</button>
+            <button onclick="sairConta()" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold py-2 px-4 rounded-xl transition shadow-sm text-sm">🚪 Sair</button>
         </div>
     </header>
 
-    <main class="max-w-5xl mx-auto space-y-6">
+    <main class="max-w-5xl mx-auto space-y-6 md:space-y-8">
         
-        <!-- TELA DE LOGIN COM NAVEGAÇÃO POR ENTER (WRAP FORM) -->
-        <form id="loginArea" onsubmit="acessar(event)" class="bg-white p-6 md:p-10 rounded-3xl shadow-xl border text-center no-print max-w-md mx-auto mt-6">
+        <!-- TELA DE LOGIN (COM SUPORTE A ENTER) -->
+        <form id="loginArea" onsubmit="acessar(event)" class="bg-white p-6 md:p-10 rounded-3xl shadow-xl border border-slate-100 text-center no-print max-w-md mx-auto mt-6">
             <div class="bg-blue-100 text-blue-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">👤</div>
-            <h2 class="text-2xl font-bold mb-2 text-slate-800">Acesse sua conta</h2>
-            <p class="text-slate-500 text-sm mb-6">Consulte faturas, consumo e pagamentos.</p>
+            <h2 class="text-2xl font-bold mb-2 text-slate-800">Acesso do Morador</h2>
+            <p class="text-slate-500 text-xs md:text-sm mb-6">Consulte suas faturas, consumo e realize pagamentos.</p>
             
             <div class="space-y-4">
-                <input type="tel" id="cpfLogin" required placeholder="CPF (só números)" class="w-full p-4 border-2 border-slate-200 rounded-2xl text-center text-lg font-mono outline-none focus:border-blue-500 focus:bg-blue-50 transition">
-                <input type="password" id="senhaLogin" required placeholder="Senha (Padrão: 123456)" class="w-full p-4 border-2 border-slate-200 rounded-2xl text-center text-lg outline-none focus:border-blue-500 focus:bg-blue-50 transition">
+                <input type="tel" id="cpfLogin" required placeholder="CPF (só números)" class="w-full p-4 border-2 border-slate-200 rounded-2xl text-center text-lg font-mono outline-none focus:border-blue-500 focus:bg-blue-50 transition shadow-inner">
+                <input type="password" id="senhaLogin" required placeholder="Senha (Padrão: 123456)" class="w-full p-4 border-2 border-slate-200 rounded-2xl text-center text-lg outline-none focus:border-blue-500 focus:bg-blue-50 transition shadow-inner">
             </div>
             
             <button type="submit" id="btnAcessar" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-[0_8px_15px_rgba(37,99,235,0.3)] active:scale-95 transition text-lg mt-6">
@@ -53,38 +62,46 @@
         </form>
 
         <!-- PAINEL DO CLIENTE -->
-        <div id="painelCliente" class="hidden space-y-6">
-            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 p-6 rounded-3xl flex flex-col md:flex-row justify-between items-center no-print shadow-sm gap-4">
+        <div id="painelCliente" class="hidden space-y-6 md:space-y-8">
+            
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 p-5 md:p-6 rounded-3xl flex flex-col md:flex-row justify-between items-center no-print shadow-sm gap-4">
                 <div class="text-center md:text-left">
-                    <p class="text-xs text-blue-500 font-bold uppercase tracking-wider">Bem-vindo(a)</p>
+                    <p class="text-[10px] md:text-xs text-blue-500 font-bold uppercase tracking-wider">Bem-vindo(a)</p>
                     <h2 class="text-xl md:text-2xl font-black text-blue-900" id="nomeCliente">---</h2>
                 </div>
                 <!-- Botões Mobile -->
                 <div class="flex sm:hidden gap-2 w-full mt-2">
-                    <button onclick="window.print()" class="flex-1 bg-white border border-slate-200 text-slate-700 font-bold py-3 rounded-xl text-sm shadow-sm">🖨️ PDF</button>
-                    <button onclick="sairConta()" class="flex-1 bg-red-50 border border-red-100 text-red-600 font-bold py-3 rounded-xl text-sm shadow-sm">🚪 Sair</button>
+                    <button onclick="window.print()" class="flex-1 bg-white border border-slate-200 text-slate-700 font-bold py-3 rounded-xl text-xs shadow-sm">🖨️ Imprimir</button>
+                    <button onclick="sairConta()" class="flex-1 bg-red-50 border border-red-100 text-red-600 font-bold py-3 rounded-xl text-xs shadow-sm">🚪 Sair</button>
                 </div>
             </div>
 
-            <!-- RELATÓRIO E HISTÓRICO RESPONSIVO -->
-            <div class="bg-white p-4 md:p-8 rounded-3xl shadow-sm border card-print overflow-hidden relative">
-                <h3 class="text-lg font-bold mb-6 flex items-center justify-center md:justify-start gap-2 text-slate-700">📊 Relatório de Gastos e Faturas</h3>
+            <!-- 1. ÁREA DE PENDÊNCIAS (OS BALÕES DE AVISO) -->
+            <div class="no-print">
+                <h3 class="text-lg font-bold mb-4 flex items-center gap-2 text-slate-700">📌 Faturas a Pagar</h3>
+                <div id="areaPendencias" class="space-y-4">
+                    <!-- Javascript preenche com os balões de pagamento -->
+                </div>
+            </div>
+
+            <!-- 2. RELATÓRIO E HISTÓRICO DE CONSUMO (APENAS LEITURA) -->
+            <div class="bg-white p-4 md:p-8 rounded-3xl shadow-sm border border-slate-200 card-print overflow-hidden relative">
+                <h3 class="text-lg font-bold mb-4 md:mb-6 flex items-center gap-2 text-slate-700">📊 Relatório de Consumo (Histórico)</h3>
                 
-                <div class="overflow-x-auto pb-4">
-                    <!-- min-w-[700px] garante que no celular você rola para o lado em vez de esmagar o texto -->
-                    <table class="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
+                <div class="overflow-x-auto scroll-suave pb-4">
+                    <table class="w-full text-left border-collapse whitespace-nowrap min-w-[650px]">
                         <thead>
                             <tr class="bg-slate-50 text-slate-500 uppercase text-[10px] font-bold tracking-widest border-y border-slate-200">
-                                <th class="py-4 pl-4">Ref / Data</th>
-                                <th class="py-4 text-center">Hodômetro Ant.</th>
-                                <th class="py-4 text-center">Atual</th>
-                                <th class="py-4 text-center">Consumo</th>
-                                <th class="py-4 text-right">Valor R$</th>
-                                <th class="py-4 text-center pr-4">Situação</th>
+                                <th class="py-3 md:py-4 pl-4">Ref / Data</th>
+                                <th class="py-3 md:py-4 text-center">Hodómetro Ant.</th>
+                                <th class="py-3 md:py-4 text-center">Atual</th>
+                                <th class="py-3 md:py-4 text-center">Consumo M³</th>
+                                <th class="py-3 md:py-4 text-right pr-4">Valor R$</th>
+                                <th class="py-3 md:py-4 text-center pr-4">Status</th>
                             </tr>
                         </thead>
                         <tbody id="listaHistorico" class="divide-y divide-slate-100 text-sm text-slate-700">
-                            <!-- JS Preenche -->
+                            <!-- JS Preenche Tabela -->
                         </tbody>
                     </table>
                 </div>
@@ -92,12 +109,12 @@
         </div>
     </main>
 
-    <!-- MODAL ALTERAR SENHA -->
+    <!-- MODAL ALTERAR SENHA (PRIMEIRO ACESSO) -->
     <div id="modalSenha" class="modal-fundo no-print" style="display: none;">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm mx-auto p-8 text-center">
+        <div class="bg-white rounded-3xl shadow-2xl w-[90%] md:w-full max-w-sm mx-auto p-6 md:p-8 text-center animate-[fade-in_0.2s_ease-out]">
             <div class="text-4xl mb-4">🔐</div>
-            <h3 class="font-bold text-xl text-slate-800 mb-2">Segurança da Conta</h3>
-            <p class="text-sm text-slate-500 mb-6">Você está usando a senha padrão. Deseja criar uma senha segura e exclusiva para você?</p>
+            <h3 class="font-bold text-lg md:text-xl text-slate-800 mb-2">Segurança da Conta</h3>
+            <p class="text-xs md:text-sm text-slate-500 mb-6">Você está usando a senha padrão. Deseja criar uma senha segura e exclusiva para você?</p>
             
             <div id="areaNovaSenha" class="hidden mb-6">
                 <input type="password" id="inputNovaSenha" placeholder="Digite a nova senha" class="w-full p-4 border-2 border-slate-200 rounded-2xl text-center text-lg outline-none focus:border-blue-500">
@@ -117,29 +134,31 @@
 
     <!-- MODAL DE PAGAMENTO PIX -->
     <div id="modalPagamento" class="modal-fundo no-print" style="display: none;">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm mx-auto overflow-hidden w-11/12">
+        <div class="bg-white rounded-3xl shadow-2xl w-[95%] md:w-full max-w-sm mx-auto overflow-hidden">
             <div class="bg-slate-900 p-4 flex justify-between items-center text-white">
-                <h3 class="font-bold text-lg">Pagar Fatura <span id="modRef" class="text-blue-400"></span></h3>
+                <h3 class="font-bold text-base md:text-lg">Pagar Fatura <span id="modRef" class="text-blue-400"></span></h3>
                 <button onclick="fecharPagamento()" class="text-slate-400 hover:text-white text-3xl px-2 leading-none">&times;</button>
             </div>
-            <div class="p-6 bg-slate-50 border-b border-slate-200">
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Resumo</p>
-                <div class="space-y-2 text-sm text-slate-600 mb-4">
+            
+            <div class="p-5 md:p-6 bg-slate-50 border-b border-slate-200">
+                <p class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Resumo da Cobrança</p>
+                <div class="space-y-2 text-xs md:text-sm text-slate-600 mb-4">
                     <div class="flex justify-between"><span>💧 Água / Ref:</span> <strong id="modAgua">R$ 0,00</strong></div>
                     <div id="linhaMulta" class="flex justify-between text-red-600 hidden"><span>🚨 Multa / Atraso:</span> <strong id="modMulta">R$ 0,00</strong></div>
-                    <div id="linhaTaxa" class="flex justify-between text-blue-600 hidden"><span>🔧 Taxa Avulsa:</span> <strong id="modTaxa">R$ 0,00</strong></div>
+                    <div id="linhaTaxa" class="flex justify-between text-blue-600 hidden"><span>🔧 Serviço Avulso:</span> <strong id="modTaxa">R$ 0,00</strong></div>
                 </div>
                 <div class="flex justify-between items-center pt-3 border-t border-slate-200">
-                    <span class="font-bold text-slate-800">Total a Pagar:</span>
-                    <span class="text-2xl font-black text-green-600" id="modTotal">R$ 0,00</span>
+                    <span class="font-bold text-slate-800 text-sm">Total a Pagar:</span>
+                    <span class="text-xl md:text-2xl font-black text-green-600" id="modTotal">R$ 0,00</span>
                 </div>
             </div>
-            <div class="p-6 text-center">
-                <p class="text-xs font-bold text-slate-400 mb-3 uppercase">Escanear QR Code</p>
+
+            <div class="p-5 md:p-6 text-center">
+                <p class="text-[10px] md:text-xs font-bold text-slate-400 mb-3 uppercase">Escanear QR Code</p>
                 <div class="bg-white p-2 inline-block rounded-xl border-2 border-dashed border-slate-300 mb-4">
-                    <img id="modImgQr" class="w-48 h-48" src="">
+                    <img id="modImgQr" class="w-40 h-40 md:w-48 md:h-48" src="" alt="QR Code">
                 </div>
-                <button onclick="copiarPixAtual()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition shadow-lg flex justify-center items-center gap-2">
+                <button onclick="copiarPixAtual()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 md:py-4 rounded-xl transition shadow-lg flex justify-center items-center gap-2 text-sm md:text-base">
                     Copiar Pix Copia e Cola
                 </button>
             </div>
@@ -147,10 +166,11 @@
     </div>
 
     <!-- TOAST DE SUCESSO -->
-    <div id="toast" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-full font-bold shadow-lg transition-opacity duration-300 opacity-0 pointer-events-none z-[110]">
+    <div id="toast" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-full font-bold shadow-lg transition-opacity duration-300 opacity-0 pointer-events-none z-[110] text-sm md:text-base whitespace-nowrap">
         ✅ Código copiado!
     </div>
 
+    <!-- SCRIPTS E FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, getDocs, query, where, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -158,8 +178,7 @@
         const firebaseConfig = {
             apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ",
             authDomain: "sistema-agua-sao-luiz.firebaseapp.com",
-            projectId: "sistema-agua-sao-luiz",
-            storageBucket: "sistema-agua-sao-luiz.firebasestorage.app"
+            projectId: "sistema-agua-sao-luiz"
         };
         const db = getFirestore(initializeApp(firebaseConfig));
 
@@ -168,6 +187,7 @@
         let clienteIDGlobal = ""; 
         let senhaAtualBanco = "";
 
+        // AUTO-LOGIN
         window.onload = () => {
             const idSalvo = localStorage.getItem("cliente_saoluiz_id");
             const nomeSalvo = localStorage.getItem("cliente_saoluiz_nome");
@@ -178,114 +198,243 @@
             }
         };
 
+        // LOGIN VIA FORMULÁRIO (Suporta tecla Enter)
         window.acessar = async (e) => {
-            e.preventDefault(); // Impede o formulário de recarregar a página ao dar Enter
+            e.preventDefault();
             const cpfInput = document.getElementById("cpfLogin").value.replace(/\D/g, '');
             const senhaInput = document.getElementById("senhaLogin").value;
             const btn = document.getElementById("btnAcessar");
             const erro = document.getElementById("erro");
             
-            if(!cpfInput || !senhaInput) { mostrarErro("Preencha CPF e Senha."); return; }
+            if(!cpfInput || !senhaInput) {
+                mostrarErro("Preencha o CPF e a Senha.");
+                return;
+            }
             
             btn.innerText = "Aguarde..."; btn.disabled = true; erro.classList.add('hidden');
             
             try {
                 const q = query(collection(db, "familias"), where("cpf", "==", cpfInput));
                 const snap = await getDocs(q);
-                if(snap.empty) { mostrarErro("❌ CPF não localizado."); btn.innerText = "Entrar no Sistema"; btn.disabled = false; return; }
+                
+                if(snap.empty) {
+                    mostrarErro("❌ CPF não localizado em nossa base.");
+                    btn.innerText = "Entrar no Sistema"; btn.disabled = false;
+                    return;
+                }
 
                 let id = "", nome = "";
-                snap.forEach(d => { id = d.id; nome = d.data().nome; senhaAtualBanco = d.data().senha || "123456"; });
+                snap.forEach(d => { 
+                    id = d.id; 
+                    nome = d.data().nome;
+                    senhaAtualBanco = d.data().senha || "123456"; 
+                });
 
-                if (senhaInput !== senhaAtualBanco) { mostrarErro("❌ Senha incorreta."); btn.innerText = "Entrar no Sistema"; btn.disabled = false; return; }
+                if (senhaInput !== senhaAtualBanco) {
+                    mostrarErro("❌ Senha incorreta.");
+                    btn.innerText = "Entrar no Sistema"; btn.disabled = false;
+                    return;
+                }
                 
+                // Sucesso
                 clienteIDGlobal = id;
                 localStorage.setItem("cliente_saoluiz_id", id);
                 localStorage.setItem("cliente_saoluiz_nome", nome);
+                
                 mostrarPainel(nome);
                 carregarDados(id);
 
-                if (senhaAtualBanco === "123456") document.getElementById("modalSenha").style.display = "flex";
+                if (senhaAtualBanco === "123456") {
+                    document.getElementById("modalSenha").style.display = "flex";
+                }
 
-            } catch(e) { mostrarErro("❌ Erro de conexão."); btn.innerText = "Entrar no Sistema"; btn.disabled = false; }
+            } catch(e) { 
+                mostrarErro("❌ Erro de conexão com a base de dados."); 
+                btn.innerText = "Entrar no Sistema"; btn.disabled = false;
+            }
         };
 
-        function mostrarErro(msg) { const erro = document.getElementById("erro"); erro.innerText = msg; erro.classList.remove('hidden'); }
+        function mostrarErro(msg) {
+            const erro = document.getElementById("erro");
+            erro.innerText = msg;
+            erro.classList.remove('hidden');
+        }
+
         function mostrarPainel(nome) {
             document.getElementById("loginArea").classList.add('hidden');
             document.getElementById("painelCliente").classList.remove('hidden');
             document.getElementById("botoesHeader").classList.remove('hidden');
+            document.getElementById("botoesHeader").classList.add('sm:flex');
             document.getElementById("nomeCliente").innerText = nome;
         }
 
-        window.sairConta = () => { localStorage.removeItem("cliente_saoluiz_id"); localStorage.removeItem("cliente_saoluiz_nome"); location.reload(); };
+        window.sairConta = () => {
+            localStorage.removeItem("cliente_saoluiz_id");
+            localStorage.removeItem("cliente_saoluiz_nome");
+            location.reload();
+        };
 
-        window.mostrarInputSenha = () => { document.getElementById("botoesSenha1").classList.add('hidden'); document.getElementById("areaNovaSenha").classList.remove('hidden'); document.getElementById("botoesSenha2").classList.remove('hidden'); };
-        window.fecharModalSenha = () => { document.getElementById("modalSenha").style.display = "none"; };
+        // --- GESTÃO DE SENHA ---
+        window.mostrarInputSenha = () => {
+            document.getElementById("botoesSenha1").classList.add('hidden');
+            document.getElementById("areaNovaSenha").classList.remove('hidden');
+            document.getElementById("botoesSenha2").classList.remove('hidden');
+        };
+
+        window.fecharModalSenha = () => {
+            document.getElementById("modalSenha").style.display = "none";
+        };
+
         window.salvarNovaSenha = async () => {
             const novaSenha = document.getElementById("inputNovaSenha").value;
             if (novaSenha.length < 4) { alert("A senha deve ter pelo menos 4 caracteres."); return; }
-            try { await updateDoc(doc(db, "familias", clienteIDGlobal), { senha: novaSenha }); alert("Senha atualizada!"); fecharModalSenha(); } catch (error) { alert("Erro."); }
+            try {
+                await updateDoc(doc(db, "familias", clienteIDGlobal), { senha: novaSenha });
+                alert("Senha atualizada com sucesso!");
+                fecharModalSenha();
+            } catch (error) { alert("Erro ao salvar senha."); }
         };
 
+        // --- CARREGAMENTO DIVIDIDO (BALÕES E RELATÓRIO) ---
         async function carregarDados(familiaId) {
             const tbody = document.getElementById("listaHistorico");
+            const divPendencias = document.getElementById("areaPendencias");
+            
             try {
                 const q = query(collection(db, "faturas"), where("familia_id", "==", familiaId));
                 const snap = await getDocs(q);
+                
                 faturasDoCliente = [];
                 snap.forEach(d => faturasDoCliente.push({ id_firebase: d.id, ...d.data() }));
                 
-                faturasDoCliente.sort((a,b) => {
-                    if (a.status === 'pendente' && b.status === 'pago') return -1;
-                    if (a.status === 'pago' && b.status === 'pendente') return 1;
-                    return new Date(b.vencimento) - new Date(a.vencimento);
-                });
+                // Ordenar por data (mais recentes primeiro)
+                faturasDoCliente.sort((a,b) => new Date(b.vencimento) - new Date(a.vencimento));
 
-                if (faturasDoCliente.length === 0) { tbody.innerHTML = "<tr><td colspan='6' class='py-8 text-center text-slate-400'>Nenhum histórico.</td></tr>"; return; }
+                if (faturasDoCliente.length === 0) {
+                    divPendencias.innerHTML = `<div class="bg-white border border-slate-200 p-4 rounded-2xl text-center text-slate-500 shadow-sm">Nenhuma fatura encontrada.</div>`;
+                    tbody.innerHTML = "<tr><td colspan='6' class='py-8 text-center text-slate-400'>Nenhum histórico de consumo encontrado.</td></tr>";
+                    return;
+                }
 
-                let html = ""; const hoje = new Date(); hoje.setHours(0,0,0,0);
+                let htmlHistorico = "";
+                let htmlPendencias = "";
+                let temPendente = false;
+                const hoje = new Date(); hoje.setHours(0,0,0,0);
+
                 faturasDoCliente.forEach(f => {
                     const isPago = f.status === 'pago';
                     const dataVencObj = new Date(f.vencimento + "T00:00:00");
                     const isAtrasado = !isPago && (dataVencObj < hoje);
+                    
                     const vencFormatado = f.vencimento.split('-').reverse().join('/');
                     const valorTotalStr = "R$ " + (f.valor_total || 0).toFixed(2).replace('.',',');
 
+                    // 1. CRIAR OS BALÕES DE PENDÊNCIAS
+                    if (!isPago) {
+                        temPendente = true;
+                        const cor = isAtrasado ? 'red' : 'amber';
+                        const bgCor = isAtrasado ? 'bg-red-50' : 'bg-amber-50';
+                        const borderCor = isAtrasado ? 'border-red-200' : 'border-amber-200';
+                        const barraLado = isAtrasado ? 'bg-red-500' : 'bg-amber-500';
+                        const textCor = isAtrasado ? 'text-red-800' : 'text-amber-800';
+                        const icone = isAtrasado ? '🚨' : '⏳';
+                        const titulo = isAtrasado ? 'Fatura em Atraso' : 'Fatura a Vencer';
+
+                        htmlPendencias += `
+                            <div class="${bgCor} border ${borderCor} p-4 md:p-5 rounded-2xl shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative overflow-hidden">
+                                <div class="absolute top-0 left-0 w-1.5 h-full ${barraLado}"></div>
+                                <div class="pl-2">
+                                    <h4 class="${textCor} font-black text-sm md:text-base flex items-center gap-2">${icone} ${titulo}</h4>
+                                    <p class="text-slate-600 text-xs md:text-sm mt-1">Ref: ${f.mes_referencia} | Venc: <span class="font-bold">${vencFormatado}</span></p>
+                                </div>
+                                <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto mt-2 md:mt-0">
+                                    <span class="text-xl md:text-2xl font-black text-slate-800">${valorTotalStr}</span>
+                                    <button onclick="abrirPagamento('${f.id_firebase}')" class="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-6 rounded-xl shadow-md transition active:scale-95 flex justify-center items-center gap-2 text-sm md:text-base">
+                                        📱 Pagar Pix
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    // 2. CRIAR A TABELA DO RELATÓRIO (Apenas Leitura)
                     const lAnt = (f.leitura_anterior === 0 && f.leitura_atual === 0 && f.consumo_m3 === 0) ? "-" : (f.leitura_anterior || 0);
                     const lAtu = (f.leitura_anterior === 0 && f.leitura_atual === 0 && f.consumo_m3 === 0) ? "-" : (f.leitura_atual || 0);
                     const cM3 = (f.consumo_m3 !== undefined && f.consumo_m3 !== null) ? f.consumo_m3 : "-";
 
-                    let acaoHtml = "";
-                    if (isPago) acaoHtml = `<span class="bg-green-100 text-green-700 px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider shadow-sm">✓ Pago</span>`;
-                    else if (isAtrasado) acaoHtml = `<button onclick="abrirPagamento('${f.id_firebase}')" class="w-full bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-xl text-xs font-bold shadow-md active:scale-95 transition">Pagar Atrasada</button>`;
-                    else acaoHtml = `<button onclick="abrirPagamento('${f.id_firebase}')" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-xl text-xs font-bold shadow-md active:scale-95 transition">Pagar Fatura</button>`;
+                    let badgeStatus = isPago 
+                        ? `<span class="bg-green-100 text-green-700 px-2 md:px-3 py-1 rounded text-[9px] md:text-[10px] font-black uppercase tracking-wider">✓ Pago</span>`
+                        : `<span class="bg-amber-100 text-amber-700 px-2 md:px-3 py-1 rounded text-[9px] md:text-[10px] font-black uppercase tracking-wider">Pendente</span>`;
 
-                    html += `<tr class="hover:bg-slate-50 border-b border-slate-100"><td class="py-4 pl-4"><p class="font-bold text-slate-800">${f.mes_referencia}</p><p class="text-[11px] ${isAtrasado ? 'text-red-500 font-bold' : 'text-slate-500'}">Venc: ${vencFormatado}</p></td><td class="py-4 text-center font-mono text-slate-500">${lAnt}</td><td class="py-4 text-center font-mono text-slate-800 font-bold">${lAtu}</td><td class="py-4 text-center font-black text-blue-600">${cM3}</td><td class="py-4 text-right font-black text-lg text-slate-900">${valorTotalStr}</td><td class="py-4 text-center pr-4 min-w-[120px]">${acaoHtml}</td></tr>`;
+                    htmlHistorico += `
+                        <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100">
+                            <td class="py-3 md:py-4 pl-4">
+                                <p class="font-bold text-slate-800 text-xs md:text-sm">${f.mes_referencia}</p>
+                                <p class="text-[9px] md:text-[10px] text-slate-500">Venc: ${vencFormatado}</p>
+                            </td>
+                            <td class="py-3 md:py-4 text-center font-mono text-slate-500 text-[10px] md:text-xs">${lAnt}</td>
+                            <td class="py-3 md:py-4 text-center font-mono text-slate-800 font-bold text-[10px] md:text-xs">${lAtu}</td>
+                            <td class="py-3 md:py-4 text-center font-black text-blue-600 text-xs md:text-sm">${cM3}</td>
+                            <td class="py-3 md:py-4 text-right font-black text-sm md:text-base text-slate-900 pr-4">${valorTotalStr}</td>
+                            <td class="py-3 md:py-4 text-center pr-4">${badgeStatus}</td>
+                        </tr>
+                    `;
                 });
-                tbody.innerHTML = html;
-            } catch (error) { tbody.innerHTML = "<tr><td colspan='6' class='py-8 text-center text-red-500'>Erro ao carregar histórico.</td></tr>"; }
+
+                // Renderiza Balões
+                if (temPendente) {
+                    divPendencias.innerHTML = htmlPendencias;
+                } else {
+                    divPendencias.innerHTML = `<div class="bg-green-50 border border-green-200 p-4 md:p-5 rounded-2xl text-center text-green-700 font-bold shadow-sm flex items-center justify-center gap-2"><span class="text-xl">✨</span> Parabéns! Todas as suas faturas estão pagas e em dia.</div>`;
+                }
+
+                // Renderiza Tabela
+                tbody.innerHTML = htmlHistorico;
+
+            } catch (error) { 
+                tbody.innerHTML = "<tr><td colspan='6' class='py-8 text-center text-red-500'>Erro ao carregar o histórico.</td></tr>"; 
+            }
         }
 
+        // --- MODAL DE PAGAMENTO ---
         window.abrirPagamento = (idFirebase) => {
             const fatura = faturasDoCliente.find(f => f.id_firebase === idFirebase);
             if(!fatura) return;
+
             document.getElementById("modRef").innerText = fatura.mes_referencia;
             document.getElementById("modAgua").innerText = "R$ " + (fatura.valor_agua || 0).toFixed(2).replace('.',',');
+            
             const multa = fatura.valor_multa || 0;
-            if(multa > 0) { document.getElementById("modMulta").innerText = "R$ " + multa.toFixed(2).replace('.',','); document.getElementById("linhaMulta").classList.remove('hidden'); } else { document.getElementById("linhaMulta").classList.add('hidden'); }
+            const divMulta = document.getElementById("linhaMulta");
+            if(multa > 0) { document.getElementById("modMulta").innerText = "R$ " + multa.toFixed(2).replace('.',','); divMulta.classList.remove('hidden'); } 
+            else { divMulta.classList.add('hidden'); }
+
             const taxa = fatura.taxa_extra || 0;
-            if(taxa > 0) { document.getElementById("modTaxa").innerText = "R$ " + taxa.toFixed(2).replace('.',','); document.getElementById("linhaTaxa").classList.remove('hidden'); } else { document.getElementById("linhaTaxa").classList.add('hidden'); }
+            const divTaxa = document.getElementById("linhaTaxa");
+            if(taxa > 0) { document.getElementById("modTaxa").innerText = "R$ " + taxa.toFixed(2).replace('.',','); divTaxa.classList.remove('hidden'); } 
+            else { divTaxa.classList.add('hidden'); }
+
             document.getElementById("modTotal").innerText = "R$ " + (fatura.valor_total || 0).toFixed(2).replace('.',',');
             document.getElementById("modImgQr").src = "data:image/jpeg;base64," + fatura.qr_code_base64;
             pixCopiaEColaAtual = fatura.pix_copia_cola;
+
             document.getElementById("modalPagamento").style.display = "flex";
         };
 
-        window.fecharPagamento = () => { document.getElementById("modalPagamento").style.display = "none"; };
+        window.fecharPagamento = () => {
+            document.getElementById("modalPagamento").style.display = "none";
+        };
+
         window.copiarPixAtual = () => {
-            const dummy = document.createElement("textarea"); document.body.appendChild(dummy); dummy.value = pixCopiaEColaAtual; dummy.select(); document.execCommand("copy"); document.body.removeChild(dummy);
-            const toast = document.getElementById("toast"); toast.classList.remove("opacity-0"); toast.classList.add("opacity-100");
+            const dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = pixCopiaEColaAtual;
+            dummy.select();
+            document.execCommand("copy");
+            document.body.removeChild(dummy);
+            
+            const toast = document.getElementById("toast");
+            toast.classList.remove("opacity-0"); toast.classList.add("opacity-100");
             setTimeout(() => { toast.classList.remove("opacity-100"); toast.classList.add("opacity-0"); }, 3000);
         };
     </script>
