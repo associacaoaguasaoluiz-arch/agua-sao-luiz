@@ -22,7 +22,9 @@ export default async function handler(req, res) {
                     email: "morador@distritosaoluiz.com.br",
                     first_name: nome,
                     identification: { type: "CPF", number: String(cpf).replace(/\D/g, '') }
-                }
+                },
+                // AQUI ESTÁ A PEÇA QUE FALTAVA: O ENDEREÇO DE AVISO!
+                notification_url: "https://agua-sao-luiz.vercel.app/api/webhook"
             })
         });
 
@@ -36,7 +38,6 @@ export default async function handler(req, res) {
                 txid: data.id
             });
         } else {
-            // Garante que o erro do Mercado Pago seja sempre lido corretamente
             return res.status(400).json({ sucesso: false, detalhes: data });
         }
     } catch (error) {
