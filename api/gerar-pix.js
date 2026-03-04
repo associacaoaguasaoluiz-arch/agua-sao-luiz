@@ -5,16 +5,13 @@ export default async function handler(req, res) {
 
     const { valor, descricao, cpf, nome } = req.body;
 
-    // A SUA CHAVE EXATA ESTÁ AQUI:
-    const TOKEN = "APP_USR-eba78170-d746-4f52-aba5-1fad3d747573";
-
     try {
         const respostaMP = await fetch("https://api.mercadopago.com/v1/payments", {
             method: "POST",
             headers: {
-                "Authorization": "Bearer " + TOKEN,
+                "Authorization": "Bearer APP_USR-eba78170-d746-4f52-aba5-1fad3d747573",
                 "Content-Type": "application/json",
-                "X-Idempotency-Key": Math.random().toString(36).substring(7) + Date.now() 
+                "X-Idempotency-Key": "pix-" + Date.now()
             },
             body: JSON.stringify({
                 transaction_amount: Number(valor),
@@ -25,7 +22,7 @@ export default async function handler(req, res) {
                     first_name: nome,
                     identification: {
                         type: "CPF",
-                        number: cpf
+                        number: String(cpf).replace(/\D/g, '')
                     }
                 }
             })
@@ -41,11 +38,15 @@ export default async function handler(req, res) {
                 txid: dadosPix.id
             });
         } else {
-            return res.status(400).json({ sucesso: false, erro: "Erro ao gerar PIX", detalhes: dadosPix });
+            // MENSAGEM RASTREADORA PARA SABERMOS SE A VERCEL ATUALIZOU
+            let erroReal = dadosPix.message || (dadosPix.cause && dadosPix.cause.length > 0 ? dadosPix.cause[0].description : "Erro Desconhecido");
+            return res.status(400).json({ 
+                sucesso: false, 
+                detalhes: { message: "CÓDIGO NOVO: " + erroReal } 
+            });
         }
 
     } catch (error) {
-        console.error("Erro interno:", error);
-        return res.status(500).json({ sucesso: false, erro: "Erro interno no servidor Vercel" });
+        return res.status(500).json({ sucesso: false, detalhes: { message: "Erro interno do servidor Vercel" } });
     }
 }
