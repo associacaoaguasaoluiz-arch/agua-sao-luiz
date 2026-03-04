@@ -2,26 +2,32 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Gestão - Água São Luiz</title>
-    <!-- Tailwind CSS para um design lindo e moderno -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>App Gestão - Água São Luiz</title>
+    <!-- Tailwind CSS para design moderno e responsivo -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Ícones FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Estilos base */
-        body { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif; background-color: #f3f4f6; }
+        body { font-family: 'Inter', system-ui, sans-serif; background-color: #f3f4f6; -webkit-tap-highlight-color: transparent; }
         
         /* Loading Overlay */
         .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
-        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #2563eb; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* Esconder telas */
         .tela-oculta { display: none !important; }
         
         /* Modal */
-        .modal-fundo { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 50; justify-content: center; align-items: center; }
+        .modal-fundo { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; justify-content: center; align-items: center; padding: 1rem; }
+
+        /* Esconder a barra de rolagem das tabelas mas permitir rolar */
+        .scroll-suave::-webkit-scrollbar { height: 6px; }
+        .scroll-suave::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .scroll-suave::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        
+        /* Espaço extra no final para a barra de menu do celular não cobrir o conteúdo */
+        .conteudo-principal { padding-bottom: 80px; }
+        @media (min-width: 768px) { .conteudo-principal { padding-bottom: 24px; } }
     </style>
 </head>
 <body class="text-gray-800 h-screen flex overflow-hidden">
@@ -33,81 +39,71 @@
     </div>
 
     <!-- TELA DE LOGIN -->
-    <div id="loginAdmin" class="fixed inset-0 bg-slate-900 flex justify-center items-center z-50">
-        <div class="bg-white p-8 rounded-xl shadow-2xl w-96 text-center">
-            <div class="bg-blue-600 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
-                <i class="fa-solid fa-droplet"></i>
-            </div>
+    <div id="loginAdmin" class="fixed inset-0 bg-slate-900 flex justify-center items-center z-50 p-4">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center">
+            <div class="text-5xl mb-4">💧</div>
             <h2 class="text-2xl font-bold mb-2">Água São Luiz</h2>
-            <p class="text-gray-500 mb-6 text-sm">Acesso exclusivo do administrador</p>
-            <input type="password" id="senhaAdmin" placeholder="Digite a senha" class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <button onclick="entrarAdmin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition">Entrar no Sistema</button>
-            <p id="erroLogin" class="text-red-500 text-sm font-bold mt-3 hidden">Senha Incorreta!</p>
+            <p class="text-gray-500 mb-6 text-sm">Acesso do Administrador</p>
+            <input type="password" id="senhaAdmin" placeholder="Digite a senha" class="w-full p-4 border border-gray-300 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 text-center text-lg">
+            <button onclick="entrarAdmin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition text-lg shadow-lg shadow-blue-500/30">Entrar</button>
+            <p id="erroLogin" class="text-red-500 text-sm font-bold mt-4 hidden">🚨 Senha Incorreta!</p>
         </div>
     </div>
 
     <!-- DASHBOARD PRINCIPAL -->
-    <div id="painelAdmin" class="flex w-full h-full tela-oculta">
+    <div id="painelAdmin" class="flex w-full h-full tela-oculta relative">
         
-        <!-- MENU LATERAL (SIDEBAR) -->
-        <aside class="w-64 bg-slate-900 text-white flex flex-col hidden md:flex">
+        <!-- MENU LATERAL (DESKTOP) -->
+        <aside class="w-72 bg-slate-900 text-white flex-col hidden md:flex shadow-xl z-20">
             <div class="p-6 text-center border-b border-slate-700">
-                <h1 class="text-xl font-bold text-blue-400"><i class="fa-solid fa-tint mr-2"></i>São Luiz</h1>
+                <div class="text-4xl mb-2">💧</div>
+                <h1 class="text-xl font-bold">São Luiz</h1>
                 <p class="text-xs text-slate-400 mt-1">Gestão de Saneamento</p>
             </div>
-            <nav class="flex-1 p-4 space-y-2">
-                <button onclick="mudarAba('aba-moradores', this)" class="menu-btn w-full flex items-center p-3 rounded-lg bg-blue-600 text-white transition"><i class="fa-solid fa-users w-6"></i> Moradores</button>
-                <button onclick="mudarAba('aba-leituras', this); carregarLoteFaturas();" class="menu-btn w-full flex items-center p-3 rounded-lg hover:bg-slate-800 text-slate-300 transition"><i class="fa-solid fa-file-invoice-dollar w-6"></i> Lançar Leituras</button>
-                <button onclick="mudarAba('aba-recebimentos', this); carregarPagamentos();" class="menu-btn w-full flex items-center p-3 rounded-lg hover:bg-slate-800 text-slate-300 transition"><i class="fa-solid fa-hand-holding-dollar w-6"></i> Recebimentos</button>
-                <button onclick="mudarAba('aba-inadimplentes', this); carregarInadimplentes();" class="menu-btn w-full flex items-center p-3 rounded-lg hover:bg-slate-800 text-slate-300 transition"><i class="fa-solid fa-triangle-exclamation w-6"></i> Inadimplentes</button>
+            <nav class="flex-1 p-4 space-y-3">
+                <button onclick="mudarAba('aba-moradores', this)" class="menu-btn w-full flex items-center p-4 rounded-xl bg-blue-600 text-white font-bold transition"><span class="text-2xl w-10 text-left">👥</span> Moradores</button>
+                <button onclick="mudarAba('aba-leituras', this); carregarLoteFaturas();" class="menu-btn w-full flex items-center p-4 rounded-xl hover:bg-slate-800 text-slate-300 font-bold transition"><span class="text-2xl w-10 text-left">📝</span> Lançar Leituras</button>
+                <button onclick="mudarAba('aba-recebimentos', this); carregarPagamentos();" class="menu-btn w-full flex items-center p-4 rounded-xl hover:bg-slate-800 text-slate-300 font-bold transition"><span class="text-2xl w-10 text-left">✅</span> Recebimentos</button>
+                <button onclick="mudarAba('aba-inadimplentes', this); carregarInadimplentes();" class="menu-btn w-full flex items-center p-4 rounded-xl hover:bg-slate-800 text-slate-300 font-bold transition"><span class="text-2xl w-10 text-left">🚨</span> Inadimplentes</button>
             </nav>
-            <div class="p-4 border-t border-slate-700 text-center text-xs text-slate-500">
-                Versão 4.0 Pro
-            </div>
         </aside>
 
         <!-- CONTEÚDO PRINCIPAL -->
-        <main class="flex-1 overflow-y-auto bg-gray-50">
+        <main class="flex-1 overflow-y-auto bg-gray-50 conteudo-principal w-full">
             
             <!-- HEADER MOBILE -->
-            <div class="md:hidden bg-slate-900 text-white p-4 flex justify-between items-center">
-                <h1 class="font-bold"><i class="fa-solid fa-tint text-blue-400 mr-2"></i> São Luiz</h1>
-                <!-- Menu dropdown simplificado para celular -->
-                <select onchange="mudarAbaMobile(this.value)" class="bg-slate-800 text-white border-none p-2 rounded">
-                    <option value="aba-moradores">Moradores</option>
-                    <option value="aba-leituras">Lançar Leituras</option>
-                    <option value="aba-recebimentos">Recebimentos</option>
-                    <option value="aba-inadimplentes">Inadimplentes</option>
-                </select>
+            <div class="md:hidden bg-slate-900 text-white p-5 flex justify-center items-center sticky top-0 z-10 shadow-md">
+                <h1 class="font-bold text-lg">💧 Gestão São Luiz</h1>
             </div>
 
-            <div class="p-6 md:p-10 max-w-7xl mx-auto">
+            <div class="p-4 md:p-8 max-w-7xl mx-auto w-full">
 
                 <!-- ================= ABA MORADORES ================= -->
                 <div id="aba-moradores" class="conteudo-aba">
-                    <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
-                        <h2 class="text-2xl font-bold text-gray-800">Gestão de Moradores</h2>
-                        <button onclick="abrirModalCadastro()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold shadow-sm"><i class="fa-solid fa-plus mr-2"></i>Novo Morador</button>
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
+                        <h2 class="text-2xl font-bold text-gray-800">👥 Moradores</h2>
+                        <button onclick="abrirModalCadastro()" class="bg-blue-600 active:bg-blue-800 text-white px-5 py-3 rounded-xl font-bold shadow-lg shadow-blue-500/30 flex justify-center items-center"><span class="text-xl mr-2">➕</span> Novo Cadastro</button>
                     </div>
 
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                        <div class="relative mb-4">
-                            <i class="fa-solid fa-search absolute left-3 top-3 text-gray-400"></i>
-                            <input type="text" id="buscaMorador" onkeyup="filtrarTabela('buscaMorador', 'tabelaMoradores')" placeholder="Buscar por nome, lote ou CPF..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="p-4 border-b border-gray-100">
+                            <div class="relative">
+                                <span class="absolute left-4 top-3 text-lg">🔍</span>
+                                <input type="text" id="buscaMorador" onkeyup="filtrarTabela('buscaMorador', 'tabelaMoradores')" placeholder="Buscar por nome ou lote..." class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition outline-none">
+                            </div>
                         </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
+                        <div class="overflow-x-auto scroll-suave w-full">
+                            <table class="w-full text-left border-collapse whitespace-nowrap min-w-max">
                                 <thead>
-                                    <tr class="bg-gray-50 text-gray-600 text-sm border-b border-gray-200">
-                                        <th class="p-4 font-semibold">Nome do Responsável</th>
-                                        <th class="p-4 font-semibold">CPF</th>
-                                        <th class="p-4 font-semibold">Lote / Endereço</th>
-                                        <th class="p-4 font-semibold">WhatsApp</th>
-                                        <th class="p-4 font-semibold text-center">Ações</th>
+                                    <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
+                                        <th class="p-4 font-bold">Responsável / Lote</th>
+                                        <th class="p-4 font-bold">CPF</th>
+                                        <th class="p-4 font-bold">WhatsApp</th>
+                                        <th class="p-4 font-bold text-center">Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tabelaMoradores" class="text-sm divide-y divide-gray-100">
-                                    <tr><td colspan="5" class="p-4 text-center text-gray-500">Carregando dados...</td></tr>
+                                    <tr><td colspan="4" class="p-8 text-center text-gray-500">Carregando dados...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -116,48 +112,41 @@
 
                 <!-- ================= ABA LANÇAR LEITURAS ================= -->
                 <div id="aba-leituras" class="conteudo-aba tela-oculta">
-                    <div class="flex flex-col md:flex-row justify-between md:items-center mb-6 gap-4">
-                        <div>
-                            <h2 class="text-2xl font-bold text-gray-800">Lançamento em Lote</h2>
-                            <p class="text-gray-500 text-sm">O sistema calcula R$25(Até 10m³), R$50(Até 30m³) e R$100(>30m³). Multa de R$25 aplicada a atrasados.</p>
-                        </div>
-                        <div class="flex gap-2 items-end">
-                            <div>
-                                <label class="block text-xs font-bold text-gray-600 mb-1">Mês (Ex: 03/2026)</label>
-                                <input type="text" id="mesReferencia" value="03/2026" class="w-24 p-2 border border-gray-300 rounded text-center">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-gray-600 mb-1">Vencimento</label>
-                                <input type="date" id="dataVencimento" value="2026-03-20" class="p-2 border border-gray-300 rounded">
-                            </div>
-                        </div>
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">📝 Lançamento do Mês</h2>
+                        <p class="text-gray-500 text-xs sm:text-sm">R$25 (até 10m³), R$50 (até 30m³), R$100 (>30m³). Multa de R$25 automática.</p>
                     </div>
 
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                        <div class="flex flex-col md:flex-row justify-between mb-4 gap-4">
-                            <div class="relative flex-1">
-                                <i class="fa-solid fa-search absolute left-3 top-3 text-gray-400"></i>
-                                <input type="text" id="buscaLeitura" onkeyup="filtrarTabela('buscaLeitura', 'corpoTabelaLote')" placeholder="Filtrar morador para lançar..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 mb-6">
+                        <div class="flex flex-col sm:flex-row gap-4 mb-4">
+                            <div class="flex-1">
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">📅 Referência</label>
+                                <input type="text" id="mesReferencia" value="03/2026" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl font-bold text-center focus:ring-2 focus:ring-blue-500 outline-none">
                             </div>
-                            <button onclick="gerarFaturasEmLote()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-bold shadow-md"><i class="fa-solid fa-bolt mr-2"></i>Gerar Faturas Preenchidas</button>
+                            <div class="flex-1">
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">⏳ Vencimento</label>
+                                <input type="date" id="dataVencimento" value="2026-03-20" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl font-bold text-center focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
                         </div>
+                        <button onclick="gerarFaturasEmLote()" class="w-full bg-green-500 active:bg-green-700 text-white px-6 py-4 rounded-xl font-bold text-lg shadow-lg shadow-green-500/30">🚀 PROCESSAR FATURAS</button>
+                    </div>
 
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse whitespace-nowrap">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="overflow-x-auto scroll-suave w-full">
+                            <table class="w-full text-left border-collapse whitespace-nowrap min-w-max">
                                 <thead>
-                                    <tr class="bg-blue-50 text-blue-800 text-sm border-b border-blue-200">
-                                        <th class="p-3 font-semibold">Morador / Lote</th>
-                                        <th class="p-3 font-semibold text-center">Leitura Ant.</th>
-                                        <th class="p-3 font-semibold text-center">Leitura Atual</th>
-                                        <th class="p-3 font-semibold text-center">Consumo</th>
-                                        <th class="p-3 font-semibold text-right">Água (R$)</th>
-                                        <th class="p-3 font-semibold text-right text-red-600">Multa (R$)</th>
-                                        <th class="p-3 font-semibold text-right">Total (R$)</th>
-                                        <th class="p-3 font-semibold text-center">Status</th>
+                                    <tr class="bg-blue-50 text-blue-800 text-xs uppercase tracking-wider">
+                                        <th class="p-4 font-bold">Morador</th>
+                                        <th class="p-4 font-bold text-center">L. Anterior</th>
+                                        <th class="p-4 font-bold text-center">L. Atual</th>
+                                        <th class="p-4 font-bold text-center">Consumo</th>
+                                        <th class="p-4 font-bold text-right text-red-600">Multa</th>
+                                        <th class="p-4 font-bold text-right text-green-700">Total R$</th>
+                                        <th class="p-4 font-bold text-center">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody id="corpoTabelaLote" class="text-sm divide-y divide-gray-100">
-                                    <tr><td colspan="8" class="p-4 text-center">Carregando...</td></tr>
+                                    <tr><td colspan="7" class="p-8 text-center text-gray-500">Carregando...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -167,28 +156,29 @@
                 <!-- ================= ABA RECEBIMENTOS ================= -->
                 <div id="aba-recebimentos" class="conteudo-aba tela-oculta">
                     <div class="mb-6">
-                        <h2 class="text-2xl font-bold text-gray-800 text-green-700"><i class="fa-solid fa-check-circle mr-2"></i>Contas Pagas</h2>
-                        <p class="text-gray-500 text-sm">Histórico de faturas baixadas no sistema.</p>
+                        <h2 class="text-2xl font-bold text-green-700">✅ Pagamentos Recebidos</h2>
                     </div>
 
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                         <div class="relative mb-4">
-                            <i class="fa-solid fa-search absolute left-3 top-3 text-gray-400"></i>
-                            <input type="text" id="buscaPago" onkeyup="filtrarTabela('buscaPago', 'tabelaPagos')" placeholder="Buscar pagamento por nome ou mês..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                         <div class="p-4 border-b border-gray-100">
+                            <div class="relative">
+                                <span class="absolute left-4 top-3 text-lg">🔍</span>
+                                <input type="text" id="buscaPago" onkeyup="filtrarTabela('buscaPago', 'tabelaPagos')" placeholder="Buscar pagamento..." class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none">
+                            </div>
                         </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
+                        <div class="overflow-x-auto scroll-suave w-full">
+                            <table class="w-full text-left border-collapse whitespace-nowrap min-w-max">
                                 <thead>
-                                    <tr class="bg-green-50 text-green-800 text-sm border-b border-green-200">
-                                        <th class="p-4 font-semibold">Data do Pagamento</th>
-                                        <th class="p-4 font-semibold">Morador</th>
-                                        <th class="p-4 font-semibold">Referência</th>
-                                        <th class="p-4 font-semibold">Valor Recebido</th>
-                                        <th class="p-4 font-semibold">Status</th>
+                                    <tr class="bg-green-50 text-green-800 text-xs uppercase tracking-wider">
+                                        <th class="p-4 font-bold">Data Pag.</th>
+                                        <th class="p-4 font-bold">Morador</th>
+                                        <th class="p-4 font-bold">Mês</th>
+                                        <th class="p-4 font-bold text-right">Valor R$</th>
+                                        <th class="p-4 font-bold text-center">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tabelaPagos" class="text-sm divide-y divide-gray-100">
-                                    <tr><td colspan="5" class="p-4 text-center">Buscando pagamentos...</td></tr>
+                                    <tr><td colspan="5" class="p-8 text-center">Buscando...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -198,28 +188,22 @@
                 <!-- ================= ABA INADIMPLENTES ================= -->
                 <div id="aba-inadimplentes" class="conteudo-aba tela-oculta">
                     <div class="mb-6">
-                        <h2 class="text-2xl font-bold text-red-600"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Contas Atrasadas</h2>
-                        <p class="text-gray-500 text-sm">Faturas que já passaram da data de vencimento e continuam pendentes.</p>
+                        <h2 class="text-2xl font-bold text-red-600">🚨 Faturas Atrasadas</h2>
                     </div>
 
-                    <div class="bg-white rounded-xl shadow-sm border border-red-100 p-6">
-                        <div class="relative mb-4">
-                            <i class="fa-solid fa-search absolute left-3 top-3 text-gray-400"></i>
-                            <input type="text" id="buscaAtrasado" onkeyup="filtrarTabela('buscaAtrasado', 'tabelaAtrasados')" placeholder="Buscar devedor..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg">
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
+                    <div class="bg-white rounded-2xl shadow-sm border border-red-100 overflow-hidden">
+                        <div class="overflow-x-auto scroll-suave w-full">
+                            <table class="w-full text-left border-collapse whitespace-nowrap min-w-max">
                                 <thead>
-                                    <tr class="bg-red-50 text-red-800 text-sm border-b border-red-200">
-                                        <th class="p-4 font-semibold">Vencimento</th>
-                                        <th class="p-4 font-semibold">Morador</th>
-                                        <th class="p-4 font-semibold">Referência</th>
-                                        <th class="p-4 font-semibold">Valor Devido</th>
-                                        <th class="p-4 font-semibold text-center">Ações</th>
+                                    <tr class="bg-red-50 text-red-800 text-xs uppercase tracking-wider">
+                                        <th class="p-4 font-bold">Vencimento</th>
+                                        <th class="p-4 font-bold">Morador</th>
+                                        <th class="p-4 font-bold text-right">Dívida R$</th>
+                                        <th class="p-4 font-bold text-center">Ação Manual</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tabelaAtrasados" class="text-sm divide-y divide-gray-100">
-                                    <tr><td colspan="5" class="p-4 text-center">Buscando...</td></tr>
+                                    <tr><td colspan="4" class="p-8 text-center">Buscando...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -228,36 +212,57 @@
 
             </div>
         </main>
+
+        <!-- MENU INFERIOR MOBILE (Estilo App) -->
+        <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 flex justify-around items-center z-40 pb-safe">
+            <button onclick="mudarAba('aba-moradores', this)" class="menu-btn w-full p-2 flex flex-col items-center text-blue-600 font-bold transition">
+                <span class="text-2xl mb-1">👥</span>
+                <span class="text-[10px] uppercase tracking-wider">Moradores</span>
+            </button>
+            <button onclick="mudarAba('aba-leituras', this); carregarLoteFaturas();" class="menu-btn w-full p-2 flex flex-col items-center text-gray-400 font-bold transition">
+                <span class="text-2xl mb-1">📝</span>
+                <span class="text-[10px] uppercase tracking-wider">Lançar</span>
+            </button>
+            <button onclick="mudarAba('aba-recebimentos', this); carregarPagamentos();" class="menu-btn w-full p-2 flex flex-col items-center text-gray-400 font-bold transition">
+                <span class="text-2xl mb-1">✅</span>
+                <span class="text-[10px] uppercase tracking-wider">Pagos</span>
+            </button>
+            <button onclick="mudarAba('aba-inadimplentes', this); carregarInadimplentes();" class="menu-btn w-full p-2 flex flex-col items-center text-gray-400 font-bold transition">
+                <span class="text-2xl mb-1">🚨</span>
+                <span class="text-[10px] uppercase tracking-wider">Atrasos</span>
+            </button>
+        </nav>
+
     </div>
 
-    <!-- MODAL DE CADASTRO / EDIÇÃO DE MORADOR -->
+    <!-- MODAL DE CADASTRO / EDIÇÃO -->
     <div id="modalMorador" class="modal-fundo">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden animate-[fade-in_0.2s_ease-out]">
-            <div class="bg-slate-900 px-6 py-4 flex justify-between items-center text-white">
-                <h3 id="tituloModal" class="font-bold text-lg">Novo Morador</h3>
-                <button onclick="fecharModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-auto overflow-hidden">
+            <div class="bg-slate-900 px-6 py-5 flex justify-between items-center text-white">
+                <h3 id="tituloModal" class="font-bold text-lg">📝 Novo Cadastro</h3>
+                <button onclick="fecharModal()" class="text-gray-400 hover:text-white text-2xl px-2">×</button>
             </div>
             <form id="formMorador" class="p-6">
                 <input type="hidden" id="modId">
                 <div class="mb-4">
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Nome Completo</label>
-                    <input type="text" id="modNome" required class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Nome Completo</label>
+                    <input type="text" id="modNome" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-bold text-gray-700 mb-1">CPF (Apenas números)</label>
-                    <input type="text" id="modCpf" required class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">CPF (Apenas números)</label>
+                    <input type="tel" id="modCpf" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div class="mb-4">
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Telefone / WhatsApp</label>
-                    <input type="text" id="modTel" required class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">WhatsApp (DDD+Num)</label>
+                    <input type="tel" id="modTel" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
-                <div class="mb-6">
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Lote / Endereço</label>
-                    <input type="text" id="modLote" required class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                <div class="mb-8">
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Lote / Endereço</label>
+                    <input type="text" id="modLote" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div class="flex gap-3">
-                    <button type="button" onclick="fecharModal()" class="flex-1 bg-gray-200 text-gray-800 font-bold py-2 rounded hover:bg-gray-300">Cancelar</button>
-                    <button type="submit" class="flex-1 bg-blue-600 text-white font-bold py-2 rounded hover:bg-blue-700">Salvar Dados</button>
+                    <button type="button" onclick="fecharModal()" class="flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-xl active:bg-gray-300">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl active:bg-blue-800 shadow-lg shadow-blue-500/30">Salvar</button>
                 </div>
             </form>
         </div>
@@ -286,7 +291,7 @@
             if(document.getElementById("senhaAdmin").value === "admin123") {
                 document.getElementById("loginAdmin").style.display = "none";
                 document.getElementById("painelAdmin").classList.remove('tela-oculta');
-                carregarFamilias(); // Carrega tela inicial
+                carregarFamilias();
             } else { 
                 document.getElementById("erroLogin").classList.remove('hidden'); 
             }
@@ -295,25 +300,29 @@
         window.mudarAba = (id, elemento) => {
             document.querySelectorAll('.conteudo-aba').forEach(a => a.classList.add('tela-oculta'));
             document.querySelectorAll('.menu-btn').forEach(btn => {
-                btn.classList.remove('bg-blue-600', 'text-white');
-                btn.classList.add('hover:bg-slate-800', 'text-slate-300');
+                // Remove cores ativas de Desktop e Mobile
+                btn.classList.remove('bg-blue-600', 'text-white', 'text-blue-600');
+                btn.classList.add('text-slate-300'); // Desktop
+                if(btn.parentElement.tagName === 'NAV' && btn.parentElement.classList.contains('md:hidden')){
+                     btn.classList.remove('text-slate-300');
+                     btn.classList.add('text-gray-400'); // Mobile inativo
+                }
             });
             document.getElementById(id).classList.remove('tela-oculta');
+            
+            // Ativa o botão clicado
             if(elemento) {
-                elemento.classList.remove('hover:bg-slate-800', 'text-slate-300');
-                elemento.classList.add('bg-blue-600', 'text-white');
+                if(elemento.parentElement.tagName === 'NAV' && elemento.parentElement.classList.contains('md:hidden')) {
+                    elemento.classList.remove('text-gray-400');
+                    elemento.classList.add('text-blue-600'); // Mobile Ativo
+                } else {
+                    elemento.classList.remove('text-slate-300', 'hover:bg-slate-800');
+                    elemento.classList.add('bg-blue-600', 'text-white'); // Desktop Ativo
+                }
             }
         };
-        window.mudarAbaMobile = (id) => {
-            document.querySelectorAll('.conteudo-aba').forEach(a => a.classList.add('tela-oculta'));
-            document.getElementById(id).classList.remove('tela-oculta');
-            if(id === 'aba-moradores') carregarFamilias();
-            if(id === 'aba-leituras') carregarLoteFaturas();
-            if(id === 'aba-recebimentos') carregarPagamentos();
-            if(id === 'aba-inadimplentes') carregarInadimplentes();
-        };
 
-        // --- SISTEMA DE BUSCA GERAL ---
+        // --- BUSCA GERAL NAS TABELAS ---
         window.filtrarTabela = (inputId, tabelaId) => {
             const filtro = document.getElementById(inputId).value.toLowerCase();
             const linhas = document.getElementById(tabelaId).getElementsByTagName('tr');
@@ -323,11 +332,11 @@
             }
         };
 
-        // --- MODAL E CADASTRO/EDIÇÃO ---
+        // --- MODAL ---
         window.abrirModalCadastro = () => {
             document.getElementById("formMorador").reset();
             document.getElementById("modId").value = "";
-            document.getElementById("tituloModal").innerText = "Novo Morador";
+            document.getElementById("tituloModal").innerHTML = "📝 Novo Cadastro";
             document.getElementById("modalMorador").style.display = "flex";
         };
 
@@ -337,7 +346,7 @@
             document.getElementById("modCpf").value = cpf;
             document.getElementById("modTel").value = tel;
             document.getElementById("modLote").value = lote;
-            document.getElementById("tituloModal").innerText = "Editar Morador";
+            document.getElementById("tituloModal").innerHTML = "✏️ Editar Cadastro";
             document.getElementById("modalMorador").style.display = "flex";
         };
 
@@ -345,7 +354,7 @@
 
         document.getElementById("formMorador").addEventListener("submit", async (e) => {
             e.preventDefault();
-            mostrarLoading("Salvando dados...");
+            mostrarLoading("Salvando...");
             const id = document.getElementById("modId").value;
             const dados = {
                 nome: document.getElementById("modNome").value,
@@ -353,14 +362,9 @@
                 telefone: document.getElementById("modTel").value,
                 lote_endereco: document.getElementById("modLote").value
             };
-
             try {
-                if(id) {
-                    await updateDoc(doc(db, "familias", id), dados);
-                } else {
-                    dados.senha = "123456"; dados.status_ativo = true;
-                    await addDoc(collection(db, "familias"), dados);
-                }
+                if(id) { await updateDoc(doc(db, "familias", id), dados); } 
+                else { dados.senha = "123456"; dados.status_ativo = true; await addDoc(collection(db, "familias"), dados); }
                 fecharModal();
                 carregarFamilias();
             } catch (error) { alert("Erro ao salvar."); }
@@ -370,83 +374,80 @@
         // --- ABA 1: MORADORES ---
         window.carregarFamilias = async () => {
             const tbody = document.getElementById("tabelaMoradores");
-            tbody.innerHTML = "<tr><td colspan='5' class='p-4 text-center'>Buscando...</td></tr>";
+            tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center text-gray-500'>Buscando...</td></tr>";
             try {
                 const snap = await getDocs(collection(db, "familias"));
                 let html = "";
                 snap.forEach(doc => {
                     const d = doc.data();
                     html += `
-                        <tr class="hover:bg-gray-50">
-                            <td class="p-4 font-medium">${d.nome}</td>
-                            <td class="p-4 text-gray-600">${d.cpf}</td>
-                            <td class="p-4 text-gray-600">${d.lote_endereco}</td>
-                            <td class="p-4 text-gray-600">${d.telefone}</td>
+                        <tr class="hover:bg-blue-50 transition">
+                            <td class="p-4">
+                                <div class="font-bold text-gray-800">${d.nome}</div>
+                                <div class="text-xs text-gray-500 mt-1 flex items-center">🏠 ${d.lote_endereco}</div>
+                            </td>
+                            <td class="p-4 text-gray-600 font-mono text-sm">${d.cpf}</td>
+                            <td class="p-4 text-gray-600 font-mono text-sm">${d.telefone}</td>
                             <td class="p-4 text-center">
-                                <button onclick="abrirModalEdicao('${doc.id}', '${d.nome}', '${d.cpf}', '${d.telefone}', '${d.lote_endereco}')" class="text-blue-500 hover:text-blue-700 bg-blue-50 p-2 rounded"><i class="fa-solid fa-pen"></i> Editar</button>
+                                <button onclick="abrirModalEdicao('${doc.id}', '${d.nome}', '${d.cpf}', '${d.telefone}', '${d.lote_endereco}')" class="text-blue-600 bg-blue-100 hover:bg-blue-200 font-bold px-3 py-2 rounded-lg text-sm">Editar</button>
                             </td>
                         </tr>
                     `;
                 });
-                tbody.innerHTML = html || "<tr><td colspan='5' class='p-4 text-center'>Nenhum morador.</td></tr>";
-            } catch (error) { tbody.innerHTML = "<tr><td colspan='5' class='text-red-500'>Erro ao carregar.</td></tr>"; }
+                tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center'>Nenhum cadastro.</td></tr>";
+            } catch (e) { tbody.innerHTML = "<tr><td colspan='4' class='text-red-500 text-center p-8'>Erro ao carregar.</td></tr>"; }
         };
 
-        // --- ABA 2: LEITURAS E MULTA (CÉREBRO) ---
+        // --- ABA 2: LEITURAS E MULTA ---
         window.carregarLoteFaturas = async () => {
             const corpo = document.getElementById("corpoTabelaLote");
-            corpo.innerHTML = "<tr><td colspan='8' class='p-4 text-center'>Analisando contas e multas...</td></tr>";
+            corpo.innerHTML = "<tr><td colspan='7' class='p-8 text-center'>Analisando...</td></tr>";
             
             try {
-                // Puxa tudo pra cruzar os dados no Javascript (Regra 2)
                 const famSnap = await getDocs(collection(db, "familias"));
                 const fatSnap = await getDocs(collection(db, "faturas"));
-                
                 const todasFaturas = [];
                 fatSnap.forEach(d => todasFaturas.push({ id_fatura: d.id, ...d.data() }));
 
                 let html = "";
                 const hoje = new Date();
-                hoje.setHours(0,0,0,0); // Zera a hora para comparar só a data
+                hoje.setHours(0,0,0,0);
 
                 famSnap.forEach(docFam => {
                     const f = docFam.data();
                     const famId = docFam.id;
 
-                    // LÓGICA DA MULTA: Acha se tem conta pendente e vencida
                     const faturasDestaFam = todasFaturas.filter(fat => fat.familia_id === famId && fat.status === 'pendente');
                     let temMulta = false;
-                    
                     for(let fat of faturasDestaFam) {
                         const dataVenc = new Date(fat.vencimento + "T00:00:00");
                         if (dataVenc < hoje) { temMulta = true; break; }
                     }
 
                     const valorMulta = temMulta ? 25.00 : 0.00;
-                    const badgeMulta = temMulta ? `<span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-bold">Atrasado (+R$25)</span>` : ``;
+                    const badgeMulta = temMulta ? `<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase ml-2">Atraso</span>` : ``;
 
                     html += `
                         <tr id="linha-${famId}" class="hover:bg-blue-50/50">
                             <td class="p-3">
                                 <div class="font-bold text-gray-800">${f.nome}</div>
-                                <div class="text-xs text-gray-500">${f.lote_endereco} ${badgeMulta}</div>
+                                <div class="text-xs text-gray-500 mt-0.5">Lote: ${f.lote_endereco} ${badgeMulta}</div>
                             </td>
-                            <td class="p-3 text-center"><input type="number" id="ant-${famId}" onkeyup="calcularLinha('${famId}', ${valorMulta})" class="w-16 p-1 border rounded text-center" placeholder="0"></td>
-                            <td class="p-3 text-center"><input type="number" id="atu-${famId}" onkeyup="calcularLinha('${famId}', ${valorMulta})" class="w-16 p-1 border rounded text-center border-blue-300 bg-blue-50" placeholder="0"></td>
-                            <td class="p-3 text-center font-bold text-blue-600"><span id="cons-${famId}">0</span></td>
-                            <td class="p-3 text-right">R$ <span id="valAgua-${famId}">0,00</span></td>
-                            <td class="p-3 text-right text-red-500 font-bold">R$ ${valorMulta.toFixed(2).replace('.',',')}</td>
-                            <td class="p-3 text-right font-bold text-green-600 text-lg">
-                                R$ <span id="valTotal-${famId}">0,00</span>
+                            <td class="p-3 text-center"><input type="number" id="ant-${famId}" onkeyup="calcularLinha('${famId}', ${valorMulta})" class="w-20 p-2 border border-gray-300 rounded-lg text-center focus:ring-2 focus:ring-blue-500 outline-none" placeholder="0"></td>
+                            <td class="p-3 text-center"><input type="number" id="atu-${famId}" onkeyup="calcularLinha('${famId}', ${valorMulta})" class="w-20 p-2 border-2 border-blue-400 bg-blue-50 rounded-lg text-center font-bold text-blue-800 focus:ring-2 focus:ring-blue-600 outline-none shadow-sm" placeholder="0"></td>
+                            <td class="p-3 text-center font-bold text-blue-600 text-lg"><span id="cons-${famId}">0</span><span class="text-xs font-normal">m³</span></td>
+                            <td class="p-3 text-right text-red-500 font-bold text-sm">R$ ${valorMulta.toFixed(2).replace('.',',')}</td>
+                            <td class="p-3 text-right font-black text-green-600 text-lg">
+                                <span class="text-xs font-normal">R$</span> <span id="valTotal-${famId}">0,00</span>
                                 <input type="hidden" id="hidden-agua-${famId}" value="0">
                                 <input type="hidden" id="hidden-total-${famId}" value="0" data-multa="${valorMulta}" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}">
                             </td>
-                            <td class="p-3 text-center" id="status-${famId}"><span class="bg-gray-200 text-gray-600 px-2 py-1 rounded text-xs">Aguardando</span></td>
+                            <td class="p-3 text-center" id="status-${famId}"><span class="bg-gray-100 text-gray-400 border border-gray-200 px-3 py-1 rounded-full text-xs font-bold uppercase">Aguardando</span></td>
                         </tr>
                     `;
                 });
                 corpo.innerHTML = html;
-            } catch (error) { corpo.innerHTML = "<tr><td colspan='8' class='text-red-500'>Erro ao carregar dados.</td></tr>"; }
+            } catch (error) { corpo.innerHTML = "<tr><td colspan='7' class='text-red-500 p-4'>Erro ao carregar dados.</td></tr>"; }
         };
 
         window.calcularLinha = (id, multa) => {
@@ -465,9 +466,7 @@
 
             const valorTotal = valorAgua > 0 ? valorAgua + multa : 0;
 
-            document.getElementById(`valAgua-${id}`).innerText = valorAgua.toFixed(2).replace('.', ',');
             document.getElementById(`valTotal-${id}`).innerText = valorTotal.toFixed(2).replace('.', ',');
-            
             document.getElementById(`hidden-agua-${id}`).value = valorAgua;
             document.getElementById(`hidden-total-${id}`).value = valorTotal;
         };
@@ -477,9 +476,9 @@
             const linhas = Array.from(inputs).filter(i => parseFloat(i.value) > 0);
             
             if(linhas.length === 0) return alert("Preencha a Leitura Atual de alguém!");
-            if(!confirm(`Gerar ${linhas.length} faturas?`)) return;
+            if(!confirm(`Deseja processar ${linhas.length} faturas agora?`)) return;
 
-            mostrarLoading("Conectando ao Mercado Pago...");
+            mostrarLoading("Comunicando com o Banco...");
             const mes = document.getElementById("mesReferencia").value;
             const venc = document.getElementById("dataVencimento").value;
 
@@ -511,23 +510,25 @@
                             vencimento: venc, status: "pendente", pix_copia_cola: pix.copiaECola, data_lancamento: new Date().toISOString()
                         });
 
-                        const txzap = `Olá ${nome}! Fatura da Água de ${mes}.\n💧 Consumo: ${cons}m³\n💰 Água: R$${valorAgua.toFixed(2)}\n⚠️ Multa: R$${valorMulta.toFixed(2)}\n💵 Total: R$ ${total.toFixed(2)}\n📅 Venc: ${venc.split('-').reverse().join('/')}\n\n*Pix Copia e Cola:*\n\n${pix.copiaECola}`;
+                        // MENSAGEM INTELIGENTE DE WHATSAPP COM LINK PARA O PORTAL
+                        const txzap = `💧 *SISTEMA ÁGUA SÃO LUIZ* 💧\n\nOlá, *${nome}*!\nA sua fatura de *${mes}* já está liberada.\n\n📊 *Consumo:* ${cons}m³\n💵 *Valor Total:* R$ ${total.toFixed(2)}\n📅 *Vencimento:* ${venc.split('-').reverse().join('/')}\n\n📲 *COMO PAGAR:* \nAcesse o portal clicando no link abaixo. Lá você pode copiar o código PIX com apenas 1 clique ou baixar o seu extrato em PDF:\n\n👉 https://agua-sao-luiz.vercel.app`;
                         
-                        document.getElementById(`status-${id}`).innerHTML = `<button onclick="window.open('https://wa.me/${tel}?text=${encodeURIComponent(txzap)}')" class="bg-green-500 text-white px-2 py-1 rounded text-xs"><i class="fa-brands fa-whatsapp"></i> Enviar</button>`;
+                        document.getElementById(`status-${id}`).innerHTML = `<button onclick="window.open('https://wa.me/${tel}?text=${encodeURIComponent(txzap)}')"\n class="bg-green-500 hover:bg-green-600 text-white font-bold px-4 py-2 rounded-xl text-sm shadow-md shadow-green-500/30 flex items-center mx-auto">Enviar no Zap 💬</button>`;
+                        
                         document.getElementById(`atu-${id}`).disabled = true;
-                        document.getElementById(`linha-${id}`).classList.add('bg-green-50');
+                        document.getElementById(`ant-${id}`).disabled = true;
+                        document.getElementById(`linha-${id}`).classList.replace('hover:bg-blue-50/50', 'bg-green-50');
                     }
-                } catch(e) { document.getElementById(`status-${id}`).innerHTML = `<span class="text-red-500 text-xs">Erro</span>`; }
+                } catch(e) { document.getElementById(`status-${id}`).innerHTML = `<span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold">Erro</span>`; }
             }
             esconderLoading();
-            alert("Lote concluído!");
+            alert("✅ Lote processado com sucesso!");
         };
 
         // --- ABA 3: RECEBIMENTOS ---
         window.carregarPagamentos = async () => {
             const tbody = document.getElementById("tabelaPagos");
-            tbody.innerHTML = "<tr><td colspan='5' class='p-4 text-center'>Buscando...</td></tr>";
-            
+            tbody.innerHTML = "<tr><td colspan='5' class='p-8 text-center'>Buscando...</td></tr>";
             try {
                 const famSnap = await getDocs(collection(db, "familias"));
                 const dictFamilias = {};
@@ -535,46 +536,40 @@
 
                 const fatSnap = await getDocs(collection(db, "faturas"));
                 const pagas = [];
-                fatSnap.forEach(d => {
-                    if(d.data().status === 'pago') pagas.push({id: d.id, ...d.data()});
-                });
-
-                // Ordena por data de pagamento (mais recente primeiro)
+                fatSnap.forEach(d => { if(d.data().status === 'pago') pagas.push({id: d.id, ...d.data()}); });
                 pagas.sort((a,b) => new Date(b.data_pagamento || 0) - new Date(a.data_pagamento || 0));
 
                 let html = "";
                 for(let p of pagas) {
                     const nome = dictFamilias[p.familia_id] || "Desconhecido";
-                    const dataPag = p.data_pagamento ? new Date(p.data_pagamento).toLocaleString('pt-BR') : "Data Indisponível";
+                    const dataPag = p.data_pagamento ? new Date(p.data_pagamento).toLocaleString('pt-BR', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'}) : "---";
                     html += `
-                        <tr class="hover:bg-green-50/50">
-                            <td class="p-4">${dataPag}</td>
-                            <td class="p-4 font-bold text-gray-700">${nome}</td>
-                            <td class="p-4">${p.mes_referencia}</td>
-                            <td class="p-4 font-bold text-green-600">R$ ${parseFloat(p.valor_total).toFixed(2).replace('.',',')}</td>
-                            <td class="p-4"><span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-bold"><i class="fa-solid fa-check"></i> Recebido</span></td>
+                        <tr class="hover:bg-green-50 transition">
+                            <td class="p-4 text-gray-500 text-sm font-mono">${dataPag}</td>
+                            <td class="p-4 font-bold text-gray-800">${nome}</td>
+                            <td class="p-4 text-gray-600">${p.mes_referencia}</td>
+                            <td class="p-4 font-black text-green-700 text-right">R$ ${parseFloat(p.valor_total).toFixed(2).replace('.',',')}</td>
+                            <td class="p-4 text-center"><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Pago</span></td>
                         </tr>
                     `;
                 }
-                tbody.innerHTML = html || "<tr><td colspan='5' class='p-4 text-center text-gray-500'>Nenhum pagamento registrado ainda.</td></tr>";
-            } catch(e) { tbody.innerHTML = "<tr><td colspan='5' class='text-red-500'>Erro.</td></tr>"; }
+                tbody.innerHTML = html || "<tr><td colspan='5' class='p-8 text-center text-gray-500'>Nenhum pagamento registrado.</td></tr>";
+            } catch(e) { tbody.innerHTML = "<tr><td colspan='5' class='text-red-500 text-center p-8'>Erro ao carregar.</td></tr>"; }
         };
 
-        // --- ABA 4: INADIMPLENTES (E BAIXA MANUAL) ---
+        // --- ABA 4: INADIMPLENTES ---
         window.carregarInadimplentes = async () => {
             const tbody = document.getElementById("tabelaAtrasados");
-            tbody.innerHTML = "<tr><td colspan='5' class='p-4 text-center'>Analisando vencimentos...</td></tr>";
-            
+            tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center'>Buscando...</td></tr>";
             try {
                 const famSnap = await getDocs(collection(db, "familias"));
                 const dictFamilias = {};
                 famSnap.forEach(d => dictFamilias[d.id] = d.data().nome);
 
                 const fatSnap = await getDocs(collection(db, "faturas"));
-                const hoje = new Date();
-                hoje.setHours(0,0,0,0);
-
+                const hoje = new Date(); hoje.setHours(0,0,0,0);
                 const atrasadas = [];
+                
                 fatSnap.forEach(d => {
                     const f = d.data();
                     if(f.status === 'pendente') {
@@ -582,7 +577,6 @@
                         if(dataVenc < hoje) atrasadas.push({id: d.id, data_venc: dataVenc, ...f});
                     }
                 });
-
                 atrasadas.sort((a,b) => a.data_venc - b.data_venc);
 
                 let html = "";
@@ -590,36 +584,33 @@
                     const nome = dictFamilias[a.familia_id] || "Desconhecido";
                     const vencBr = a.vencimento.split('-').reverse().join('/');
                     html += `
-                        <tr class="hover:bg-red-50/50">
-                            <td class="p-4 font-bold text-red-600">${vencBr}</td>
-                            <td class="p-4 font-bold">${nome}</td>
-                            <td class="p-4">${a.mes_referencia}</td>
-                            <td class="p-4 font-bold">R$ ${parseFloat(a.valor_total).toFixed(2).replace('.',',')}</td>
+                        <tr class="hover:bg-red-50 transition">
+                            <td class="p-4 font-bold text-red-600 text-sm font-mono">⚠️ ${vencBr}</td>
+                            <td class="p-4">
+                                <div class="font-bold text-gray-800">${nome}</div>
+                                <div class="text-xs text-gray-500">Ref: ${a.mes_referencia}</div>
+                            </td>
+                            <td class="p-4 font-black text-red-700 text-right text-lg">R$ ${parseFloat(a.valor_total).toFixed(2).replace('.',',')}</td>
                             <td class="p-4 text-center">
-                                <button onclick="marcarComoPagoManual('${a.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs shadow"><i class="fa-solid fa-check-double"></i> Dar Baixa Manual</button>
+                                <button onclick="marcarComoPagoManual('${a.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md shadow-blue-500/30">Dar Baixa Agora</button>
                             </td>
                         </tr>
                     `;
                 }
-                tbody.innerHTML = html || "<tr><td colspan='5' class='p-4 text-center text-green-600 font-bold'>Parabéns! Ninguém está devendo.</td></tr>";
-            } catch(e) { tbody.innerHTML = "<tr><td colspan='5' class='text-red-500'>Erro.</td></tr>"; }
+                tbody.innerHTML = html || "<tr><td colspan='4' class='p-10 text-center text-green-600 font-bold text-lg'>🎉 Nenhuma fatura atrasada!</td></tr>";
+            } catch(e) { tbody.innerHTML = "<tr><td colspan='4' class='text-red-500 text-center p-8'>Erro ao carregar.</td></tr>"; }
         };
 
-        // FUNÇÃO DE BAIXA MANUAL (Até criarmos o Webhook)
         window.marcarComoPagoManual = async (faturaId) => {
-            if(!confirm("Tem certeza que este morador pagou? Isso mudará o status para PAGO.")) return;
-            mostrarLoading("Registrando pagamento...");
+            if(!confirm("Registrar este pagamento manualmente?")) return;
+            mostrarLoading("Registrando...");
             try {
-                await updateDoc(doc(db, "faturas", faturaId), {
-                    status: "pago",
-                    data_pagamento: new Date().toISOString()
-                });
+                await updateDoc(doc(db, "faturas", faturaId), { status: "pago", data_pagamento: new Date().toISOString() });
                 carregarInadimplentes();
-            } catch(e) { alert("Erro ao dar baixa."); }
+            } catch(e) { alert("Erro ao baixar."); }
             esconderLoading();
         };
 
-        // UI Helpers
         const mostrarLoading = (msg) => { document.getElementById("loadingMsg").innerText = msg; document.getElementById("loading").style.display = "flex"; };
         const esconderLoading = () => { document.getElementById("loading").style.display = "none"; };
     </script>
