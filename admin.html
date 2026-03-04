@@ -7,31 +7,26 @@
     <style>
         body { font-family: Arial, sans-serif; background-color: #e9ecef; margin: 0; padding: 0; }
         
-        /* Tela de Login do Admin */
         #loginAdmin { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #343a40; }
         .login-box { background: white; padding: 2rem; border-radius: 8px; text-align: center; width: 300px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
         .login-box input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         .login-box button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px;}
         .login-box button:hover { background-color: #0056b3; }
         
-        /* Painel Principal (Escondido inicialmente) */
         #painelAdmin { display: none; max-width: 800px; margin: 20px auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         h1 { color: #333; text-align: center; }
         
-        /* Abas de Navegação */
-        .abas { display: flex; margin-bottom: 20px; border-bottom: 2px solid #ccc; }
+        .abas { display: flex; margin-bottom: 20px; border-bottom: 2px solid #ccc; flex-wrap: wrap; }
         .aba { padding: 10px 20px; cursor: pointer; font-weight: bold; color: #555; }
         .aba:hover { background-color: #f8f9fa; }
         .aba.ativa { border-bottom: 3px solid #007bff; color: #007bff; margin-bottom: -2px; }
         
-        /* Conteúdo das Abas */
         .conteudo-aba { display: none; }
         .conteudo-aba.ativo { display: block; }
         
-        /* Formulários e Tabelas */
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #333; }
-        .form-group input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         .btn-sucesso { background-color: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px;}
         .btn-sucesso:hover { background-color: #218838; }
         
@@ -59,13 +54,14 @@
         <div class="abas">
             <div class="aba ativa" onclick="mudarAba('cadastro', this)">Cadastrar Família</div>
             <div class="aba" onclick="mudarAba('lista', this); carregarFamilias();">Lista de Famílias</div>
+            <div class="aba" onclick="mudarAba('faturas', this); carregarSelectFamilias();">Lançar Faturas</div>
         </div>
 
         <div id="cadastro" class="conteudo-aba ativo">
             <h3 style="color: #333;">Nova Família</h3>
             <form id="formCadastro">
                 <div class="form-group">
-                    <label>Nome Completo (Responsável)</label>
+                    <label>Nome Completo</label>
                     <input type="text" id="cadNome" required placeholder="Ex: Maria Souza">
                 </div>
                 <div class="form-group">
@@ -73,14 +69,14 @@
                     <input type="text" id="cadCpf" required placeholder="Ex: 00011122233">
                 </div>
                 <div class="form-group">
-                    <label>Telefone WhatsApp (Ex: 5546999999999)</label>
+                    <label>Telefone WhatsApp</label>
                     <input type="text" id="cadTelefone" required placeholder="55469...">
                 </div>
                 <div class="form-group">
                     <label>Endereço / Lote</label>
                     <input type="text" id="cadEndereco" required placeholder="Ex: Casa 02">
                 </div>
-                <button type="submit" class="btn-sucesso">Salvar Família no Banco de Dados</button>
+                <button type="submit" class="btn-sucesso">Salvar Família</button>
                 <p id="msgCadastro" style="font-weight: bold; text-align: center; margin-top: 15px;"></p>
             </form>
         </div>
@@ -93,14 +89,44 @@
                     <tr>
                         <th>Nome</th>
                         <th>CPF</th>
-                        <th>Endereço</th>
                         <th>WhatsApp</th>
                     </tr>
                 </thead>
                 <tbody id="tabelaFamilias">
-                    <tr><td colspan="4" style="text-align: center;">Buscando dados no Firebase...</td></tr>
+                    <tr><td colspan="3" style="text-align: center;">Buscando dados no Firebase...</td></tr>
                 </tbody>
             </table>
+        </div>
+
+        <div id="faturas" class="conteudo-aba">
+            <h3 style="color: #333;">Lançar Conta de Água</h3>
+            <form id="formFatura">
+                <div class="form-group">
+                    <label>Selecione a Família</label>
+                    <select id="fatFamilia" required>
+                        <option value="">Carregando famílias...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Mês de Referência</label>
+                    <input type="text" id="fatMes" value="03/2026" required>
+                </div>
+                <div class="form-group">
+                    <label>Valor do Consumo (R$)</label>
+                    <input type="number" step="0.01" id="fatValor" placeholder="Ex: 45.50" required>
+                </div>
+                <button type="submit" class="btn-sucesso" id="btnGerarFatura">Gerar Pix e Salvar</button>
+            </form>
+
+            <div id="resultadoFatura" style="display:none; margin-top: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 8px; text-align: center; background-color: #f8f9fa;">
+                <p style="color: green; font-weight: bold; font-size: 18px;">✅ Fatura Gerada com Sucesso!</p>
+                <img id="imgQrCode" src="" style="width: 200px; height: 200px; margin: 10px auto; display: block; border: 1px solid #ddd;">
+                <textarea id="txtCopiaCola" rows="3" style="width: 100%; font-size: 12px; padding: 5px; border-radius: 4px;" readonly></textarea>
+                <br>
+                <button id="btnZap" style="background-color: #25D366; color: white; padding: 12px; border: none; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 15px; font-weight: bold; font-size: 16px;">
+                    📲 Enviar Cobrança por WhatsApp
+                </button>
+            </div>
         </div>
     </div>
 
@@ -108,7 +134,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // SUAS CHAVES DO FIREBASE
+        // COLOQUE SUAS CHAVES DO FIREBASE AQUI
         const firebaseConfig = {
             apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ",
             authDomain: "sistema-agua-sao-luiz.firebaseapp.com",
@@ -122,12 +148,9 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Como usamos type="module", precisamos atrelar as funções ao 'window' para o HTML conseguir chamar no onclick
-        
-        // LÓGICA DE LOGIN DO ADMIN
+        // Funções de Interface
         window.entrarAdmin = function() {
             const senha = document.getElementById("senhaAdmin").value;
-            // SENHA PADRÃO DE ACESSO AO PAINEL
             if (senha === "admin123") { 
                 document.getElementById("loginAdmin").style.display = "none";
                 document.getElementById("painelAdmin").style.display = "block";
@@ -136,87 +159,154 @@
             }
         }
 
-        // LÓGICA DE MUDAR DE ABA
         window.mudarAba = function(idAba, elementoClicado) {
             document.querySelectorAll('.conteudo-aba').forEach(aba => aba.classList.remove('ativo'));
             document.querySelectorAll('.aba').forEach(aba => aba.classList.remove('ativa'));
-            
             document.getElementById(idAba).classList.add('ativo');
             elementoClicado.classList.add('ativa');
         }
 
-        // LÓGICA PARA CADASTRAR NOVA FAMÍLIA NO FIREBASE
+        // Cadastrar Família
         document.getElementById("formCadastro").addEventListener("submit", async (e) => {
             e.preventDefault();
             const msg = document.getElementById("msgCadastro");
-            const btn = document.querySelector(".btn-sucesso");
-            
+            const btn = document.querySelector("#cadastro .btn-sucesso");
             btn.innerText = "Salvando...";
             btn.disabled = true;
 
             try {
-                // Adiciona a família lá no Firestore
                 await addDoc(collection(db, "familias"), {
                     nome: document.getElementById("cadNome").value,
                     cpf: document.getElementById("cadCpf").value,
                     telefone: document.getElementById("cadTelefone").value,
                     lote_endereco: document.getElementById("cadEndereco").value,
-                    senha: "123456", // Senha padrão 123456 para o primeiro acesso
+                    senha: "123456",
                     status_ativo: true
                 });
-
                 msg.style.color = "green";
-                msg.innerText = "Família cadastrada com sucesso!";
+                msg.innerText = "Família cadastrada!";
                 document.getElementById("formCadastro").reset();
-                
                 setTimeout(() => { msg.innerText = ""; }, 3000);
-
             } catch (error) {
-                console.error("Erro ao cadastrar:", error);
                 msg.style.color = "red";
-                msg.innerText = "Erro ao cadastrar. Verifique a conexão.";
+                msg.innerText = "Erro ao cadastrar.";
             } finally {
-                btn.innerText = "Salvar Família no Banco de Dados";
+                btn.innerText = "Salvar Família";
                 btn.disabled = false;
             }
         });
 
-        // LÓGICA PARA LISTAR AS FAMÍLIAS DO FIREBASE
+        // Listar Famílias na Tabela
         window.carregarFamilias = async function() {
             const tabela = document.getElementById("tabelaFamilias");
-            tabela.innerHTML = "<tr><td colspan='4' style='text-align: center;'>Buscando dados...</td></tr>";
-            
             try {
                 const querySnapshot = await getDocs(collection(db, "familias"));
                 let htmlTabela = "";
                 let contador = 0;
-
                 querySnapshot.forEach((doc) => {
                     const dados = doc.data();
                     contador++;
-                    htmlTabela += `
-                        <tr>
-                            <td>${dados.nome}</td>
-                            <td>${dados.cpf}</td>
-                            <td>${dados.lote_endereco}</td>
-                            <td>${dados.telefone}</td>
-                        </tr>
-                    `;
+                    htmlTabela += `<tr><td>${dados.nome}</td><td>${dados.cpf}</td><td>${dados.telefone}</td></tr>`;
                 });
-
                 document.getElementById("totalFamilias").innerText = contador;
-                
-                if (contador === 0) {
-                    tabela.innerHTML = "<tr><td colspan='4' style='text-align: center;'>Nenhuma família cadastrada ainda.</td></tr>";
-                } else {
-                    tabela.innerHTML = htmlTabela;
-                }
-
+                tabela.innerHTML = contador === 0 ? "<tr><td colspan='3'>Nenhuma família.</td></tr>" : htmlTabela;
             } catch (error) {
-                console.error("Erro ao carregar lista:", error);
-                tabela.innerHTML = "<tr><td colspan='4' style='text-align: center; color: red;'>Erro ao carregar dados do banco.</td></tr>";
+                tabela.innerHTML = "<tr><td colspan='3' style='color:red;'>Erro ao carregar dados.</td></tr>";
             }
         }
+
+        // Carregar Famílias no Select da Aba de Faturas
+        window.carregarSelectFamilias = async function() {
+            const select = document.getElementById("fatFamilia");
+            select.innerHTML = "<option value=''>Buscando famílias no banco...</option>";
+            try {
+                const querySnapshot = await getDocs(collection(db, "familias"));
+                let htmlOptions = "<option value=''>-- Selecione a família --</option>";
+                querySnapshot.forEach((doc) => {
+                    const dados = doc.data();
+                    // Guardamos os dados escondidos no HTML para usarmos na hora de gerar o Pix e mandar o Zap
+                    htmlOptions += `<option value="${doc.id}" data-nome="${dados.nome}" data-cpf="${dados.cpf}" data-telefone="${dados.telefone}">
+                        ${dados.nome} (Lote: ${dados.lote_endereco})
+                    </option>`;
+                });
+                select.innerHTML = htmlOptions;
+            } catch (error) {
+                select.innerHTML = "<option value=''>Erro ao carregar famílias</option>";
+            }
+        }
+
+        // MOTOR: GERAR A FATURA COM O MERCADO PAGO E SALVAR
+        document.getElementById("formFatura").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById("btnGerarFatura");
+            const select = document.getElementById("fatFamilia");
+            const familiaSelecionada = select.options[select.selectedIndex];
+            
+            const familiaId = select.value;
+            const nome = familiaSelecionada.getAttribute("data-nome");
+            const cpf = familiaSelecionada.getAttribute("data-cpf");
+            const telefone = familiaSelecionada.getAttribute("data-telefone");
+            
+            const mes = document.getElementById("fatMes").value;
+            const valor = parseFloat(document.getElementById("fatValor").value);
+            
+            btn.innerText = "Gerando Pix no Mercado Pago...";
+            btn.disabled = true;
+
+            try {
+                // 1. Chama a nossa API mágica na Vercel
+                const resposta = await fetch("/api/gerar-pix", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        valor: valor,
+                        descricao: "Conta de Água - " + mes,
+                        nome: nome,
+                        cpf: cpf
+                    })
+                });
+
+                const dadosPix = await resposta.json();
+
+                if (dadosPix.sucesso) {
+                    // 2. Salva o recibo completo no Firebase
+                    await addDoc(collection(db, "faturas"), {
+                        familia_id: familiaId,
+                        mes_referencia: mes,
+                        valor_agua: valor,
+                        valor_multa: 0,
+                        valor_total: valor,
+                        vencimento: "2026-03-20",
+                        status: "pendente",
+                        pix_txid: dadosPix.txid,
+                        pix_copia_cola: dadosPix.copiaECola,
+                        qr_code_base64: dadosPix.qrCodeBase64,
+                        data_criacao: new Date().toISOString()
+                    });
+
+                    // 3. Exibe o QR Code na tela
+                    document.getElementById("resultadoFatura").style.display = "block";
+                    document.getElementById("imgQrCode").src = "data:image/jpeg;base64," + dadosPix.qrCodeBase64;
+                    document.getElementById("txtCopiaCola").value = dadosPix.copiaECola;
+
+                    // 4. Prepara a mensagem automática de WhatsApp
+                    const textoZap = `Olá ${nome}! Segue a fatura da água de ${mes}. \n\n💰 *Valor:* R$ ${valor.toFixed(2)} \n📅 *Vencimento:* 20/03/2026 \n\n*Pix Copia e Cola:*\n${dadosPix.copiaECola}`;
+                    const linkZap = `https://wa.me/${telefone}?text=${encodeURIComponent(textoZap)}`;
+                    
+                    document.getElementById("btnZap").onclick = () => window.open(linkZap, '_blank');
+                    document.getElementById("formFatura").reset();
+
+                } else {
+                    alert("Erro do Mercado Pago: " + (dadosPix.erro || "Verifique o CPF do morador."));
+                }
+            } catch (error) {
+                console.error("Erro interno:", error);
+                alert("Erro ao conectar com a Vercel. Tem certeza que a pasta /api subiu pro GitHub?");
+            } finally {
+                btn.innerText = "Gerar Pix e Salvar";
+                btn.disabled = false;
+            }
+        });
     </script>
 </body>
 </html>
