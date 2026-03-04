@@ -127,18 +127,19 @@
                         <form id="formAvulso" class="space-y-4" onsubmit="if(window.submitAvulso) window.submitAvulso(event)">
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Como deseja cobrar?</label>
-                                <select id="avulsoTipo" class="w-full p-3 bg-blue-50 border border-blue-200 rounded-xl outline-none font-bold text-blue-900">
+                                <select id="avulsoTipo" class="w-full p-3 bg-blue-50 border border-blue-200 rounded-xl outline-none font-bold text-blue-900" onchange="if(window.focarProximo) window.focarProximo({key: 'Enter', preventDefault: ()=>{}}, 'buscaClienteAvulso')">
                                     <option value="somar_proxima">➕ Somar na Próxima Conta de Água</option>
                                     <option value="pix_agora">⚡ Gerar um PIX Separado Agora</option>
                                 </select>
                             </div>
                             
-                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-inner">
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-inner relative">
                                 <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Busque por Nome ou CPF</label>
-                                <input type="text" id="buscaClienteAvulso" onkeyup="if(window.filtrarAvulso) window.filtrarAvulso()" onkeydown="if(window.focarProximo) window.focarProximo(event, 'avulsoDescricao')" placeholder="🔍 Digite para auto-selecionar e pressione Enter..." class="w-full p-3 mb-3 bg-white border-2 border-blue-100 rounded-xl outline-none focus:border-blue-500 transition text-sm shadow-sm font-bold text-blue-800">
+                                <input type="text" id="buscaClienteAvulso" oninput="if(window.filtrarAvulsoESelecionar) window.filtrarAvulsoESelecionar()" onkeydown="if(window.focarProximo) window.focarProximo(event, 'avulsoDescricao')" placeholder="🔍 Digite e pressione Enter para avançar..." autocomplete="off" class="w-full p-3 mb-2 bg-white border-2 border-blue-100 rounded-xl outline-none focus:border-blue-500 transition text-sm shadow-sm font-bold text-blue-800">
                                 
-                                <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Cliente Selecionado:</label>
-                                <select id="avulsoFamilia" required class="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none font-bold text-gray-700 shadow-sm pointer-events-none">
+                                <div id="avulsoClienteNomeExibicao" class="text-sm font-bold text-green-700 bg-green-50 p-2 rounded hidden">Nenhum selecionado</div>
+
+                                <select id="avulsoFamilia" required class="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none font-bold text-gray-700 shadow-sm mt-2 hidden">
                                     <!-- Options rendered via JS -->
                                 </select>
                             </div>
@@ -204,7 +205,7 @@
 
                 <!-- CONFIGURAÇÕES -->
                 <div id="aba-config" class="conteudo-aba tela-oculta">
-                    <h2 class="text-2xl font-bold text-slate-700 mb-6">⚙️ Configurações</h2>
+                    <h2 class="text-2xl font-bold text-slate-700 mb-6">⚙️ Configurações e Banco de Dados</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="bg-white p-6 rounded-2xl shadow-sm border border-amber-100 md:col-span-2">
                             <h3 class="font-bold text-lg text-amber-700 mb-4">💰 Valores da Mensalidade (Água)</h3>
@@ -214,6 +215,25 @@
                                 <div><label class="block text-xs font-bold text-gray-500 mb-1">Acima de 30m³ (R$)</label><input type="number" step="0.01" id="cfgVal3" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none"></div>
                             </div>
                             <button onclick="salvarConfigAgua()" class="mt-4 bg-amber-500 text-white font-bold py-3 px-6 rounded-xl shadow">💾 Guardar Valores</button>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-blue-100">
+                            <h3 class="font-bold text-lg text-blue-700 mb-2">💾 Salvar Backup</h3>
+                            <p class="text-xs text-gray-500 mb-4">Baixe todas as famílias e faturas para o seu computador em formato JSON.</p>
+                            <button onclick="if(window.exportarBase) window.exportarBase()" class="w-full bg-blue-100 text-blue-700 hover:bg-blue-200 transition font-bold py-3 rounded-xl mt-2">Baixar Arquivo JSON</button>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-100">
+                            <h3 class="font-bold text-lg text-emerald-700 mb-2">📂 Importar Backup</h3>
+                            <p class="text-xs text-gray-500 mb-4">Selecione o arquivo JSON baixado anteriormente para restaurar o sistema.</p>
+                            <input type="file" id="fileImport" accept=".json" class="mb-3 w-full text-sm">
+                            <button onclick="if(window.importarBase) window.importarBase()" class="w-full bg-emerald-100 hover:bg-emerald-200 transition text-emerald-700 font-bold py-3 rounded-xl">Importar Dados</button>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-red-100 md:col-span-2">
+                            <h3 class="font-bold text-lg text-red-600 mb-2">🗑️ Limpar Todas as Faturas</h3>
+                            <p class="text-xs text-gray-500 mb-4">Use com cuidado. Isso apagará todas as faturas e relatórios. O cadastro dos moradores será mantido.</p>
+                            <button onclick="if(window.limparFaturas) window.limparFaturas()" class="w-full bg-red-600 hover:bg-red-700 transition text-white font-bold py-3 rounded-xl shadow-md">Apagar Definitivamente</button>
                         </div>
                     </div>
                 </div>
@@ -279,7 +299,11 @@
             if (event.key === "Enter") {
                 event.preventDefault(); // Impede o formulário de enviar antes da hora
                 const nextEl = document.getElementById(nextId);
-                if(nextEl) nextEl.focus();
+                if(nextEl) {
+                     nextEl.focus();
+                     // Se for input de texto/numero, seleciona o conteúdo para facilitar digitação por cima
+                     if(nextEl.tagName === 'INPUT') nextEl.select();
+                }
             }
         };
 
@@ -387,33 +411,51 @@
             recognition.start();
         };
 
-        // --- MÓDULO INTELIGENTE DO SELECT AVULSO ---
+        // --- MÓDULO INTELIGENTE DO SELECT AVULSO (AUTO-SELEÇÃO) ---
         window.renderizarSelectAvulso = (filtro = "") => {
             const select = document.getElementById("avulsoFamilia");
-            let html = "<option value='TODOS' class='font-bold text-blue-700 bg-blue-50'>🌟 RATEIO: COBRAR TODOS</option>";
+            const displayNome = document.getElementById("avulsoClienteNomeExibicao");
+            
+            let html = "<option value='TODOS'>🌟 RATEIO: COBRAR TODOS</option>";
             let matchCount = 0;
             let firstMatchId = null;
+            let firstMatchName = null;
+
+            const termoBuscado = filtro.toLowerCase().trim();
 
             Object.entries(window.familiasGlobal).forEach(([id, f]) => {
-                // A Busca agora verifica Nome, CPF e Endereço!
                 const texto = `${f.nome} ${f.cpf} ${f.lote_endereco}`.toLowerCase();
-                if(texto.includes(filtro.toLowerCase())) {
+                if(texto.includes(termoBuscado)) {
                     html += `<option value="${id}" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}">${f.nome} (${f.lote_endereco})</option>`;
-                    if(matchCount === 0) firstMatchId = id; // Guarda o primeiro que bater com a busca
+                    if(matchCount === 0) {
+                        firstMatchId = id; 
+                        firstMatchName = f.nome;
+                    }
                     matchCount++;
                 }
             });
             select.innerHTML = html;
 
-            // Lógica de Auto-Seleção! Se digitou algo e achou alguém, já seleciona esse morador.
-            if (filtro.trim() !== "" && firstMatchId) {
-                select.value = firstMatchId;
-            } else if (filtro.trim() === "") {
+            // Auto-Seleção visual
+            if (termoBuscado === "") {
                 select.value = 'TODOS';
+                displayNome.innerText = "🌟 RATEIO: COBRAR TODOS";
+                displayNome.classList.remove('hidden');
+                displayNome.className = "text-sm font-bold text-blue-700 bg-blue-50 p-2 rounded mt-2";
+            } else if (firstMatchId) {
+                select.value = firstMatchId; // Já deixa marcado no select invisível
+                displayNome.innerText = `✅ Selecionado: ${firstMatchName}`;
+                displayNome.classList.remove('hidden');
+                displayNome.className = "text-sm font-bold text-green-700 bg-green-50 p-2 rounded mt-2 border border-green-200";
+            } else {
+                select.value = "";
+                displayNome.innerText = "❌ Nenhum cliente encontrado";
+                displayNome.classList.remove('hidden');
+                displayNome.className = "text-sm font-bold text-red-700 bg-red-50 p-2 rounded mt-2";
             }
         };
 
-        window.filtrarAvulso = () => {
+        window.filtrarAvulsoESelecionar = () => {
             const termo = document.getElementById("buscaClienteAvulso").value;
             window.renderizarSelectAvulso(termo);
         };
@@ -422,7 +464,7 @@
     <!-- SCRIPT 2: FIREBASE E NEGÓCIO -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ",
@@ -556,7 +598,7 @@
             window.esconderLoading(); alert("Lote Concluído!");
         };
 
-        // --- ABA TAXAS AVULSAS (MELHORADA COM BUSCA E NOVO TEXTO WPP) ---
+        // --- ABA TAXAS AVULSAS ---
         window.carregarSelectAvulso = async () => {
             const select = document.getElementById("avulsoFamilia");
             select.innerHTML = "<option value=''>Buscando...</option>";
@@ -591,7 +633,7 @@
                 alert("✅ Serviço agendado! Ele aparecerá automaticamente quando for lançar a próxima conta de Água Mensal.");
                 document.getElementById("formAvulso").reset();
                 document.getElementById("buscaClienteAvulso").value = "";
-                window.filtrarAvulso(); // Reseta o filtro
+                window.filtrarAvulsoESelecionar(); 
                 return;
             }
 
@@ -625,10 +667,10 @@
             }
             document.getElementById("formAvulso").reset();
             document.getElementById("buscaClienteAvulso").value = "";
-            window.filtrarAvulso(); // Reseta o filtro
+            window.filtrarAvulsoESelecionar();
         };
 
-        // --- TEMPO REAL: ABERTAS (COM NOVO TEXTO WHATSAPP) ---
+        // --- TEMPO REAL: ABERTAS ---
         window.iniciarListenerAbertas = async () => {
             if(unsubAbertas) unsubAbertas();
             const tbody = document.getElementById("tabelaAbertas");
@@ -650,7 +692,6 @@
                     const nomeReal = f.nome_morador || window.familiasGlobal[f.familia_id]?.nome || "Morador";
                     const tel = f.telefone || window.familiasGlobal[f.familia_id]?.telefone;
                     
-                    // NOVA MENSAGEM WHATSAPP
                     const nomeLimpo = nomeReal.trim();
                     const zap = `💧 *ÁGUA SÃO LUIZ*\nOlá *${nomeLimpo}*! 👋\n\nA sua fatura de ${f.mes_referencia} já está disponível. 🏠✨\n\n💰 *Total:* R$ ${f.valor_total.toFixed(2)}\n📅 *Venc:* ${f.vencimento.split('-').reverse().join('/')}\n\n👉 *Acesse o site para ver e pagar o PIX:*\nhttps://agua-sao-luiz.vercel.app\n\n🔐 *Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456 (caso não tenha alterado).*`;
                     
@@ -739,6 +780,92 @@
             document.getElementById("relCardPago").innerText = "R$ " + tPago.toFixed(2).replace('.',',');
             document.getElementById("tabelaRelatorio").innerHTML = html || "<tr><td colspan='5' class='p-8 text-center'>Vazio.</td></tr>";
         };
+
+        // --- BACKUP, IMPORTAÇÃO E LIMPEZA DE DADOS ---
+        window.exportarBase = async () => {
+            window.mostrarLoading("Criando backup...");
+            try {
+                const famSnap = await getDocs(collection(db, "familias"));
+                const fatSnap = await getDocs(collection(db, "faturas"));
+                const data = { familias: [], faturas: [] };
+                famSnap.forEach(d => data.familias.push({id: d.id, ...d.data()}));
+                fatSnap.forEach(d => data.faturas.push({id: d.id, ...d.data()}));
+                
+                const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
+                const a = document.createElement("a");
+                a.href = URL.createObjectURL(blob); 
+                a.download = `backup_agua_saoluiz_${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+            } catch(e) {
+                alert("Erro ao exportar base de dados.");
+            }
+            window.esconderLoading();
+        };
+
+        window.importarBase = async () => {
+            const fileInput = document.getElementById("fileImport");
+            if (!fileInput.files.length) return alert("Por favor, selecione um arquivo JSON primeiro.");
+            
+            if(!confirm("⚠️ ATENÇÃO: Os dados do arquivo serão ADICIONADOS ao banco atual. Tem certeza que deseja continuar?")) return;
+            
+            window.mostrarLoading("Importando dados...");
+            const reader = new FileReader();
+            
+            reader.onload = async (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if(data.familias) {
+                        for(let f of data.familias) { 
+                            const {id, ...rest} = f; 
+                            await setDoc(doc(db, "familias", id), rest); 
+                        }
+                    }
+                    
+                    if(data.faturas) {
+                        for(let f of data.faturas) { 
+                            const {id, ...rest} = f; 
+                            await setDoc(doc(db, "faturas", id), rest); 
+                        }
+                    }
+                    
+                    alert("✅ Importação concluída com sucesso!"); 
+                    window.carregarFamilias();
+                } catch(err) { 
+                    alert("❌ Erro ao ler o arquivo. Certifique-se de que é um JSON de backup válido."); 
+                }
+                window.esconderLoading();
+            };
+            
+            reader.readAsText(fileInput.files[0]);
+        };
+
+        window.limparFaturas = async () => {
+            if(!confirm("🚨 PERIGO: Deseja apagar TODAS as faturas do sistema? Isso não pode ser desfeito. (O cadastro dos moradores será mantido)")) return;
+            
+            // Confirmação dupla de segurança
+            const confirmacao = prompt("Para continuar, digite a palavra: CONFIRMO");
+            if(confirmacao !== "CONFIRMO") {
+                alert("Limpeza cancelada.");
+                return;
+            }
+
+            window.mostrarLoading("Limpando Banco de Dados...");
+            try {
+                const snap = await getDocs(collection(db, "faturas"));
+                const deletePromises = [];
+                snap.forEach(d => deletePromises.push(deleteDoc(doc(db, "faturas", d.id))));
+                
+                await Promise.all(deletePromises);
+                
+                alert("✅ Banco de faturas limpo com sucesso!"); 
+                window.carregarRelatorio();
+            } catch(e) {
+                alert("Erro ao limpar base de dados.");
+            }
+            window.esconderLoading();
+        };
+
     </script>
 </body>
 </html>
