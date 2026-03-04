@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Admin 3.0 - São Luiz</title>
+    <title>Painel Admin 3.1 - São Luiz</title>
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; }
         #loginAdmin { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #1c2b36; }
@@ -72,7 +72,7 @@
             <form id="formCadastro">
                 <input type="text" id="cadNome" required placeholder="Nome Completo" style="width:100%; padding:10px; margin-bottom:10px;">
                 <input type="text" id="cadCpf" required placeholder="CPF (Só números)" style="width:100%; padding:10px; margin-bottom:10px;">
-                <input type="text" id="cadTelefone" required placeholder="WhatsApp (DDD+Nmero)" style="width:100%; padding:10px; margin-bottom:10px;">
+                <input type="text" id="cadTelefone" required placeholder="WhatsApp (DDD+Numero)" style="width:100%; padding:10px; margin-bottom:10px;">
                 <input type="text" id="cadEndereco" required placeholder="Lote / Endereço" style="width:100%; padding:10px; margin-bottom:10px;">
                 <button type="submit" class="btn-acao" style="background:#007bff; width:100%;">Salvar Morador</button>
             </form>
@@ -135,6 +135,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // LOGIN
         window.entrarAdmin = () => {
             if(document.getElementById("senhaAdmin").value === "admin123") {
                 document.getElementById("loginAdmin").style.display = "none";
@@ -142,11 +143,64 @@
             } else { alert("Senha incorreta"); }
         };
 
+        // MUDAR ABA
         window.mudarAba = (id, el) => {
             document.querySelectorAll('.conteudo-aba').forEach(a => a.classList.remove('ativo'));
             document.querySelectorAll('.aba').forEach(a => a.classList.remove('ativa'));
             document.getElementById(id).classList.add('ativo');
             el.classList.add('ativa');
+        };
+
+        // --- CÓDIGO CORRIGIDO QUE TINHA SUMIDO: CADASTRAR FAMÍLIA ---
+        document.getElementById("formCadastro").addEventListener("submit", async (e) => {
+            e.preventDefault(); // Impede a página de recarregar
+            const btn = document.querySelector("#formCadastro button");
+            btn.innerText = "Salvando no banco de dados...";
+            btn.disabled = true;
+
+            try {
+                await addDoc(collection(db, "familias"), {
+                    nome: document.getElementById("cadNome").value,
+                    cpf: document.getElementById("cadCpf").value,
+                    telefone: document.getElementById("cadTelefone").value,
+                    lote_endereco: document.getElementById("cadEndereco").value,
+                    senha: "123456",
+                    status_ativo: true
+                });
+                alert("Família cadastrada com sucesso!");
+                document.getElementById("formCadastro").reset();
+            } catch (error) {
+                console.error("Erro ao cadastrar:", error);
+                alert("Erro ao cadastrar. Verifique a internet.");
+            } finally {
+                btn.innerText = "Salvar Morador";
+                btn.disabled = false;
+            }
+        });
+
+        // --- CÓDIGO CORRIGIDO QUE TINHA SUMIDO: VER A LISTA ---
+        window.carregarFamilias = async () => {
+            const divTabela = document.getElementById("tabelaLista");
+            divTabela.innerHTML = "Buscando dados no Firebase...";
+            
+            try {
+                const snap = await getDocs(collection(db, "familias"));
+                let html = `
+                    <table class="tabela-lote">
+                        <thead>
+                            <tr><th>Nome</th><th>CPF</th><th>Lote</th><th>Telefone</th></tr>
+                        </thead>
+                        <tbody>
+                `;
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    html += `<tr><td>${d.nome}</td><td>${d.cpf}</td><td>${d.lote_endereco}</td><td>${d.telefone}</td></tr>`;
+                });
+                html += "</tbody></table>";
+                divTabela.innerHTML = html;
+            } catch (error) {
+                divTabela.innerHTML = "<span style='color:red;'>Erro ao carregar lista.</span>";
+            }
         };
 
         // Carregar Tabela com Lógica do Hidrômetro
@@ -159,7 +213,6 @@
                 let html = "";
                 snap.forEach(doc => {
                     const d = doc.data();
-                    // Colocamos eventos onkeyup para calcular automaticamente
                     html += `
                         <tr id="linha-${doc.id}">
                             <td><strong>${d.nome}</strong><br><small style="color:#666;">Lote: ${d.lote_endereco}</small></td>
@@ -185,7 +238,6 @@
             const ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0;
             const atu = parseFloat(document.getElementById(`atu-${id}`).value) || 0;
             
-            // Só calcula se a atual for maior que a anterior e não for zero
             let consumo = 0;
             if (atu >= ant && atu > 0) {
                 consumo = atu - ant;
@@ -193,7 +245,7 @@
             
             document.getElementById(`cons-${id}`).innerText = consumo;
 
-            // Regras de Preço da Água São Luiz
+            // Regras de Preço
             let valor = 0;
             if (consumo > 0) {
                 if (consumo <= 10) {
@@ -211,9 +263,7 @@
 
         // Gerar Faturas Prontas
         window.gerarFaturasEmLote = async () => {
-            // Pega todos os inputs ocultos que guardam o valor
             const inputs = document.querySelectorAll('input[id^="val-hidden-"]');
-            // Filtra só as linhas que o valor for maior que 0
             const linhasParaProcessar = Array.from(inputs).filter(i => parseFloat(i.value) > 0);
             const total = linhasParaProcessar.length;
             
@@ -248,7 +298,6 @@
                     const pix = await res.json();
 
                     if(pix.sucesso) {
-                        // SALVA O HISTÓRICO COMPLETO NO FIREBASE
                         await addDoc(collection(db, "faturas"), {
                             familia_id: id, 
                             mes_referencia: mes,
@@ -262,7 +311,6 @@
                             data_lancamento: new Date().toISOString()
                         });
 
-                        // Mensagem de WhatsApp isolando o código
                         const texto = `Olá ${nome}! Segue a fatura da Água de ${mes}.\n\n💧 Consumo: ${consumo_calc}m³\n💰 Valor: R$ ${valor.toFixed(2)}\n📅 Vencimento: ${venc.split('-').reverse().join('/')}\n\n*Pix Copia e Cola (toque e segure abaixo para copiar):*\n\n${pix.copiaECola}`;
                         const link = `https://wa.me/${tel}?text=${encodeURIComponent(texto)}`;
 
@@ -271,7 +319,6 @@
                             <button onclick="window.open('${link}', '_blank')" class="btn-acao btn-zap-lote" style="margin-top:5px;">📲 Enviar Zap</button>
                         `;
                         
-                        // Bloqueia as caixas para não editar mais
                         document.getElementById(`ant-${id}`).disabled = true;
                         document.getElementById(`atu-${id}`).disabled = true;
                         document.getElementById(`linha-${id}`).style.backgroundColor = "#e8f5e9";
@@ -291,4 +338,5 @@
     </script>
 </body>
 </html>
+
 
