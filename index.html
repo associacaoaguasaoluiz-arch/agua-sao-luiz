@@ -7,31 +7,24 @@
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; color: #333; }
         
-        /* CABEÇALHO */
         header { background-color: #0056b3; color: white; padding: 20px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         header h1 { margin: 0; font-size: 24px; }
         header p { margin: 5px 0 0 0; font-size: 14px; opacity: 0.9; }
 
-        /* CONTAINER PRINCIPAL */
         .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
         
-        /* TELA DE LOGIN (Substitui o index.html antigo) */
         #telaLogin { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; margin-top: 50px; }
         #telaLogin input { width: 100%; max-width: 300px; padding: 12px; margin: 15px 0; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; text-align: center; }
         .btn-principal { background-color: #28a745; color: white; padding: 12px 20px; border: none; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; width: 100%; max-width: 300px; }
-        .btn-principal:hover { background-color: #218838; }
-
-        /* PAINEL INTERNO */
+        
         #painelInterno { display: none; }
         .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
         .card h2 { margin-top: 0; color: #0056b3; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; font-size: 20px; }
 
-        /* FATURA ATUAL DESTAQUE */
         .fatura-alerta { background: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; border-radius: 6px; margin-bottom: 20px; display: none; }
         .pix-box { background: #f8f9fa; border: 1px dashed #ccc; padding: 15px; text-align: center; margin-top: 15px; border-radius: 6px; }
         .pix-box textarea { width: 100%; height: 60px; font-size: 12px; margin-top: 10px; padding: 5px; box-sizing: border-box; resize: none; border-radius: 4px; border: 1px solid #ccc; }
 
-        /* TABELA DE HISTÓRICO */
         .tabela-responsiva { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 600px; }
         th { background-color: #f8f9fa; padding: 12px; text-align: left; font-size: 14px; color: #555; border-bottom: 2px solid #ddd; }
@@ -40,13 +33,11 @@
         .status-pendente { color: #d9534f; font-weight: bold; }
         .status-pago { color: #28a745; font-weight: bold; }
 
-        /* BOTÃO PDF */
-        .btn-pdf { background-color: #17a2b8; color: white; padding: 10px 15px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; float: right; }
+        .btn-pdf { background-color: #17a2b8; color: white; padding: 10px 15px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; float: right; }
 
-        /* === REGRAS PARA QUANDO CLICAR EM IMPRIMIR / PDF === */
         @media print {
             body { background: white; }
-            .no-print { display: none !important; } /* Esconde botões, login, etc */
+            .no-print { display: none !important; }
             .card { box-shadow: none; border: 1px solid #ccc; margin-bottom: 10px; }
             header { background: white; color: black; border-bottom: 2px solid black; }
         }
@@ -60,7 +51,6 @@
     </header>
 
     <div class="container">
-        <!-- TELA DE LOGIN INTEGRADA -->
         <div id="telaLogin" class="no-print">
             <h2>Bem-vindo!</h2>
             <p style="color: #666;">Digite o seu CPF para acessar suas faturas e histórico de consumo.</p>
@@ -70,7 +60,6 @@
             <p id="erroLogin" style="color: red; display: none; font-weight: bold; margin-top: 15px;">CPF não encontrado.</p>
         </div>
 
-        <!-- O PAINEL QUE APARECE APÓS LOGAR -->
         <div id="painelInterno">
             
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;" class="no-print">
@@ -78,18 +67,20 @@
                 <button class="btn-pdf" onclick="window.print()">🖨️ Salvar Extrato PDF</button>
             </div>
 
-            <!-- QUADRO DE FATURA PENDENTE (Se houver) -->
             <div id="avisoFaturaAberta" class="fatura-alerta no-print">
                 <h3 style="margin-top:0; color: #856404;">⚠️ Você tem uma fatura em aberto!</h3>
-                <p>Referência: <strong id="refAberta">--</strong> | Valor: <strong id="valAberta">--</strong></p>
+                <p>Referência: <strong id="refAberta">--</strong> | Valor Total: <strong id="valAberta">--</strong></p>
+                
                 <div class="pix-box">
-                    <strong>Pague via PIX:</strong><br>
-                    <p style="font-size: 12px; color: #666; margin: 5px 0;">Copie o código abaixo e cole no seu banco (Pix Copia e Cola).</p>
+                    <strong>📱 Pague escaneando o QR Code:</strong><br>
+                    <!-- IMAGEM DO QR CODE ADICIONADA AQUI -->
+                    <img id="imgQrCodeAberta" src="" style="width: 200px; height: 200px; margin: 15px auto; display: block; border: 2px solid #ddd; border-radius: 8px;">
+                    
+                    <p style="font-size: 14px; margin-top: 15px;"><strong>Ou use a opção Pix Copia e Cola:</strong></p>
                     <textarea id="codigoPixAberta" readonly></textarea>
                 </div>
             </div>
 
-            <!-- HISTÓRICO DE CONSUMO -->
             <div class="card">
                 <h2>Histórico de Consumo e Faturas</h2>
                 <div class="tabela-responsiva">
@@ -100,7 +91,7 @@
                                 <th>Leit. Anterior</th>
                                 <th>Leit. Atual</th>
                                 <th>Consumo</th>
-                                <th>Valor</th>
+                                <th>Valor Total</th>
                                 <th>Vencimento</th>
                                 <th>Status</th>
                             </tr>
@@ -129,69 +120,51 @@
             measurementId: "G-K300HKHY2J"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        const db = getFirestore(initializeApp(firebaseConfig));
 
         window.acessarPainel = async () => {
             const btn = document.querySelector(".btn-principal");
             const erro = document.getElementById("erroLogin");
-            let cpfDigitado = document.getElementById("cpfLogin").value.replace(/\D/g, ''); // limpa pontos
+            let cpfDigitado = document.getElementById("cpfLogin").value.replace(/\D/g, '');
             
             if(!cpfDigitado) return alert("Digite o CPF!");
 
-            btn.innerText = "Buscando...";
-            btn.disabled = true;
-            erro.style.display = "none";
+            btn.innerText = "Buscando..."; btn.disabled = true; erro.style.display = "none";
 
             try {
-                // 1. Acha quem é a família dona desse CPF
                 const q = query(collection(db, "familias"), where("cpf", "==", cpfDigitado));
                 const querySnapshot = await getDocs(q);
                 
                 if (querySnapshot.empty) {
-                    erro.style.display = "block";
-                    btn.innerText = "Acessar Minhas Contas";
-                    btn.disabled = false;
+                    erro.style.display = "block"; btn.innerText = "Acessar Minhas Contas"; btn.disabled = false;
                     return;
                 }
 
-                let familiaId = "";
-                let familiaNome = "";
-                querySnapshot.forEach((doc) => {
-                    familiaId = doc.id;
-                    familiaNome = doc.data().nome;
-                });
+                let familiaId = ""; let familiaNome = "";
+                querySnapshot.forEach((doc) => { familiaId = doc.id; familiaNome = doc.data().nome; });
 
-                // 2. Muda a tela
                 document.getElementById("telaLogin").style.display = "none";
                 document.getElementById("painelInterno").style.display = "block";
                 document.getElementById("nomeMorador").innerText = `Olá, ${familiaNome}`;
 
-                // 3. Busca o histórico de contas dessa família
                 buscarFaturas(familiaId);
-
             } catch (error) {
-                console.error(error);
-                alert("Erro ao conectar no banco de dados.");
-                btn.innerText = "Acessar Minhas Contas";
-                btn.disabled = false;
+                alert("Erro de conexão."); btn.innerText = "Acessar"; btn.disabled = false;
             }
         };
 
         async function buscarFaturas(familiaId) {
             const corpo = document.getElementById("corpoHistorico");
-            
             try {
                 const qFaturas = query(collection(db, "faturas"), where("familia_id", "==", familiaId));
                 const faturasSnap = await getDocs(qFaturas);
                 
                 if (faturasSnap.empty) {
-                    corpo.innerHTML = "<tr><td colspan='7' style='text-align:center;'>Nenhum histórico encontrado.</td></tr>";
+                    corpo.innerHTML = "<tr><td colspan='7' style='text-align:center;'>Nenhum histórico.</td></tr>";
                     return;
                 }
 
-                let htmlHistorico = "";
-                let temPendente = false;
+                let htmlHistorico = ""; let temPendente = false;
 
                 faturasSnap.forEach((doc) => {
                     const f = doc.data();
@@ -199,41 +172,36 @@
                     const statusTexto = f.status === 'pendente' ? 'Aberto' : 'Pago';
                     const valorFormatado = parseFloat(f.valor_total).toFixed(2).replace('.', ',');
                     
-                    // Tratamento para faturas antigas que não tinham leitura
-                    const leitAnt = f.leitura_anterior !== undefined ? f.leitura_anterior : '--';
-                    const leitAtu = f.leitura_atual !== undefined ? f.leitura_atual : '--';
-                    const cons = f.consumo_m3 !== undefined ? f.consumo_m3 + ' m³' : '--';
-
                     htmlHistorico += `
                         <tr>
                             <td><strong>${f.mes_referencia}</strong></td>
-                            <td>${leitAnt}</td>
-                            <td>${leitAtu}</td>
-                            <td>${cons}</td>
+                            <td>${f.leitura_anterior || '--'}</td>
+                            <td>${f.leitura_atual || '--'}</td>
+                            <td>${f.consumo_m3 !== undefined ? f.consumo_m3 + ' m³' : '--'}</td>
                             <td>R$ ${valorFormatado}</td>
                             <td>${f.vencimento.split('-').reverse().join('/')}</td>
                             <td class="${statusClass}">${statusTexto}</td>
                         </tr>
                     `;
 
-                    // Se tiver uma fatura pendente, joga pro topo na caixa de alerta
                     if(f.status === 'pendente' && !temPendente) {
                         temPendente = true;
                         document.getElementById("avisoFaturaAberta").style.display = "block";
                         document.getElementById("refAberta").innerText = f.mes_referencia;
                         document.getElementById("valAberta").innerText = `R$ ${valorFormatado}`;
                         document.getElementById("codigoPixAberta").value = f.pix_copia_cola;
+                        
+                        // MÁGICA: Puxa o QR Code do banco de dados e exibe a imagem
+                        if(f.qr_code_base64) {
+                            document.getElementById("imgQrCodeAberta").src = "data:image/jpeg;base64," + f.qr_code_base64;
+                        }
                     }
                 });
-
                 corpo.innerHTML = htmlHistorico;
-
-            } catch (error) {
-                console.error(error);
-                corpo.innerHTML = "<tr><td colspan='7' style='text-align:center; color:red;'>Erro ao carregar histórico.</td></tr>";
-            }
+            } catch (error) { corpo.innerHTML = "<tr><td colspan='7' style='color:red;'>Erro.</td></tr>"; }
         }
     </script>
 </body>
 </html>
+
 
