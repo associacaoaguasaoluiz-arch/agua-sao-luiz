@@ -4,30 +4,88 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>App Gestão - Água São Luiz</title>
+    
     <!-- Tailwind CSS para design moderno e responsivo -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <style>
-        body { font-family: 'Inter', system-ui, sans-serif; background-color: #f3f4f6; -webkit-tap-highlight-color: transparent; }
+        /* =========================================
+           ESTILOS BASE E UTILITÁRIOS
+           ========================================= */
+        body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background-color: #f3f4f6; 
+            -webkit-tap-highlight-color: transparent; 
+        }
         
-        /* Loading Overlay */
-        .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
-        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
         /* Esconder telas */
-        .tela-oculta { display: none !important; }
-        
-        /* Modal */
-        .modal-fundo { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; justify-content: center; align-items: center; padding: 1rem; }
+        .tela-oculta { 
+            display: none !important; 
+        }
 
-        /* Esconder a barra de rolagem das tabelas mas permitir rolar */
+        /* =========================================
+           OVERLAYS E MODAIS
+           ========================================= */
+        .loading-overlay { 
+            display: none; 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(255,255,255,0.9); 
+            z-index: 9999; 
+            justify-content: center; 
+            align-items: center; 
+            flex-direction: column; 
+        }
+        
+        .spinner { 
+            border: 4px solid #f3f3f3; 
+            border-top: 4px solid #3b82f6; 
+            border-radius: 50%; 
+            width: 40px; 
+            height: 40px; 
+            animation: spin 1s linear infinite; 
+        }
+        
+        @keyframes spin { 
+            0% { transform: rotate(0deg); } 
+            100% { transform: rotate(360deg); } 
+        }
+        
+        .modal-fundo { 
+            display: none; 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0,0,0,0.6); 
+            z-index: 100; 
+            justify-content: center; 
+            align-items: center; 
+            padding: 1rem; 
+        }
+
+        /* =========================================
+           TABELAS E ROLAGEM
+           ========================================= */
+        /* Barra de rolagem suave */
         .scroll-suave::-webkit-scrollbar { height: 6px; }
         .scroll-suave::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
         .scroll-suave::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         
-        /* Espaço extra no final para a barra de menu do celular não cobrir o conteúdo */
         .conteudo-principal { padding-bottom: 80px; }
         @media (min-width: 768px) { .conteudo-principal { padding-bottom: 24px; } }
+
+        /* Mágica da Coluna Fixa para o nome não sumir ao rolar a tabela */
+        .coluna-fixa {
+            position: sticky;
+            left: 0;
+            z-index: 10;
+            background-color: white; 
+            box-shadow: 2px 0 5px -2px rgba(0,0,0,0.1); 
+            border-right: 1px solid #e5e7eb;
+        }
+        
+        th.coluna-fixa { 
+            background-color: #eff6ff; 
+        }
     </style>
 </head>
 <body class="text-gray-800 h-screen flex overflow-hidden">
@@ -44,8 +102,13 @@
             <div class="text-5xl mb-4">💧</div>
             <h2 class="text-2xl font-bold mb-2">Água São Luiz</h2>
             <p class="text-gray-500 mb-6 text-sm">Acesso do Administrador</p>
+            
             <input type="password" id="senhaAdmin" placeholder="Digite a senha" class="w-full p-4 border border-gray-300 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 text-center text-lg">
-            <button onclick="entrarAdmin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition text-lg shadow-lg shadow-blue-500/30">Entrar</button>
+            
+            <button onclick="entrarAdmin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition text-lg shadow-lg shadow-blue-500/30">
+                Entrar
+            </button>
+            
             <p id="erroLogin" class="text-red-500 text-sm font-bold mt-4 hidden">🚨 Senha Incorreta!</p>
         </div>
     </div>
@@ -61,14 +124,22 @@
                 <p class="text-xs text-slate-400 mt-1">Gestão de Saneamento</p>
             </div>
             <nav class="flex-1 p-4 space-y-3">
-                <button onclick="mudarAba('aba-moradores', this)" class="menu-btn w-full flex items-center p-4 rounded-xl bg-blue-600 text-white font-bold transition"><span class="text-2xl w-10 text-left">👥</span> Moradores</button>
-                <button onclick="mudarAba('aba-leituras', this); carregarLoteFaturas();" class="menu-btn w-full flex items-center p-4 rounded-xl hover:bg-slate-800 text-slate-300 font-bold transition"><span class="text-2xl w-10 text-left">📝</span> Lançar Leituras</button>
-                <button onclick="mudarAba('aba-recebimentos', this); carregarPagamentos();" class="menu-btn w-full flex items-center p-4 rounded-xl hover:bg-slate-800 text-slate-300 font-bold transition"><span class="text-2xl w-10 text-left">✅</span> Recebimentos</button>
-                <button onclick="mudarAba('aba-inadimplentes', this); carregarInadimplentes();" class="menu-btn w-full flex items-center p-4 rounded-xl hover:bg-slate-800 text-slate-300 font-bold transition"><span class="text-2xl w-10 text-left">🚨</span> Inadimplentes</button>
+                <button onclick="mudarAba('aba-moradores', this)" class="menu-btn w-full flex items-center p-4 rounded-xl bg-blue-600 text-white font-bold transition">
+                    <span class="text-2xl w-10 text-left">👥</span> Moradores
+                </button>
+                <button onclick="mudarAba('aba-leituras', this); carregarLoteFaturas();" class="menu-btn w-full flex items-center p-4 rounded-xl hover:bg-slate-800 text-slate-300 font-bold transition">
+                    <span class="text-2xl w-10 text-left">📝</span> Lançar Leituras
+                </button>
+                <button onclick="mudarAba('aba-recebimentos', this); carregarPagamentos();" class="menu-btn w-full flex items-center p-4 rounded-xl hover:bg-slate-800 text-slate-300 font-bold transition">
+                    <span class="text-2xl w-10 text-left">✅</span> Recebimentos
+                </button>
+                <button onclick="mudarAba('aba-inadimplentes', this); carregarInadimplentes();" class="menu-btn w-full flex items-center p-4 rounded-xl hover:bg-slate-800 text-slate-300 font-bold transition">
+                    <span class="text-2xl w-10 text-left">🚨</span> Inadimplentes
+                </button>
             </nav>
         </aside>
 
-        <!-- CONTEÚDO PRINCIPAL -->
+        <!-- CONTEÚDO PRINCIPAL (ONDE AS TELAS APARECEM) -->
         <main class="flex-1 overflow-y-auto bg-gray-50 conteudo-principal w-full">
             
             <!-- HEADER MOBILE -->
@@ -80,22 +151,26 @@
 
                 <!-- ================= ABA MORADORES ================= -->
                 <div id="aba-moradores" class="conteudo-aba">
+                    
                     <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
                         <h2 class="text-2xl font-bold text-gray-800">👥 Moradores</h2>
-                        <button onclick="abrirModalCadastro()" class="bg-blue-600 active:bg-blue-800 text-white px-5 py-3 rounded-xl font-bold shadow-lg shadow-blue-500/30 flex justify-center items-center"><span class="text-xl mr-2">➕</span> Novo Cadastro</button>
+                        <button onclick="abrirModalCadastro()" class="bg-blue-600 active:bg-blue-800 text-white px-5 py-3 rounded-xl font-bold shadow-lg shadow-blue-500/30">
+                            ➕ Novo Cadastro
+                        </button>
                     </div>
 
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                        
+                        <!-- Barra de Busca -->
                         <div class="p-4 border-b border-gray-100">
-                            <div class="relative">
-                                <span class="absolute left-4 top-3 text-lg">🔍</span>
-                                <input type="text" id="buscaMorador" onkeyup="filtrarTabela('buscaMorador', 'tabelaMoradores')" placeholder="Buscar por nome ou lote..." class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition outline-none">
-                            </div>
+                            <input type="text" id="buscaMorador" onkeyup="filtrarTabela('buscaMorador', 'tabelaMoradores')" placeholder="🔍 Buscar morador por nome ou lote..." class="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
+                        
+                        <!-- Tabela Responsiva -->
                         <div class="overflow-x-auto scroll-suave w-full">
-                            <table class="w-full text-left border-collapse whitespace-nowrap min-w-max">
+                            <table class="w-full text-left whitespace-nowrap min-w-max">
                                 <thead>
-                                    <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
+                                    <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider border-b">
                                         <th class="p-4 font-bold">Responsável / Lote</th>
                                         <th class="p-4 font-bold">CPF</th>
                                         <th class="p-4 font-bold">WhatsApp</th>
@@ -107,36 +182,42 @@
                                 </tbody>
                             </table>
                         </div>
+
                     </div>
                 </div>
 
                 <!-- ================= ABA LANÇAR LEITURAS ================= -->
                 <div id="aba-leituras" class="conteudo-aba tela-oculta">
+                    
                     <div class="mb-6">
-                        <h2 class="text-2xl font-bold text-gray-800 mb-2">📝 Lançamento do Mês</h2>
-                        <p class="text-gray-500 text-xs sm:text-sm">R$25 (até 10m³), R$50 (até 30m³), R$100 (>30m³). Multa de R$25 automática.</p>
+                        <h2 class="text-2xl font-bold text-gray-800">📝 Lançamento do Mês</h2>
+                        <p class="text-gray-500 text-xs sm:text-sm mt-1">R$25 (até 10m³), R$50 (até 30m³), R$100 (>30m³). Multa de R$25 automática para quem tem atraso.</p>
                     </div>
 
+                    <!-- Configuração do Lote -->
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 mb-6">
                         <div class="flex flex-col sm:flex-row gap-4 mb-4">
                             <div class="flex-1">
-                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">📅 Referência</label>
-                                <input type="text" id="mesReferencia" value="03/2026" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl font-bold text-center focus:ring-2 focus:ring-blue-500 outline-none">
+                                <label class="block text-xs font-bold text-gray-500 uppercase">📅 Referência do Mês</label>
+                                <input type="text" id="mesReferencia" value="03/2026" class="w-full p-3 mt-1 bg-gray-50 border rounded-xl font-bold text-center focus:ring-2 focus:ring-blue-500">
                             </div>
                             <div class="flex-1">
-                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">⏳ Vencimento</label>
-                                <input type="date" id="dataVencimento" value="2026-03-20" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl font-bold text-center focus:ring-2 focus:ring-blue-500 outline-none">
+                                <label class="block text-xs font-bold text-gray-500 uppercase">⏳ Data de Vencimento</label>
+                                <input type="date" id="dataVencimento" value="2026-03-20" class="w-full p-3 mt-1 bg-gray-50 border rounded-xl font-bold text-center focus:ring-2 focus:ring-blue-500">
                             </div>
                         </div>
-                        <button onclick="gerarFaturasEmLote()" class="w-full bg-green-500 active:bg-green-700 text-white px-6 py-4 rounded-xl font-bold text-lg shadow-lg shadow-green-500/30">🚀 PROCESSAR FATURAS</button>
+                        <button onclick="gerarFaturasEmLote()" class="w-full bg-green-500 text-white px-6 py-4 rounded-xl font-bold text-lg shadow-lg shadow-green-500/30 hover:bg-green-600 transition">
+                            🚀 PROCESSAR FATURAS E GERAR PIX
+                        </button>
                     </div>
 
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <!-- Tabela de Leituras com Coluna Fixa -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative">
                         <div class="overflow-x-auto scroll-suave w-full">
                             <table class="w-full text-left border-collapse whitespace-nowrap min-w-max">
                                 <thead>
-                                    <tr class="bg-blue-50 text-blue-800 text-xs uppercase tracking-wider">
-                                        <th class="p-4 font-bold">Morador</th>
+                                    <tr class="bg-blue-50 text-blue-800 text-xs uppercase tracking-wider border-b border-blue-100">
+                                        <th class="p-4 font-bold coluna-fixa">Morador / Lote</th>
                                         <th class="p-4 font-bold text-center">L. Anterior</th>
                                         <th class="p-4 font-bold text-center">L. Atual</th>
                                         <th class="p-4 font-bold text-center">Consumo</th>
@@ -146,39 +227,31 @@
                                     </tr>
                                 </thead>
                                 <tbody id="corpoTabelaLote" class="text-sm divide-y divide-gray-100">
-                                    <tr><td colspan="7" class="p-8 text-center text-gray-500">Carregando...</td></tr>
+                                    <!-- Conteúdo gerado via JS -->
                                 </tbody>
                             </table>
                         </div>
                     </div>
+
                 </div>
 
                 <!-- ================= ABA RECEBIMENTOS ================= -->
                 <div id="aba-recebimentos" class="conteudo-aba tela-oculta">
-                    <div class="mb-6">
-                        <h2 class="text-2xl font-bold text-green-700">✅ Pagamentos Recebidos</h2>
-                    </div>
-
+                    <h2 class="text-2xl font-bold text-green-700 mb-6">✅ Pagamentos Recebidos</h2>
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                         <div class="p-4 border-b border-gray-100">
-                            <div class="relative">
-                                <span class="absolute left-4 top-3 text-lg">🔍</span>
-                                <input type="text" id="buscaPago" onkeyup="filtrarTabela('buscaPago', 'tabelaPagos')" placeholder="Buscar pagamento..." class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none">
-                            </div>
-                        </div>
                         <div class="overflow-x-auto scroll-suave w-full">
-                            <table class="w-full text-left border-collapse whitespace-nowrap min-w-max">
+                            <table class="w-full text-left whitespace-nowrap min-w-max">
                                 <thead>
-                                    <tr class="bg-green-50 text-green-800 text-xs uppercase tracking-wider">
+                                    <tr class="bg-green-50 text-green-800 text-xs uppercase tracking-wider border-b">
                                         <th class="p-4 font-bold">Data Pag.</th>
                                         <th class="p-4 font-bold">Morador</th>
-                                        <th class="p-4 font-bold">Mês</th>
+                                        <th class="p-4 font-bold">Mês Ref.</th>
                                         <th class="p-4 font-bold text-right">Valor R$</th>
                                         <th class="p-4 font-bold text-center">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tabelaPagos" class="text-sm divide-y divide-gray-100">
-                                    <tr><td colspan="5" class="p-8 text-center">Buscando...</td></tr>
+                                    <!-- Conteúdo gerado via JS -->
                                 </tbody>
                             </table>
                         </div>
@@ -187,23 +260,21 @@
 
                 <!-- ================= ABA INADIMPLENTES ================= -->
                 <div id="aba-inadimplentes" class="conteudo-aba tela-oculta">
-                    <div class="mb-6">
-                        <h2 class="text-2xl font-bold text-red-600">🚨 Faturas Atrasadas</h2>
-                    </div>
-
+                    <h2 class="text-2xl font-bold text-red-600 mb-6">🚨 Faturas Atrasadas</h2>
                     <div class="bg-white rounded-2xl shadow-sm border border-red-100 overflow-hidden">
                         <div class="overflow-x-auto scroll-suave w-full">
-                            <table class="w-full text-left border-collapse whitespace-nowrap min-w-max">
+                            <table class="w-full text-left whitespace-nowrap min-w-max">
                                 <thead>
-                                    <tr class="bg-red-50 text-red-800 text-xs uppercase tracking-wider">
+                                    <tr class="bg-red-50 text-red-800 text-xs uppercase tracking-wider border-b">
                                         <th class="p-4 font-bold">Vencimento</th>
                                         <th class="p-4 font-bold">Morador</th>
+                                        <th class="p-4 font-bold">Ref.</th>
                                         <th class="p-4 font-bold text-right">Dívida R$</th>
                                         <th class="p-4 font-bold text-center">Ação Manual</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tabelaAtrasados" class="text-sm divide-y divide-gray-100">
-                                    <tr><td colspan="4" class="p-8 text-center">Buscando...</td></tr>
+                                    <!-- Conteúdo gerado via JS -->
                                 </tbody>
                             </table>
                         </div>
@@ -214,7 +285,7 @@
         </main>
 
         <!-- MENU INFERIOR MOBILE (Estilo App) -->
-        <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 flex justify-around items-center z-40 pb-safe">
+        <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t flex justify-around items-center z-40 pb-safe shadow-[0_-5px_10px_rgba(0,0,0,0.05)]">
             <button onclick="mudarAba('aba-moradores', this)" class="menu-btn w-full p-2 flex flex-col items-center text-blue-600 font-bold transition">
                 <span class="text-2xl mb-1">👥</span>
                 <span class="text-[10px] uppercase tracking-wider">Moradores</span>
@@ -232,7 +303,6 @@
                 <span class="text-[10px] uppercase tracking-wider">Atrasos</span>
             </button>
         </nav>
-
     </div>
 
     <!-- MODAL DE CADASTRO / EDIÇÃO -->
@@ -242,37 +312,46 @@
                 <h3 id="tituloModal" class="font-bold text-lg">📝 Novo Cadastro</h3>
                 <button onclick="fecharModal()" class="text-gray-400 hover:text-white text-2xl px-2">×</button>
             </div>
+            
             <form id="formMorador" class="p-6">
                 <input type="hidden" id="modId">
+                
                 <div class="mb-4">
                     <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Nome Completo</label>
                     <input type="text" id="modNome" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
+                
                 <div class="mb-4">
                     <label class="block text-xs font-bold text-gray-500 uppercase mb-1">CPF (Apenas números)</label>
                     <input type="tel" id="modCpf" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
+                
                 <div class="mb-4">
                     <label class="block text-xs font-bold text-gray-500 uppercase mb-1">WhatsApp (DDD+Num)</label>
                     <input type="tel" id="modTel" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
+                
                 <div class="mb-8">
                     <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Lote / Endereço</label>
                     <input type="text" id="modLote" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
+                
                 <div class="flex gap-3">
                     <button type="button" onclick="fecharModal()" class="flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-xl active:bg-gray-300">Cancelar</button>
-                    <button type="submit" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl active:bg-blue-800 shadow-lg shadow-blue-500/30">Salvar</button>
+                    <button type="submit" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl active:bg-blue-800 shadow-lg shadow-blue-500/30">Salvar Dados</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Scripts do Firebase e Lógica -->
+    <!-- =========================================
+         SCRIPTS - LÓGICA DO SISTEMA
+         ========================================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
+        // CHAVES DO FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ",
             authDomain: "sistema-agua-sao-luiz.firebaseapp.com",
@@ -282,13 +361,11 @@
             appId: "1:815174423700:web:d1ffa58c09738c29a99081",
             measurementId: "G-K300HKHY2J"
         };
+        const db = getFirestore(initializeApp(firebaseConfig));
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // --- SISTEMA DE NAVEGAÇÃO ---
+        // --- SISTEMA DE LOGIN E NAVEGAÇÃO ---
         window.entrarAdmin = () => {
-            if(document.getElementById("senhaAdmin").value === "admin123") {
+            if (document.getElementById("senhaAdmin").value === "admin123") {
                 document.getElementById("loginAdmin").style.display = "none";
                 document.getElementById("painelAdmin").classList.remove('tela-oculta');
                 carregarFamilias();
@@ -298,41 +375,55 @@
         };
 
         window.mudarAba = (id, elemento) => {
-            document.querySelectorAll('.conteudo-aba').forEach(a => a.classList.add('tela-oculta'));
+            // Esconde todas as abas
+            document.querySelectorAll('.conteudo-aba').forEach(aba => {
+                aba.classList.add('tela-oculta');
+            });
+            
+            // Remove o estilo de "ativo" de todos os botões de menu
             document.querySelectorAll('.menu-btn').forEach(btn => {
-                // Remove cores ativas de Desktop e Mobile
                 btn.classList.remove('bg-blue-600', 'text-white', 'text-blue-600');
-                btn.classList.add('text-slate-300'); // Desktop
-                if(btn.parentElement.tagName === 'NAV' && btn.parentElement.classList.contains('md:hidden')){
+                btn.classList.add('text-slate-300'); // Cor padrão Desktop
+                
+                // Trata especificamente a barra de baixo do celular
+                if (btn.parentElement.tagName === 'NAV' && btn.parentElement.classList.contains('md:hidden')) {
                      btn.classList.remove('text-slate-300');
-                     btn.classList.add('text-gray-400'); // Mobile inativo
+                     btn.classList.add('text-gray-400'); // Cor padrão Mobile
                 }
             });
+            
+            // Mostra a aba selecionada
             document.getElementById(id).classList.remove('tela-oculta');
             
-            // Ativa o botão clicado
-            if(elemento) {
-                if(elemento.parentElement.tagName === 'NAV' && elemento.parentElement.classList.contains('md:hidden')) {
+            // Pinta o botão clicado de azul
+            if (elemento) {
+                if (elemento.parentElement.tagName === 'NAV' && elemento.parentElement.classList.contains('md:hidden')) {
                     elemento.classList.remove('text-gray-400');
-                    elemento.classList.add('text-blue-600'); // Mobile Ativo
+                    elemento.classList.add('text-blue-600'); // Ativo Mobile
                 } else {
                     elemento.classList.remove('text-slate-300', 'hover:bg-slate-800');
-                    elemento.classList.add('bg-blue-600', 'text-white'); // Desktop Ativo
+                    elemento.classList.add('bg-blue-600', 'text-white'); // Ativo Desktop
                 }
             }
         };
 
-        // --- BUSCA GERAL NAS TABELAS ---
+        // --- FUNÇÃO DE BUSCA NAS TABELAS ---
         window.filtrarTabela = (inputId, tabelaId) => {
             const filtro = document.getElementById(inputId).value.toLowerCase();
             const linhas = document.getElementById(tabelaId).getElementsByTagName('tr');
+            
             for (let i = 0; i < linhas.length; i++) {
                 const textoLinha = linhas[i].innerText.toLowerCase();
-                linhas[i].style.display = textoLinha.includes(filtro) ? "" : "none";
+                // Se a linha tem o texto digitado, mostra. Se não, oculta.
+                if (textoLinha.includes(filtro)) {
+                    linhas[i].style.display = "";
+                } else {
+                    linhas[i].style.display = "none";
+                }
             }
         };
 
-        // --- MODAL ---
+        // --- CONTROLES DO MODAL (NOVO CADASTRO E EDIÇÃO) ---
         window.abrirModalCadastro = () => {
             document.getElementById("formMorador").reset();
             document.getElementById("modId").value = "";
@@ -350,11 +441,15 @@
             document.getElementById("modalMorador").style.display = "flex";
         };
 
-        window.fecharModal = () => { document.getElementById("modalMorador").style.display = "none"; };
+        window.fecharModal = () => { 
+            document.getElementById("modalMorador").style.display = "none"; 
+        };
 
+        // SALVAR DADOS DO MORADOR NO FIREBASE
         document.getElementById("formMorador").addEventListener("submit", async (e) => {
             e.preventDefault();
             mostrarLoading("Salvando...");
+            
             const id = document.getElementById("modId").value;
             const dados = {
                 nome: document.getElementById("modNome").value,
@@ -362,26 +457,38 @@
                 telefone: document.getElementById("modTel").value,
                 lote_endereco: document.getElementById("modLote").value
             };
+            
             try {
-                if(id) { await updateDoc(doc(db, "familias", id), dados); } 
-                else { dados.senha = "123456"; dados.status_ativo = true; await addDoc(collection(db, "familias"), dados); }
+                if (id) { 
+                    // Se tem ID, é porque estamos Editando
+                    await updateDoc(doc(db, "familias", id), dados); 
+                } else { 
+                    // Se não tem ID, é um Novo Morador
+                    dados.senha = "123456"; 
+                    dados.status_ativo = true; 
+                    await addDoc(collection(db, "familias"), dados); 
+                }
                 fecharModal();
-                carregarFamilias();
-            } catch (error) { alert("Erro ao salvar."); }
+                carregarFamilias(); // Atualiza a lista na tela
+            } catch (error) { 
+                alert("Erro ao salvar."); 
+            }
             esconderLoading();
         });
 
-        // --- ABA 1: MORADORES ---
+        // --- ABA 1: CARREGAR LISTA DE MORADORES ---
         window.carregarFamilias = async () => {
             const tbody = document.getElementById("tabelaMoradores");
             tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center text-gray-500'>Buscando...</td></tr>";
+            
             try {
                 const snap = await getDocs(collection(db, "familias"));
                 let html = "";
+                
                 snap.forEach(doc => {
                     const d = doc.data();
                     html += `
-                        <tr class="hover:bg-blue-50 transition">
+                        <tr class="hover:bg-blue-50 transition border-b border-gray-100">
                             <td class="p-4">
                                 <div class="font-bold text-gray-800">${d.nome}</div>
                                 <div class="text-xs text-gray-500 mt-1 flex items-center">🏠 ${d.lote_endereco}</div>
@@ -389,100 +496,155 @@
                             <td class="p-4 text-gray-600 font-mono text-sm">${d.cpf}</td>
                             <td class="p-4 text-gray-600 font-mono text-sm">${d.telefone}</td>
                             <td class="p-4 text-center">
-                                <button onclick="abrirModalEdicao('${doc.id}', '${d.nome}', '${d.cpf}', '${d.telefone}', '${d.lote_endereco}')" class="text-blue-600 bg-blue-100 hover:bg-blue-200 font-bold px-3 py-2 rounded-lg text-sm">Editar</button>
+                                <button onclick="abrirModalEdicao('${doc.id}', '${d.nome}', '${d.cpf}', '${d.telefone}', '${d.lote_endereco}')" class="text-blue-600 bg-blue-100 hover:bg-blue-200 font-bold px-4 py-2 rounded-lg text-sm transition">Editar</button>
                             </td>
                         </tr>
                     `;
                 });
+                
                 tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center'>Nenhum cadastro.</td></tr>";
-            } catch (e) { tbody.innerHTML = "<tr><td colspan='4' class='text-red-500 text-center p-8'>Erro ao carregar.</td></tr>"; }
+            } catch (e) { 
+                tbody.innerHTML = "<tr><td colspan='4' class='text-red-500 text-center p-8'>Erro ao carregar do banco de dados.</td></tr>"; 
+            }
         };
 
-        // --- ABA 2: LEITURAS E MULTA ---
+        // --- ABA 2: LANÇAMENTOS, LEITURAS E MULTAS (CÉREBRO DO SISTEMA) ---
         window.carregarLoteFaturas = async () => {
             const corpo = document.getElementById("corpoTabelaLote");
-            corpo.innerHTML = "<tr><td colspan='7' class='p-8 text-center'>Analisando...</td></tr>";
+            corpo.innerHTML = "<tr><td colspan='7' class='p-8 text-center text-gray-500'>Analisando contas, consumos e multas...</td></tr>";
             
             try {
+                // 1. Busca Famílias e Faturas
                 const famSnap = await getDocs(collection(db, "familias"));
                 const fatSnap = await getDocs(collection(db, "faturas"));
+                
                 const todasFaturas = [];
                 fatSnap.forEach(d => todasFaturas.push({ id_fatura: d.id, ...d.data() }));
 
                 let html = "";
-                const hoje = new Date();
+                const hoje = new Date(); 
                 hoje.setHours(0,0,0,0);
 
                 famSnap.forEach(docFam => {
                     const f = docFam.data();
                     const famId = docFam.id;
 
+                    // 2. Lógica da Multa Automática
+                    // Pega todas as faturas pendentes desta família
                     const faturasDestaFam = todasFaturas.filter(fat => fat.familia_id === famId && fat.status === 'pendente');
                     let temMulta = false;
-                    for(let fat of faturasDestaFam) {
+                    
+                    // Verifica se alguma está vencida (Atrasada)
+                    for (let fat of faturasDestaFam) {
                         const dataVenc = new Date(fat.vencimento + "T00:00:00");
-                        if (dataVenc < hoje) { temMulta = true; break; }
+                        if (dataVenc < hoje) { 
+                            temMulta = true; 
+                            break; 
+                        }
                     }
 
+                    // Define o valor da multa
                     const valorMulta = temMulta ? 25.00 : 0.00;
-                    const badgeMulta = temMulta ? `<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase ml-2">Atraso</span>` : ``;
+                    const badgeMulta = temMulta ? `<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase ml-2">Atraso Detectado</span>` : ``;
 
+                    // 3. Monta a Linha da Tabela
                     html += `
-                        <tr id="linha-${famId}" class="hover:bg-blue-50/50">
-                            <td class="p-3">
+                        <tr id="linha-${famId}" class="hover:bg-blue-50/50 transition">
+                            
+                            <!-- COLUNA FIXA (Não some ao rolar pra esquerda no celular) -->
+                            <td class="p-3 coluna-fixa">
                                 <div class="font-bold text-gray-800">${f.nome}</div>
                                 <div class="text-xs text-gray-500 mt-0.5">Lote: ${f.lote_endereco} ${badgeMulta}</div>
                             </td>
-                            <td class="p-3 text-center"><input type="number" id="ant-${famId}" onkeyup="calcularLinha('${famId}', ${valorMulta})" class="w-20 p-2 border border-gray-300 rounded-lg text-center focus:ring-2 focus:ring-blue-500 outline-none" placeholder="0"></td>
-                            <td class="p-3 text-center"><input type="number" id="atu-${famId}" onkeyup="calcularLinha('${famId}', ${valorMulta})" class="w-20 p-2 border-2 border-blue-400 bg-blue-50 rounded-lg text-center font-bold text-blue-800 focus:ring-2 focus:ring-blue-600 outline-none shadow-sm" placeholder="0"></td>
-                            <td class="p-3 text-center font-bold text-blue-600 text-lg"><span id="cons-${famId}">0</span><span class="text-xs font-normal">m³</span></td>
-                            <td class="p-3 text-right text-red-500 font-bold text-sm">R$ ${valorMulta.toFixed(2).replace('.',',')}</td>
-                            <td class="p-3 text-right font-black text-green-600 text-lg">
-                                <span class="text-xs font-normal">R$</span> <span id="valTotal-${famId}">0,00</span>
+                            
+                            <!-- Inputs de Leitura -->
+                            <td class="p-3 text-center">
+                                <input type="number" id="ant-${famId}" onkeyup="calcularLinha('${famId}', ${valorMulta})" class="w-20 p-2 border border-gray-300 rounded-lg text-center outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                            </td>
+                            <td class="p-3 text-center">
+                                <input type="number" id="atu-${famId}" onkeyup="calcularLinha('${famId}', ${valorMulta})" class="w-20 p-2 border-2 border-blue-400 bg-blue-50 rounded-lg text-center font-bold text-blue-800 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm">
+                            </td>
+                            
+                            <!-- Exibição Visual -->
+                            <td class="p-3 text-center font-bold text-blue-600 text-lg">
+                                <span id="cons-${famId}">0</span><span class="text-xs font-normal text-blue-400"> m³</span>
+                            </td>
+                            <td class="p-3 text-right text-red-500 font-bold text-sm">
+                                R$ ${valorMulta.toFixed(2).replace('.',',')}
+                            </td>
+                            <td class="p-3 text-right font-black text-green-600 text-xl">
+                                <span class="text-xs font-normal text-green-500">R$</span> <span id="valTotal-${famId}">0,00</span>
+                                
+                                <!-- Campos Escondidos para o Backend -->
                                 <input type="hidden" id="hidden-agua-${famId}" value="0">
                                 <input type="hidden" id="hidden-total-${famId}" value="0" data-multa="${valorMulta}" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}">
                             </td>
-                            <td class="p-3 text-center" id="status-${famId}"><span class="bg-gray-100 text-gray-400 border border-gray-200 px-3 py-1 rounded-full text-xs font-bold uppercase">Aguardando</span></td>
+                            
+                            <!-- Status -->
+                            <td class="p-3 text-center" id="status-${famId}">
+                                <span class="bg-gray-100 text-gray-400 px-3 py-1 rounded-full text-xs font-bold uppercase border border-gray-200">Aguardando</span>
+                            </td>
                         </tr>
                     `;
                 });
                 corpo.innerHTML = html;
-            } catch (error) { corpo.innerHTML = "<tr><td colspan='7' class='text-red-500 p-4'>Erro ao carregar dados.</td></tr>"; }
+            } catch (e) { 
+                corpo.innerHTML = "<tr><td colspan='7' class='text-red-500 p-8 text-center'>Erro ao carregar dados financeiros.</td></tr>"; 
+            }
         };
 
+        // CÁLCULO INSTANTÂNEO DE CONSUMO E FAIXAS DE PREÇO
         window.calcularLinha = (id, multa) => {
             const ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0;
             const atu = parseFloat(document.getElementById(`atu-${id}`).value) || 0;
+            
+            // Só cobra se Atual for maior que Anterior
             let consumo = (atu >= ant && atu > 0) ? atu - ant : 0;
             
+            // Atualiza visualmente o consumo
             document.getElementById(`cons-${id}`).innerText = consumo;
 
             let valorAgua = 0;
+            
+            // Faixas de Preço
             if (consumo > 0) {
-                if (consumo <= 10) valorAgua = 25.00;
-                else if (consumo <= 30) valorAgua = 50.00;
-                else valorAgua = 100.00;
+                if (consumo <= 10) {
+                    valorAgua = 25.00;
+                } else if (consumo <= 30) {
+                    valorAgua = 50.00;
+                } else {
+                    valorAgua = 100.00;
+                }
             }
-
+            
+            // Soma Água + Multa
             const valorTotal = valorAgua > 0 ? valorAgua + multa : 0;
 
+            // Atualiza visualmente o valor
             document.getElementById(`valTotal-${id}`).innerText = valorTotal.toFixed(2).replace('.', ',');
+            
+            // Atualiza os campos escondidos que o botão "Processar" vai ler
             document.getElementById(`hidden-agua-${id}`).value = valorAgua;
             document.getElementById(`hidden-total-${id}`).value = valorTotal;
         };
 
+        // COMUNICAÇÃO COM MERCADO PAGO E SALVAMENTO (EM LOTE)
         window.gerarFaturasEmLote = async () => {
+            // Pega apenas as linhas que o valor total é maior que zero
             const inputs = document.querySelectorAll('input[id^="hidden-total-"]');
             const linhas = Array.from(inputs).filter(i => parseFloat(i.value) > 0);
             
-            if(linhas.length === 0) return alert("Preencha a Leitura Atual de alguém!");
-            if(!confirm(`Deseja processar ${linhas.length} faturas agora?`)) return;
-
-            mostrarLoading("Comunicando com o Banco...");
+            if (linhas.length === 0) {
+                return alert("Você precisa preencher a Leitura Atual de pelo menos um morador!");
+            }
+            
+            mostrarLoading("Comunicando com Mercado Pago e Firebase...");
+            
             const mes = document.getElementById("mesReferencia").value;
             const venc = document.getElementById("dataVencimento").value;
 
-            for(let input of linhas) {
+            // Loop para processar um por um
+            for (let input of linhas) {
                 const total = parseFloat(input.value);
                 const id = input.id.replace('hidden-total-', '');
                 const valorAgua = parseFloat(document.getElementById(`hidden-agua-${id}`).value);
@@ -496,123 +658,187 @@
                 const cons = l_atu - l_ant;
 
                 try {
+                    // 1. Pede o PIX para nossa API na Vercel (Mercado Pago)
                     const res = await fetch("/api/gerar-pix", {
-                        method: "POST",
+                        method: "POST", 
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ valor: total, descricao: `Água ${mes}`, nome, cpf })
                     });
+                    
                     const pix = await res.json();
 
-                    if(pix.sucesso) {
+                    if (pix.sucesso) {
+                        // 2. Salva no banco de dados (Firebase) com a imagem do QR Code
                         await addDoc(collection(db, "faturas"), {
-                            familia_id: id, mes_referencia: mes, leitura_anterior: l_ant, leitura_atual: l_atu,
-                            consumo_m3: cons, valor_agua: valorAgua, valor_multa: valorMulta, valor_total: total, 
-                            vencimento: venc, status: "pendente", pix_copia_cola: pix.copiaECola, data_lancamento: new Date().toISOString()
+                            familia_id: id, 
+                            mes_referencia: mes, 
+                            leitura_anterior: l_ant, 
+                            leitura_atual: l_atu,
+                            consumo_m3: cons, 
+                            valor_agua: valorAgua, 
+                            valor_multa: valorMulta, 
+                            valor_total: total, 
+                            vencimento: venc, 
+                            status: "pendente", 
+                            pix_copia_cola: pix.copiaECola, 
+                            qr_code_base64: pix.qrCodeBase64, // Salva a imagem
+                            data_lancamento: new Date().toISOString()
                         });
 
-                        // MENSAGEM INTELIGENTE DE WHATSAPP COM LINK PARA O PORTAL
-                        const txzap = `💧 *SISTEMA ÁGUA SÃO LUIZ* 💧\n\nOlá, *${nome}*!\nA sua fatura de *${mes}* já está liberada.\n\n📊 *Consumo:* ${cons}m³\n💵 *Valor Total:* R$ ${total.toFixed(2)}\n📅 *Vencimento:* ${venc.split('-').reverse().join('/')}\n\n📲 *COMO PAGAR:* \nAcesse o portal clicando no link abaixo. Lá você pode copiar o código PIX com apenas 1 clique ou baixar o seu extrato em PDF:\n\n👉 https://agua-sao-luiz.vercel.app`;
+                        // 3. Monta a mensagem profissional do WhatsApp
+                        const txzap = `💧 *SISTEMA ÁGUA SÃO LUIZ* 💧\n\nOlá, *${nome}*!\nA sua fatura de *${mes}* já está liberada no sistema.\n\n📊 *Consumo:* ${cons}m³\n💵 *Valor Total:* R$ ${total.toFixed(2)}\n📅 *Vencimento:* ${venc.split('-').reverse().join('/')}\n\n📲 *COMO PAGAR:* \nAcesse o portal seguro clicando no link abaixo. Lá você encontrará o *QR Code* para apontar a câmera ou o botão para *Copiar o PIX*:\n\n👉 https://agua-sao-luiz.vercel.app`;
                         
-                        document.getElementById(`status-${id}`).innerHTML = `<button onclick="window.open('https://wa.me/${tel}?text=${encodeURIComponent(txzap)}')"\n class="bg-green-500 hover:bg-green-600 text-white font-bold px-4 py-2 rounded-xl text-sm shadow-md shadow-green-500/30 flex items-center mx-auto">Enviar no Zap 💬</button>`;
+                        // 4. Cria o botão de enviar no painel
+                        document.getElementById(`status-${id}`).innerHTML = `
+                            <button onclick="window.open('https://wa.me/${tel}?text=${encodeURIComponent(txzap)}')" class="bg-green-500 hover:bg-green-600 text-white font-bold px-4 py-2 rounded-xl text-sm shadow-md transition whitespace-nowrap">
+                                <i class="fa-brands fa-whatsapp mr-1"></i> Enviar Zap
+                            </button>
+                        `;
                         
+                        // Trava as caixas para não editar acidentalmente
                         document.getElementById(`atu-${id}`).disabled = true;
                         document.getElementById(`ant-${id}`).disabled = true;
                         document.getElementById(`linha-${id}`).classList.replace('hover:bg-blue-50/50', 'bg-green-50');
                     }
-                } catch(e) { document.getElementById(`status-${id}`).innerHTML = `<span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold">Erro</span>`; }
+                } catch(e) { 
+                    document.getElementById(`status-${id}`).innerHTML = `<span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-bold border border-red-200">Erro na Conexão</span>`; 
+                }
             }
+            
             esconderLoading();
-            alert("✅ Lote processado com sucesso!");
+            alert("✅ Lote processado com sucesso! As faturas já estão disponíveis no portal do morador.");
         };
 
         // --- ABA 3: RECEBIMENTOS ---
         window.carregarPagamentos = async () => {
             const tbody = document.getElementById("tabelaPagos");
-            tbody.innerHTML = "<tr><td colspan='5' class='p-8 text-center'>Buscando...</td></tr>";
+            tbody.innerHTML = "<tr><td colspan='5' class='p-8 text-center text-gray-500'>Buscando pagamentos...</td></tr>";
+            
             try {
+                // Traz moradores para sabermos o nome de quem pagou
                 const famSnap = await getDocs(collection(db, "familias"));
                 const dictFamilias = {};
                 famSnap.forEach(d => dictFamilias[d.id] = d.data().nome);
 
+                // Traz as faturas e filtra as pagas
                 const fatSnap = await getDocs(collection(db, "faturas"));
                 const pagas = [];
-                fatSnap.forEach(d => { if(d.data().status === 'pago') pagas.push({id: d.id, ...d.data()}); });
+                fatSnap.forEach(d => { 
+                    if (d.data().status === 'pago') pagas.push({id: d.id, ...d.data()}); 
+                });
+                
+                // Ordena pelas mais recentes
                 pagas.sort((a,b) => new Date(b.data_pagamento || 0) - new Date(a.data_pagamento || 0));
 
                 let html = "";
-                for(let p of pagas) {
+                for (let p of pagas) {
                     const nome = dictFamilias[p.familia_id] || "Desconhecido";
-                    const dataPag = p.data_pagamento ? new Date(p.data_pagamento).toLocaleString('pt-BR', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'}) : "---";
+                    
+                    // Formata a data bonitinha (Ex: 03/03/2026 14:30)
+                    let dataPag = "---";
+                    if(p.data_pagamento){
+                        const dataObj = new Date(p.data_pagamento);
+                        dataPag = dataObj.toLocaleDateString('pt-BR') + ' ' + dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+                    }
+
                     html += `
-                        <tr class="hover:bg-green-50 transition">
+                        <tr class="hover:bg-green-50 transition border-b border-gray-100">
                             <td class="p-4 text-gray-500 text-sm font-mono">${dataPag}</td>
                             <td class="p-4 font-bold text-gray-800">${nome}</td>
                             <td class="p-4 text-gray-600">${p.mes_referencia}</td>
                             <td class="p-4 font-black text-green-700 text-right">R$ ${parseFloat(p.valor_total).toFixed(2).replace('.',',')}</td>
-                            <td class="p-4 text-center"><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Pago</span></td>
+                            <td class="p-4 text-center">
+                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border border-green-200">Pago</span>
+                            </td>
                         </tr>
                     `;
                 }
-                tbody.innerHTML = html || "<tr><td colspan='5' class='p-8 text-center text-gray-500'>Nenhum pagamento registrado.</td></tr>";
-            } catch(e) { tbody.innerHTML = "<tr><td colspan='5' class='text-red-500 text-center p-8'>Erro ao carregar.</td></tr>"; }
+                tbody.innerHTML = html || "<tr><td colspan='5' class='p-8 text-center text-gray-500'>Nenhum pagamento registrado ainda.</td></tr>";
+            } catch(e) { 
+                tbody.innerHTML = "<tr><td colspan='5' class='text-red-500 text-center p-8'>Erro ao carregar o histórico.</td></tr>"; 
+            }
         };
 
-        // --- ABA 4: INADIMPLENTES ---
+        // --- ABA 4: INADIMPLENTES E BAIXA MANUAL ---
         window.carregarInadimplentes = async () => {
             const tbody = document.getElementById("tabelaAtrasados");
-            tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center'>Buscando...</td></tr>";
+            tbody.innerHTML = "<tr><td colspan='5' class='p-8 text-center text-gray-500'>Buscando inadimplentes...</td></tr>";
+            
             try {
                 const famSnap = await getDocs(collection(db, "familias"));
                 const dictFamilias = {};
                 famSnap.forEach(d => dictFamilias[d.id] = d.data().nome);
 
                 const fatSnap = await getDocs(collection(db, "faturas"));
-                const hoje = new Date(); hoje.setHours(0,0,0,0);
-                const atrasadas = [];
+                const hoje = new Date(); 
+                hoje.setHours(0,0,0,0);
                 
+                const atrasadas = [];
                 fatSnap.forEach(d => {
                     const f = d.data();
-                    if(f.status === 'pendente') {
+                    if (f.status === 'pendente') {
                         const dataVenc = new Date(f.vencimento + "T00:00:00");
-                        if(dataVenc < hoje) atrasadas.push({id: d.id, data_venc: dataVenc, ...f});
+                        if (dataVenc < hoje) {
+                            atrasadas.push({id: d.id, data_venc: dataVenc, ...f});
+                        }
                     }
                 });
+                
                 atrasadas.sort((a,b) => a.data_venc - b.data_venc);
 
                 let html = "";
-                for(let a of atrasadas) {
+                for (let a of atrasadas) {
                     const nome = dictFamilias[a.familia_id] || "Desconhecido";
                     const vencBr = a.vencimento.split('-').reverse().join('/');
+                    
                     html += `
-                        <tr class="hover:bg-red-50 transition">
+                        <tr class="hover:bg-red-50 transition border-b border-gray-100">
                             <td class="p-4 font-bold text-red-600 text-sm font-mono">⚠️ ${vencBr}</td>
                             <td class="p-4">
                                 <div class="font-bold text-gray-800">${nome}</div>
-                                <div class="text-xs text-gray-500">Ref: ${a.mes_referencia}</div>
+                                <div class="text-xs text-gray-500 mt-1">Ref: ${a.mes_referencia}</div>
                             </td>
                             <td class="p-4 font-black text-red-700 text-right text-lg">R$ ${parseFloat(a.valor_total).toFixed(2).replace('.',',')}</td>
                             <td class="p-4 text-center">
-                                <button onclick="marcarComoPagoManual('${a.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md shadow-blue-500/30">Dar Baixa Agora</button>
+                                <button onclick="marcarComoPagoManual('${a.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md transition whitespace-nowrap">
+                                    ✓ Dar Baixa Manual
+                                </button>
                             </td>
                         </tr>
                     `;
                 }
-                tbody.innerHTML = html || "<tr><td colspan='4' class='p-10 text-center text-green-600 font-bold text-lg'>🎉 Nenhuma fatura atrasada!</td></tr>";
-            } catch(e) { tbody.innerHTML = "<tr><td colspan='4' class='text-red-500 text-center p-8'>Erro ao carregar.</td></tr>"; }
+                tbody.innerHTML = html || "<tr><td colspan='4' class='p-12 text-center text-green-600 font-bold text-xl'>🎉 Ótima notícia! Nenhuma fatura atrasada.</td></tr>";
+            } catch(e) { 
+                tbody.innerHTML = "<tr><td colspan='4' class='text-red-500 text-center p-8'>Erro ao analisar atrasos.</td></tr>"; 
+            }
         };
 
+        // Função temporária de Baixa Manual (até o Webhook funcionar)
         window.marcarComoPagoManual = async (faturaId) => {
-            if(!confirm("Registrar este pagamento manualmente?")) return;
-            mostrarLoading("Registrando...");
+            if (!confirm("Tem certeza que deseja registrar este pagamento? Ele sairá dos inadimplentes e irá para os recebidos.")) return;
+            
+            mostrarLoading("Registrando baixa no sistema...");
             try {
-                await updateDoc(doc(db, "faturas", faturaId), { status: "pago", data_pagamento: new Date().toISOString() });
+                await updateDoc(doc(db, "faturas", faturaId), { 
+                    status: "pago", 
+                    data_pagamento: new Date().toISOString() 
+                });
+                // Recarrega a tela para o nome sumir da lista
                 carregarInadimplentes();
-            } catch(e) { alert("Erro ao baixar."); }
+            } catch(e) { 
+                alert("Erro ao confirmar a baixa."); 
+            }
             esconderLoading();
         };
 
-        const mostrarLoading = (msg) => { document.getElementById("loadingMsg").innerText = msg; document.getElementById("loading").style.display = "flex"; };
-        const esconderLoading = () => { document.getElementById("loading").style.display = "none"; };
+        // --- FUNÇÕES DE INTERFACE ---
+        const mostrarLoading = (msg) => { 
+            document.getElementById("loadingMsg").innerText = msg; 
+            document.getElementById("loading").style.display = "flex"; 
+        };
+        const esconderLoading = () => { 
+            document.getElementById("loading").style.display = "none"; 
+        };
     </script>
 </body>
 </html>
