@@ -601,8 +601,7 @@
             // Só cobra se Atual for maior que Anterior
             let consumo = (atu >= ant && atu > 0) ? atu - ant : 0;
             
-            // Atualiza visualmente o consumo
-            document.getElementById(`cons-${id}`).innerText = consumo;
+            // Atualiza (`cons-${id}`).innerText = consumo;
 
             let valorAgua = 0;
             
@@ -670,20 +669,16 @@
                     if (pix.sucesso) {
                         // 2. Salva no banco de dados (Firebase) com a imagem do QR Code
                         await addDoc(collection(db, "faturas"), {
-                            familia_id: id, 
-                            mes_referencia: mes, 
-                            leitura_anterior: l_ant, 
-                            leitura_atual: l_atu,
-                            consumo_m3: cons, 
-                            valor_agua: valorAgua, 
-                            valor_multa: valorMulta, 
-                            valor_total: total, 
-                            vencimento: venc, 
-                            status: "pendente", 
-                            pix_copia_cola: pix.copiaECola, 
-                            qr_code_base64: pix.qrCodeBase64, // Salva a imagem
-                            data_lancamento: new Date().toISOString()
-                        });
+                        await addDoc(collection(db, "faturas"), {
+    familia_id: id, mes_referencia: mes, leitura_anterior: l_ant, leitura_atual: l_atu,
+    consumo_m3: cons, valor_agua: valorAgua, valor_multa: valorMulta, valor_total: total, 
+    vencimento: venc, status: "pendente", 
+    pix_copia_cola: pix.copiaECola, 
+    qr_code_base64: pix.qrCodeBase64,
+    pix_txid: String(pix.txid), // <--- LINHA NOVA: Salva o RG do Pix pro Webhook achar!
+    data_lancamento: new Date().toISOString()
+});
+
 
                         // 3. Monta a mensagem profissional do WhatsApp
                         const txzap = `💧 *SISTEMA ÁGUA SÃO LUIZ* 💧\n\nOlá, *${nome}*!\nA sua fatura de *${mes}* já está liberada no sistema.\n\n📊 *Consumo:* ${cons}m³\n💵 *Valor Total:* R$ ${total.toFixed(2)}\n📅 *Vencimento:* ${venc.split('-').reverse().join('/')}\n\n📲 *COMO PAGAR:* \nAcesse o portal seguro clicando no link abaixo. Lá você encontrará o *QR Code* para apontar a câmera ou o botão para *Copiar o PIX*:\n\n👉 https://agua-sao-luiz.vercel.app`;
