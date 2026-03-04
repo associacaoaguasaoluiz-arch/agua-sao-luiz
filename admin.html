@@ -3,24 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>App Gestão 15.0 - Água São Luiz</title>
+    <title>App Gestão 17.0 - Água São Luiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; -webkit-tap-highlight-color: transparent; }
+        /* Bloqueia scroll horizontal na página inteira (usado apenas nas tabelas) */
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; -webkit-tap-highlight-color: transparent; max-width: 100vw; overflow-x: hidden; }
         .tela-oculta { display: none !important; }
         .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        .coluna-fixa { position: sticky; left: 0; z-index: 20; background-color: white; border-right: 2px solid #e5e7eb; max-width: 160px; min-width: 160px; white-space: normal; font-size: 0.8rem; line-height: 1.2; }
+        .coluna-fixa { position: sticky; left: 0; z-index: 20; background-color: white; border-right: 2px solid #e5e7eb; max-width: 130px; min-width: 130px; white-space: normal; font-size: 0.75rem; line-height: 1.2; }
         th.coluna-fixa { background-color: #f8fafc; }
-        .scroll-suave::-webkit-scrollbar { height: 8px; }
-        .scroll-suave::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .conteudo-principal { padding-bottom: 90px; }
         
-        /* Ajuste do foco para os Inputs expandidos */
-        .input-leitura { width: 120px; font-size: 1.125rem; transition: all 0.2s; }
+        /* Rolagem Suave Mobile */
+        .overflow-x-auto { -webkit-overflow-scrolling: touch; }
+        .scroll-suave::-webkit-scrollbar { height: 6px; }
+        .scroll-suave::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .conteudo-principal { padding-bottom: 100px; } /* Espaço para o menu mobile */
+        
+        /* Inputs adaptáveis */
+        .input-leitura { width: 100%; min-width: 80px; max-width: 120px; font-size: 1rem; transition: all 0.2s; }
         .input-leitura:focus { background-color: #fffbeb; border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2); }
         
         .modal-fundo { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; justify-content: center; align-items: center; padding: 1rem; }
@@ -37,89 +41,90 @@
 </head>
 <body class="text-gray-800 h-screen flex overflow-hidden">
 
-    <!-- OVERLAY DE CARREGAMENTO -->
     <div id="loading" class="loading-overlay"><div class="spinner"></div><p id="loadingMsg" class="mt-4 font-bold text-gray-700 font-mono text-center px-4">A processar...</p></div>
+    <div id="toastVoz" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full font-bold shadow-2xl transition-opacity duration-300 opacity-0 z-[110] flex items-center gap-2 pointer-events-none"><i class="fa-solid fa-microphone"></i> <span id="txtToastVoz">Comando</span></div>
 
-    <!-- TOAST DE VOZ -->
-    <div id="toastVoz" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full font-bold shadow-2xl transition-opacity duration-300 opacity-0 z-[110] flex items-center gap-2 pointer-events-none">
-        <i class="fa-solid fa-microphone"></i> <span id="txtToastVoz">Comando</span>
-    </div>
-
-    <!-- LOGIN ADMIN -->
+    <!-- LOGIN ADMIN: Agora funciona com a tecla Enter -->
     <div id="loginAdmin" class="fixed inset-0 bg-slate-900 flex justify-center items-center z-50 p-4">
-        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center">
-            <span class="text-5xl">💧</span>
-            <h2 class="text-2xl font-bold mt-2 mb-6 text-slate-800">São Luiz Admin</h2>
-            <input type="password" id="senhaAdmin" onkeypress="if(event.key === 'Enter') entrarAdmin()" placeholder="Senha de Acesso" class="w-full p-4 border border-gray-300 rounded-xl mb-4 text-center text-lg outline-none focus:ring-2 focus:ring-blue-500">
-            <button onclick="entrarAdmin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition">Entrar</button>
-            <p id="erroLogin" class="text-red-500 text-sm font-bold mt-4 hidden">❌ Senha Incorreta!</p>
-        </div>
+        <form onsubmit="entrarAdmin(event)" class="bg-white p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center">
+            <span class="text-5xl mb-2 block">💧</span>
+            <h2 class="text-2xl font-bold mb-6 text-slate-800">São Luiz Admin</h2>
+            <input type="password" id="senhaAdmin" required placeholder="Digite a Senha..." class="w-full p-4 border-2 border-gray-200 rounded-xl mb-4 text-center text-lg outline-none focus:border-blue-500 focus:bg-blue-50 transition">
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition text-lg">Entrar</button>
+            <p id="erroLogin" class="text-red-500 text-sm font-bold mt-4 hidden bg-red-50 p-2 rounded-lg">❌ Senha Incorreta!</p>
+        </form>
     </div>
 
     <div id="painelAdmin" class="flex w-full h-full tela-oculta relative">
-        <!-- SIDEBAR -->
+        <!-- SIDEBAR DESKTOP -->
         <aside class="w-64 bg-slate-900 text-white flex-col hidden md:flex shadow-xl z-30">
             <div class="p-6 text-center border-b border-slate-700"><h1 class="text-xl font-bold">💧 São Luiz</h1></div>
             <nav class="flex-1 p-4 space-y-2 overflow-y-auto scroll-suave text-sm text-gray-400">
-                <button onclick="mudarAba('aba-moradores', this)" class="menu-btn w-full flex items-center p-3 rounded-xl bg-blue-600 text-white font-bold transition"><i class="fa-solid fa-users w-6"></i> Moradores</button>
-                <button onclick="mudarAba('aba-leituras', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-pen-to-square w-6"></i> Água (Mensal)</button>
-                <button onclick="mudarAba('aba-avulso', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-wrench w-6"></i> Serviços Avulsos</button>
-                <button onclick="mudarAba('aba-abertas', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-hourglass-half w-6"></i> Pendentes</button>
-                <button onclick="mudarAba('aba-recebimentos', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-check-double w-6"></i> Pagos</button>
-                <button onclick="mudarAba('aba-relatorios', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-chart-pie w-6"></i> Relatórios</button>
-                <button onclick="mudarAba('aba-config', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-gear w-6"></i> Configuração</button>
-                
+                <button onclick="mudarAba('aba-moradores', this)" class="menu-btn w-full flex items-center p-3 rounded-xl bg-blue-600 text-white font-bold transition"><i class="fa-solid fa-users w-6 mr-2"></i> Moradores</button>
+                <button onclick="mudarAba('aba-leituras', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-pen-to-square w-6 mr-2"></i> Água (Mensal)</button>
+                <button onclick="mudarAba('aba-avulso', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-wrench w-6 mr-2"></i> Taxas Avulsas</button>
+                <button onclick="mudarAba('aba-abertas', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-hourglass-half w-6 mr-2"></i> Pendentes</button>
+                <button onclick="mudarAba('aba-recebimentos', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-check-double w-6 mr-2"></i> Pagos</button>
+                <button onclick="mudarAba('aba-relatorios', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-chart-pie w-6 mr-2"></i> Relatórios</button>
+                <button onclick="mudarAba('aba-config', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-gear w-6 mr-2"></i> Configuração</button>
                 <div class="pt-6 mt-6 border-t border-slate-700">
-                    <button onclick="sairAdmin()" class="w-full flex items-center justify-center p-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold transition">Sair</button>
+                    <button onclick="sairAdmin()" class="w-full flex items-center justify-center p-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold transition">Sair do Painel</button>
                 </div>
             </nav>
         </aside>
 
-        <!-- CONTEÚDO PRINCIPAL -->
+        <!-- MAIN AREA -->
         <main class="flex-1 overflow-y-auto bg-gray-100 conteudo-principal w-full">
-            <div class="md:hidden bg-slate-900 text-white p-4 text-center sticky top-0 z-40 shadow-md font-bold flex justify-between px-6 items-center">
+            <!-- TOPO MOBILE -->
+            <div class="md:hidden bg-slate-900 text-white p-4 text-center sticky top-0 z-40 shadow-md font-bold flex justify-between px-4 items-center">
                 <span>💧 São Luiz</span>
-                <button onclick="sairAdmin()" class="text-red-400"><i class="fa-solid fa-right-from-bracket"></i></button>
+                <button onclick="sairAdmin()" class="text-red-400 bg-slate-800 px-3 py-1 rounded-lg text-xs"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
             </div>
             
-            <div class="p-4 md:p-8 max-w-7xl mx-auto w-full print-area">
+            <div class="p-3 md:p-8 max-w-7xl mx-auto w-full print-area">
                 
                 <!-- MORADORES -->
                 <div id="aba-moradores" class="conteudo-aba">
-                    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-                        <h2 class="text-2xl font-bold">👥 Moradores</h2>
-                        <button onclick="abrirModalCadastro()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition">➕ Novo</button>
+                    <div class="flex flex-col sm:flex-row justify-between items-center mb-4 md:mb-6 gap-3">
+                        <h2 class="text-xl md:text-2xl font-bold text-slate-800">👥 Moradores</h2>
+                        <button onclick="abrirModalCadastro()" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold shadow-lg transition text-sm">➕ Novo Cadastro</button>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
-                        <input type="text" id="buscaMorador" onkeyup="filtrarTabela('buscaMorador', 'tabelaMoradores')" placeholder="🔍 Buscar morador ou lote..." class="w-full p-4 bg-gray-50 border-b outline-none">
-                        <div class="overflow-x-auto"><table class="w-full text-left whitespace-nowrap"><tbody id="tabelaMoradores" class="divide-y text-sm"></tbody></table></div>
+                        <input type="text" id="buscaMorador" onkeyup="filtrarTabela('buscaMorador', 'tabelaMoradores')" placeholder="🔍 Buscar morador ou lote..." class="w-full p-4 bg-gray-50 border-b outline-none text-sm md:text-base">
+                        <div class="overflow-x-auto scroll-suave w-full">
+                            <!-- Min-width garante que as colunas não amassem no telemóvel -->
+                            <table class="w-full text-left whitespace-nowrap min-w-[550px]">
+                                <tbody id="tabelaMoradores" class="divide-y text-sm"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
                 <!-- LEITURAS MENSAL -->
                 <div id="aba-leituras" class="conteudo-aba tela-oculta">
-                    <div class="mb-4 flex justify-between items-end flex-wrap gap-2">
+                    <div class="mb-4 flex flex-col md:flex-row justify-between items-start md:items-end gap-3">
                         <div>
-                            <h2 class="text-2xl font-bold flex items-center gap-2">📝 Consumo Mensal <button id="btnVoz" onclick="alternarVoz()" class="bg-slate-200 text-slate-600 w-10 h-10 rounded-full flex justify-center items-center shadow-sm"><i class="fa-solid fa-microphone"></i></button></h2>
+                            <h2 class="text-xl md:text-2xl font-bold flex items-center gap-2 text-slate-800">📝 Consumo <button id="btnVoz" onclick="alternarVoz()" class="bg-slate-200 text-slate-600 w-8 h-8 md:w-10 md:h-10 rounded-full flex justify-center items-center shadow-sm"><i class="fa-solid fa-microphone text-xs md:text-base"></i></button></h2>
                         </div>
-                        <div class="flex gap-2 text-xs">
-                            <input type="text" id="mesReferencia" value="04/2026" class="w-24 p-2 border rounded-lg font-bold text-center">
-                            <input type="date" id="dataVencimento" value="2026-04-20" class="p-2 border rounded-lg font-bold text-center">
+                        <div class="flex gap-2 text-xs w-full md:w-auto">
+                            <input type="text" id="mesReferencia" value="04/2026" class="p-2 border rounded-lg font-bold text-center flex-1 md:w-24 outline-none">
+                            <input type="date" id="dataVencimento" value="2026-04-20" class="p-2 border rounded-lg font-bold text-center flex-1 outline-none">
                         </div>
                     </div>
-                    <button onclick="if(window.gerarFaturasEmLote) window.gerarFaturasEmLote()" class="w-full bg-green-500 hover:bg-green-600 text-white py-4 rounded-2xl font-black text-xl shadow-xl active:scale-95 transition mb-6">🚀 GERAR FATURAS E SALVAR HODÓMETROS</button>
+                    <button onclick="if(window.gerarFaturasEmLote) window.gerarFaturasEmLote()" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 md:py-4 rounded-2xl font-black text-base md:text-xl shadow-xl active:scale-95 transition mb-6">🚀 GERAR E SALVAR LOTES</button>
+                    
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden relative">
-                        <div class="overflow-x-auto scroll-suave pb-10">
-                            <table class="w-full text-left border-collapse whitespace-nowrap">
+                        <div class="overflow-x-auto scroll-suave w-full pb-4">
+                            <table class="w-full text-left border-collapse whitespace-nowrap min-w-[850px]">
                                 <thead>
                                     <tr class="bg-slate-100 text-[10px] uppercase font-bold text-slate-500 border-b">
-                                        <th class="p-3 coluna-fixa">Morador / CPF</th>
-                                        <th class="p-3 text-center">Hodómetro Ant.</th>
-                                        <th class="p-3 text-center">Hodómetro Atual</th>
-                                        <th class="p-3 text-center">Gasto m³</th>
-                                        <th class="p-3 text-center text-red-600">Multa (R$)</th>
-                                        <th class="p-3 text-right text-green-700 font-black">Total R$</th>
-                                        <th class="p-3 text-center">Status</th>
+                                        <th class="p-2 md:p-3 coluna-fixa">Morador / CPF</th>
+                                        <th class="p-2 md:p-3 text-center">Hodóm. Ant.</th>
+                                        <th class="p-2 md:p-3 text-center">Hodóm. Atual</th>
+                                        <th class="p-2 md:p-3 text-center">Gasto m³</th>
+                                        <th class="p-2 md:p-3 text-center text-red-600">Multa (R$)</th>
+                                        <th class="p-2 md:p-3 text-right text-green-700 font-black">Total R$</th>
+                                        <th class="p-2 md:p-3 text-center">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody id="corpoTabelaLote" class="divide-y text-sm"></tbody>
@@ -130,147 +135,175 @@
 
                 <!-- TAXAS AVULSAS -->
                 <div id="aba-avulso" class="conteudo-aba tela-oculta">
-                    <h2 class="text-2xl font-bold text-blue-800 mb-6">🔧 Lançar Serviço Avulso</h2>
-                    <div class="bg-white rounded-2xl shadow-sm border p-6 max-w-2xl mx-auto md:mx-0">
+                    <h2 class="text-xl md:text-2xl font-bold text-blue-800 mb-4 md:mb-6">🔧 Lançar Serviço Avulso</h2>
+                    <div class="bg-white rounded-2xl shadow-sm border p-4 md:p-6 w-full max-w-2xl">
                         <form id="formAvulso" class="space-y-4" onsubmit="if(window.submitAvulso) window.submitAvulso(event)">
                             <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Como deseja cobrar?</label>
-                                <select id="avulsoTipo" class="w-full p-3 bg-blue-50 border border-blue-200 rounded-xl outline-none font-bold text-blue-900" onchange="if(window.focarProximo) window.focarProximo({key: 'Enter', preventDefault: ()=>{}}, 'buscaClienteAvulso')">
+                                <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Como deseja cobrar?</label>
+                                <select id="avulsoTipo" class="w-full p-3 bg-blue-50 border border-blue-200 rounded-xl outline-none font-bold text-blue-900 text-sm md:text-base" onchange="if(window.focarProximo) window.focarProximo({key: 'Enter', preventDefault: ()=>{}}, 'buscaClienteAvulso')">
                                     <option value="somar_proxima">➕ Somar na Próxima Conta de Água</option>
                                     <option value="pix_agora">⚡ Gerar um PIX Separado Agora</option>
                                 </select>
                             </div>
                             
-                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-inner relative">
-                                <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Busque por Nome ou CPF</label>
-                                <input type="text" id="buscaClienteAvulso" oninput="if(window.filtrarAvulsoESelecionar) window.filtrarAvulsoESelecionar()" onkeydown="if(window.focarProximo) window.focarProximo(event, 'avulsoDescricao')" placeholder="🔍 Digite e pressione Enter para avançar..." autocomplete="off" class="w-full p-3 mb-2 bg-white border-2 border-blue-100 rounded-xl outline-none focus:border-blue-500 transition text-sm shadow-sm font-bold text-blue-800">
-                                
-                                <div id="avulsoClienteNomeExibicao" class="text-sm font-bold text-green-700 bg-green-50 p-2 rounded hidden">Nenhum selecionado</div>
-
-                                <select id="avulsoFamilia" required class="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none font-bold text-gray-700 shadow-sm mt-2 hidden">
-                                </select>
+                            <div class="bg-slate-50 p-3 md:p-4 rounded-xl border border-slate-200 shadow-inner relative">
+                                <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-2">Busque por Nome ou CPF</label>
+                                <input type="text" id="buscaClienteAvulso" oninput="if(window.filtrarAvulsoESelecionar) window.filtrarAvulsoESelecionar()" onkeydown="if(window.focarProximo) window.focarProximo(event, 'avulsoDescricao')" placeholder="🔍 Digite e aperte Enter..." autocomplete="off" class="w-full p-3 mb-2 bg-white border-2 border-blue-100 rounded-xl outline-none focus:border-blue-500 transition text-sm shadow-sm font-bold text-blue-800">
+                                <div id="avulsoClienteNomeExibicao" class="text-[11px] md:text-sm font-bold text-green-700 bg-green-50 p-2 rounded hidden">Nenhum selecionado</div>
+                                <select id="avulsoFamilia" required class="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none font-bold text-gray-700 shadow-sm mt-2 hidden"></select>
                             </div>
 
                             <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Título do Serviço</label>
-                                <input type="text" id="avulsoDescricao" required placeholder="Ex: Conserto do encanamento" onkeydown="if(window.focarProximo) window.focarProximo(event, 'avulsoValor')" class="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500 focus:bg-white transition shadow-sm">
+                                <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Título do Serviço</label>
+                                <input type="text" id="avulsoDescricao" required placeholder="Ex: Conserto do encanamento" onkeydown="if(window.focarProximo) window.focarProximo(event, 'avulsoValor')" class="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500 focus:bg-white transition shadow-sm text-sm md:text-base">
                             </div>
                             <div class="flex flex-col sm:flex-row gap-4">
                                 <div class="flex-1">
-                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Valor (R$)</label>
+                                    <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Valor (R$)</label>
                                     <input type="number" step="0.01" id="avulsoValor" required class="w-full p-3 bg-gray-50 border rounded-xl outline-none text-blue-600 font-bold text-lg focus:border-blue-500 focus:bg-white transition shadow-sm" onkeydown="if(document.getElementById('avulsoTipo').value === 'pix_agora') { if(window.focarProximo) window.focarProximo(event, 'avulsoVencimento'); } else { if(window.focarProximo) window.focarProximo(event, 'btnSubmitAvulso'); }">
                                 </div>
                                 <div class="flex-1" id="divVencimentoAvulso">
-                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Vencimento (Só p/ Pix Separado)</label>
-                                    <input type="date" id="avulsoVencimento" onkeydown="if(window.focarProximo) window.focarProximo(event, 'btnSubmitAvulso')" class="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500 focus:bg-white transition shadow-sm">
+                                    <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Vencimento (Só p/ Pix)</label>
+                                    <input type="date" id="avulsoVencimento" onkeydown="if(window.focarProximo) window.focarProximo(event, 'btnSubmitAvulso')" class="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500 focus:bg-white transition shadow-sm text-sm md:text-base">
                                 </div>
                             </div>
-                            <button type="submit" id="btnSubmitAvulso" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-black py-4 rounded-xl shadow-lg mt-4 active:scale-95 transition">Confirmar Lançamento</button>
+                            <button type="submit" id="btnSubmitAvulso" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-black py-3 md:py-4 rounded-xl shadow-lg mt-2 active:scale-95 transition text-base md:text-lg">Confirmar Lançamento</button>
                         </form>
                     </div>
                 </div>
 
                 <!-- ABERTAS -->
                 <div id="aba-abertas" class="conteudo-aba tela-oculta">
-                    <div class="flex justify-between items-end mb-6">
-                        <h2 class="text-2xl font-bold text-amber-600 flex items-center gap-2">⏳ Pendentes <span class="flex h-3 w-3 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span></span></h2>
-                        <span class="text-xs font-bold text-slate-400 uppercase bg-slate-100 px-3 py-1 rounded-full">Atualização Tempo Real</span>
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-end mb-4 md:mb-6 gap-2">
+                        <h2 class="text-xl md:text-2xl font-bold text-amber-600 flex items-center gap-2">⏳ Pendentes</h2>
+                        <span class="text-[9px] md:text-xs font-bold text-slate-400 uppercase bg-slate-100 px-3 py-1 rounded-full w-fit"><span class="flex h-2 w-2 relative inline-block mr-1"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span></span> Atualização em Tempo Real</span>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left whitespace-nowrap"><tbody id="tabelaAbertas" class="divide-y text-sm"></tbody></table></div></div>
+                    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
+                        <div class="overflow-x-auto w-full"><table class="w-full text-left whitespace-nowrap min-w-[650px]"><tbody id="tabelaAbertas" class="divide-y text-sm"></tbody></table></div>
+                    </div>
                 </div>
 
                 <!-- PAGAS -->
                 <div id="aba-recebimentos" class="conteudo-aba tela-oculta">
-                    <div class="flex justify-between items-end mb-6">
-                        <h2 class="text-2xl font-bold text-green-700 flex items-center gap-2">✅ Recebidos <span class="flex h-3 w-3 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span></span></h2>
-                        <span class="text-xs font-bold text-slate-400 uppercase bg-slate-100 px-3 py-1 rounded-full">Atualização Tempo Real</span>
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-end mb-4 md:mb-6 gap-2">
+                        <h2 class="text-xl md:text-2xl font-bold text-green-700 flex items-center gap-2">✅ Recebidos</h2>
+                        <span class="text-[9px] md:text-xs font-bold text-slate-400 uppercase bg-slate-100 px-3 py-1 rounded-full w-fit"><span class="flex h-2 w-2 relative inline-block mr-1"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span> Atualização em Tempo Real</span>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden"><table class="w-full text-left whitespace-nowrap"><tbody id="tabelaPagos" class="divide-y text-sm"></tbody></table></div>
+                    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
+                        <div class="overflow-x-auto w-full"><table class="w-full text-left whitespace-nowrap min-w-[500px]"><tbody id="tabelaPagos" class="divide-y text-sm"></tbody></table></div>
+                    </div>
                 </div>
 
                 <!-- RELATÓRIOS -->
                 <div id="aba-relatorios" class="conteudo-aba tela-oculta">
-                    <div class="flex justify-between items-center mb-6 no-print">
-                        <h2 class="text-2xl font-bold text-slate-800">📊 Relatórios Financeiros</h2>
-                        <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-900 transition text-white px-4 py-2 rounded-lg font-bold shadow-md"><i class="fa-solid fa-print"></i> Imprimir</button>
+                    
+                    <!-- Cabeçalho Oficial do Relatório -->
+                    <div class="text-center mb-6 md:mb-8 pb-4 md:pb-6 border-b border-slate-300">
+                        <img src="capanema.jpg" alt="Capanema" class="mx-auto h-24 md:h-40 object-cover rounded-xl shadow-md mb-4 w-full max-w-[280px] md:max-w-md" onerror="this.style.display='none'">
+                        <h1 class="text-lg md:text-3xl font-black text-blue-900 tracking-tight">ASSOCIAÇÃO DE ÁGUA DO SÃO LUIZ</h1>
+                        <p class="text-slate-500 font-bold uppercase text-[9px] md:text-xs tracking-widest mt-1 md:mt-2">Relatório Oficial de Gestão Financeira</p>
                     </div>
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border mb-6 no-print flex flex-wrap gap-4 items-end text-xs">
-                        <div class="flex-1 min-w-[150px]"><label class="block font-bold text-gray-500 mb-1 uppercase">De</label><input type="date" id="relDataInicio" class="w-full p-2 border rounded-lg outline-none"></div>
-                        <div class="flex-1 min-w-[150px]"><label class="block font-bold text-gray-500 mb-1 uppercase">Até</label><input type="date" id="relDataFim" class="w-full p-2 border rounded-lg outline-none"></div>
-                        <div class="flex-1 min-w-[150px]"><label class="block font-bold text-gray-500 mb-1 uppercase">Status</label><select id="relStatus" class="w-full p-2 border rounded-lg outline-none bg-white"><option value="TODOS">Geral</option><option value="pago">Apenas Pagos</option><option value="pendente">Apenas Pendentes</option></select></div>
-                        <div class="flex-[2] min-w-[200px]"><label class="block font-bold text-gray-500 mb-1 uppercase">Buscar Cliente</label><input type="text" id="relBusca" class="w-full p-2 border rounded-lg outline-none"></div>
-                        <button onclick="window.gerarRelatorioFiltrado()" class="bg-blue-600 hover:bg-blue-700 transition text-white px-6 py-2 rounded-lg font-bold shadow h-[36px]">Filtrar</button>
+
+                    <div class="flex justify-between items-center mb-4 md:mb-6 no-print flex-wrap gap-2">
+                        <h2 class="text-lg md:text-2xl font-bold text-slate-800">📊 Visão Geral</h2>
+                        <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-900 transition text-white px-4 py-2 rounded-lg font-bold shadow-md text-xs md:text-sm"><i class="fa-solid fa-print"></i> Imprimir PDF</button>
                     </div>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                        <div class="bg-white p-4 rounded-xl border shadow-sm text-center"><p class="text-[10px] text-gray-500 font-bold uppercase">Volume (m³)</p><p class="text-xl font-black text-blue-600" id="relCardM3">0</p></div>
-                        <div class="bg-white p-4 rounded-xl border shadow-sm text-center"><p class="text-[10px] text-gray-500 font-bold uppercase">Contas</p><p class="text-xl font-black" id="relCardQtd">0</p></div>
-                        <div class="bg-white p-4 rounded-xl border shadow-sm text-center border-red-100"><p class="text-[10px] text-red-500 font-bold uppercase">Inadimplência</p><p class="text-xl font-black text-red-600" id="relCardPendente">R$ 0,00</p></div>
-                        <div class="bg-white p-4 rounded-xl border shadow-sm text-center border-green-100"><p class="text-[10px] text-green-600 font-bold uppercase">Recebido</p><p class="text-xl font-black text-green-600" id="relCardPago">R$ 0,00</p></div>
+                    
+                    <!-- Filtros Adaptados para Mobile -->
+                    <div class="bg-white p-3 md:p-4 rounded-2xl shadow-sm border mb-4 md:mb-6 no-print flex flex-col md:flex-row flex-wrap gap-3 items-end text-xs md:text-sm">
+                        <div class="w-full md:flex-1"><label class="block font-bold text-gray-500 mb-1 uppercase text-[10px] md:text-xs">De</label><input type="date" id="relDataInicio" class="w-full p-2 border rounded-lg outline-none"></div>
+                        <div class="w-full md:flex-1"><label class="block font-bold text-gray-500 mb-1 uppercase text-[10px] md:text-xs">Até</label><input type="date" id="relDataFim" class="w-full p-2 border rounded-lg outline-none"></div>
+                        <div class="w-full md:flex-1"><label class="block font-bold text-gray-500 mb-1 uppercase text-[10px] md:text-xs">Status</label><select id="relStatus" class="w-full p-2 border rounded-lg outline-none bg-white"><option value="TODOS">Geral</option><option value="pago">Apenas Pagos</option><option value="pendente">Apenas Pendentes</option></select></div>
+                        <div class="w-full md:flex-[2]"><label class="block font-bold text-gray-500 mb-1 uppercase text-[10px] md:text-xs">Buscar Cliente</label><input type="text" id="relBusca" class="w-full p-2 border rounded-lg outline-none" placeholder="Ex: João..."></div>
+                        <button onclick="window.gerarRelatorioFiltrado()" class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 transition text-white px-6 py-2 rounded-lg font-bold shadow h-[36px] md:h-[40px]">Filtrar</button>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left whitespace-nowrap text-sm"><thead><tr class="bg-slate-50 text-slate-500 uppercase text-[10px] font-bold border-b"><th class="p-4">Cliente</th><th class="p-4">Ref</th><th class="p-4 text-center">M³</th><th class="p-4 text-center">Status</th><th class="p-4 text-right">Total</th></tr></thead><tbody id="tabelaRelatorio" class="divide-y"><tr><td colspan="5" class="p-8 text-center text-gray-400">Filtre para carregar...</td></tr></tbody></table></div></div>
+                    
+                    <!-- Cards -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
+                        <div class="bg-white p-3 md:p-4 rounded-xl border shadow-sm text-center"><p class="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase">Volume (m³)</p><p class="text-lg md:text-xl font-black text-blue-600" id="relCardM3">0</p></div>
+                        <div class="bg-white p-3 md:p-4 rounded-xl border shadow-sm text-center"><p class="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase">Contas</p><p class="text-lg md:text-xl font-black" id="relCardQtd">0</p></div>
+                        <div class="bg-white p-3 md:p-4 rounded-xl border shadow-sm text-center border-red-100"><p class="text-[9px] md:text-[10px] text-red-500 font-bold uppercase">Inadimplência</p><p class="text-lg md:text-xl font-black text-red-600" id="relCardPendente">R$ 0,00</p></div>
+                        <div class="bg-white p-3 md:p-4 rounded-xl border shadow-sm text-center border-green-100"><p class="text-[9px] md:text-[10px] text-green-600 font-bold uppercase">Recebido</p><p class="text-lg md:text-xl font-black text-green-600" id="relCardPago">R$ 0,00</p></div>
+                    </div>
+                    
+                    <!-- Tabela Relatório -->
+                    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
+                        <div class="overflow-x-auto w-full">
+                            <table class="w-full text-left whitespace-nowrap min-w-[650px] text-sm">
+                                <thead>
+                                    <tr class="bg-slate-50 text-slate-500 uppercase text-[10px] font-bold border-b">
+                                        <th class="p-3 pl-4">Cliente</th>
+                                        <th class="p-3">Ref</th>
+                                        <th class="p-3 text-center">M³</th>
+                                        <th class="p-3 text-center">Status</th>
+                                        <th class="p-3 text-right pr-4">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabelaRelatorio" class="divide-y divide-gray-100">
+                                    <tr><td colspan="5" class="p-6 text-center text-gray-400">Filtre para carregar...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- CONFIGURAÇÕES -->
                 <div id="aba-config" class="conteudo-aba tela-oculta">
-                    <h2 class="text-2xl font-bold text-slate-700 mb-6">⚙️ Banco de Dados e Configurações</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <h2 class="text-xl md:text-2xl font-bold text-slate-700 mb-4 md:mb-6">⚙️ Banco de Dados e Configurações</h2>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                         
-                        <!-- Configuração Valores de Água -->
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-blue-100 md:col-span-2">
-                            <h3 class="font-bold text-lg text-blue-700 mb-4">💰 Valores da Mensalidade (Água)</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div><label class="block text-xs font-bold text-gray-500 mb-1">Até 10m³ (R$)</label><input type="number" step="0.01" id="cfgVal1" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none"></div>
-                                <div><label class="block text-xs font-bold text-gray-500 mb-1">De 11m³ a 30m³ (R$)</label><input type="number" step="0.01" id="cfgVal2" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none"></div>
-                                <div><label class="block text-xs font-bold text-gray-500 mb-1">Acima de 30m³ (R$)</label><input type="number" step="0.01" id="cfgVal3" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none"></div>
+                        <!-- Config Água -->
+                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-blue-100 lg:col-span-2">
+                            <h3 class="font-bold text-base md:text-lg text-blue-700 mb-3 md:mb-4">💰 Valores da Mensalidade (Água)</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
+                                <div><label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1">Até 10m³ (R$)</label><input type="number" step="0.01" id="cfgVal1" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none text-sm md:text-base"></div>
+                                <div><label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1">De 11m³ a 30m³ (R$)</label><input type="number" step="0.01" id="cfgVal2" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none text-sm md:text-base"></div>
+                                <div><label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1">Acima de 30m³ (R$)</label><input type="number" step="0.01" id="cfgVal3" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none text-sm md:text-base"></div>
                             </div>
-                            <button onclick="window.salvarConfigAgua()" class="mt-4 bg-blue-500 hover:bg-blue-600 transition text-white font-bold py-3 px-6 rounded-xl shadow">💾 Guardar Valores de Água</button>
+                            <button onclick="window.salvarConfigAgua()" class="mt-4 w-full sm:w-auto bg-blue-500 hover:bg-blue-600 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">💾 Guardar Valores</button>
                         </div>
 
-                        <!-- Configuração Multa Automática -->
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-red-100 md:col-span-2">
-                            <h3 class="font-bold text-lg text-red-700 mb-4">🚨 Multa Padrão (Contas em Atraso)</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-500 mb-1">Valor Padrão da Multa (R$)</label>
-                                    <input type="number" step="0.01" id="cfgMulta" class="w-full p-3 border rounded-xl font-bold text-red-600 outline-none">
-                                </div>
-                                <div class="flex items-center text-xs text-gray-500">
-                                    Este valor será preenchido automaticamente ao gerar o lote se o morador estiver inadimplente. Pode ser alterado manualmente na grelha.
-                                </div>
+                        <!-- Config Multa -->
+                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-red-100 lg:col-span-2">
+                            <h3 class="font-bold text-base md:text-lg text-red-700 mb-3 md:mb-4">🚨 Multa Padrão (Atraso)</h3>
+                            <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                                <div class="w-full sm:w-1/3"><label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1">Valor da Multa (R$)</label><input type="number" step="0.01" id="cfgMulta" class="w-full p-3 border rounded-xl font-bold text-red-600 outline-none text-sm md:text-base"></div>
+                                <div class="w-full sm:w-2/3 text-[10px] md:text-xs text-gray-500 leading-relaxed">Valor preenchido automaticamente ao gerar lote se houver pendências. Pode ser alterado na grelha.</div>
                             </div>
-                            <button onclick="window.salvarConfigMulta()" class="mt-4 bg-red-500 hover:bg-red-600 transition text-white font-bold py-3 px-6 rounded-xl shadow">💾 Guardar Valor da Multa</button>
+                            <button onclick="window.salvarConfigMulta()" class="mt-4 w-full sm:w-auto bg-red-500 hover:bg-red-600 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">💾 Guardar Multa</button>
                         </div>
                         
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-blue-100"><h3 class="font-bold text-lg text-blue-700 mb-2">💾 Backup</h3><button onclick="if(window.exportarBase) window.exportarBase()" class="w-full bg-blue-100 hover:bg-blue-200 transition text-blue-700 font-bold py-3 rounded-xl mt-2">Exportar JSON</button></div>
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-100"><h3 class="font-bold text-lg text-emerald-700 mb-2">📂 Importar</h3><input type="file" id="fileImport" accept=".json" class="mb-3 w-full text-sm"><button onclick="if(window.importarBase) window.importarBase()" class="w-full bg-emerald-100 hover:bg-emerald-200 transition text-emerald-700 font-bold py-3 rounded-xl">Importar JSON</button></div>
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-red-100 md:col-span-2"><h3 class="font-bold text-lg text-red-600 mb-2">🗑️ Limpeza Absoluta</h3><button onclick="if(window.limparFaturas) window.limparFaturas()" class="w-full bg-red-600 hover:bg-red-700 transition text-white font-bold py-3 rounded-xl shadow-md">Apagar TODAS as Faturas</button></div>
+                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-blue-100"><h3 class="font-bold text-base md:text-lg text-blue-700 mb-2">💾 Backup</h3><button onclick="if(window.exportarBase) window.exportarBase()" class="w-full bg-blue-100 hover:bg-blue-200 transition text-blue-700 font-bold py-3 rounded-xl mt-2 text-sm md:text-base">Exportar JSON</button></div>
+                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-emerald-100"><h3 class="font-bold text-base md:text-lg text-emerald-700 mb-2">📂 Importar</h3><input type="file" id="fileImport" accept=".json" class="mb-3 w-full text-xs md:text-sm"><button onclick="if(window.importarBase) window.importarBase()" class="w-full bg-emerald-100 hover:bg-emerald-200 transition text-emerald-700 font-bold py-3 rounded-xl text-sm md:text-base">Importar JSON</button></div>
+                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-red-100 lg:col-span-2"><h3 class="font-bold text-base md:text-lg text-red-600 mb-2">🗑️ Limpeza Absoluta</h3><button onclick="if(window.limparFaturas) window.limparFaturas()" class="w-full bg-red-600 hover:bg-red-700 transition text-white font-bold py-3 rounded-xl shadow-md text-sm md:text-base">Apagar TODAS as Faturas</button></div>
                     </div>
                 </div>
             </div>
         </main>
 
-        <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t flex justify-around items-center z-50 pb-2 shadow-inner no-print">
-            <button onclick="mudarAba('aba-moradores', this)" class="w-full p-2 flex flex-col items-center text-blue-600"><i class="fa-solid fa-users text-lg"></i><span class="text-[9px]">Pessoas</span></button>
-            <button onclick="mudarAba('aba-leituras', this)" class="w-full p-2 flex flex-col items-center text-gray-400"><i class="fa-solid fa-pen-to-square text-lg"></i><span class="text-[9px]">Água</span></button>
-            <button onclick="mudarAba('aba-abertas', this)" class="w-full p-2 flex flex-col items-center text-gray-400"><i class="fa-solid fa-hourglass-half text-lg"></i><span class="text-[9px]">Pendentes</span></button>
-            <button onclick="mudarAba('aba-recebimentos', this)" class="w-full p-2 flex flex-col items-center text-gray-400"><i class="fa-solid fa-check-double text-lg"></i><span class="text-[9px]">Pagos</span></button>
-            <button onclick="mudarAba('aba-relatorios', this)" class="w-full p-2 flex flex-col items-center text-gray-400"><i class="fa-solid fa-chart-pie text-lg"></i><span class="text-[9px]">Gráfico</span></button>
+        <!-- MENU MOBILE (BOTTOM NAV) -->
+        <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t flex justify-around items-center z-50 pb-2 pt-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] no-print">
+            <button onclick="mudarAba('aba-moradores', this)" class="w-full p-2 flex flex-col items-center text-blue-600"><i class="fa-solid fa-users text-lg mb-1"></i><span class="text-[9px] font-bold">Pessoas</span></button>
+            <button onclick="mudarAba('aba-leituras', this)" class="w-full p-2 flex flex-col items-center text-gray-400"><i class="fa-solid fa-pen-to-square text-lg mb-1"></i><span class="text-[9px] font-bold">Água</span></button>
+            <button onclick="mudarAba('aba-abertas', this)" class="w-full p-2 flex flex-col items-center text-gray-400"><i class="fa-solid fa-hourglass-half text-lg mb-1"></i><span class="text-[9px] font-bold">Abertas</span></button>
+            <button onclick="mudarAba('aba-recebimentos', this)" class="w-full p-2 flex flex-col items-center text-gray-400"><i class="fa-solid fa-check-double text-lg mb-1"></i><span class="text-[9px] font-bold">Pagos</span></button>
+            <button onclick="mudarAba('aba-relatorios', this)" class="w-full p-2 flex flex-col items-center text-gray-400"><i class="fa-solid fa-chart-pie text-lg mb-1"></i><span class="text-[9px] font-bold">Gráfico</span></button>
         </nav>
     </div>
 
     <!-- MODAL CADASTRO -->
     <div id="modalMorador" class="modal-fundo no-print">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm mx-auto overflow-hidden">
-            <div class="bg-slate-900 p-5 flex justify-between items-center text-white"><h3 id="tituloModal" class="font-bold">Morador</h3><button onclick="fecharModal()" class="text-2xl hover:text-red-400 transition">×</button></div>
-            <form id="formMorador" class="p-6 space-y-4" onsubmit="if(window.submitMorador) window.submitMorador(event)">
+        <div class="bg-white rounded-3xl shadow-2xl w-[95%] md:w-full max-w-sm mx-auto overflow-hidden">
+            <div class="bg-slate-900 p-4 md:p-5 flex justify-between items-center text-white"><h3 id="tituloModal" class="font-bold">Morador</h3><button onclick="fecharModal()" class="text-2xl hover:text-red-400 transition">&times;</button></div>
+            <form id="formMorador" class="p-4 md:p-6 space-y-3 md:space-y-4" onsubmit="if(window.submitMorador) window.submitMorador(event)">
                 <input type="hidden" id="modId">
-                <input type="text" id="modNome" required placeholder="Nome Completo" class="w-full p-3 bg-gray-100 rounded-xl outline-none border focus:border-blue-500">
-                <input type="tel" id="modCpf" required placeholder="CPF (Apenas números)" class="w-full p-3 bg-gray-100 rounded-xl outline-none border focus:border-blue-500">
-                <input type="tel" id="modTel" required placeholder="WhatsApp (DDD+Número)" class="w-full p-3 bg-gray-100 rounded-xl outline-none border focus:border-blue-500">
-                <input type="text" id="modLote" required placeholder="Lote / Morada" class="w-full p-3 bg-gray-100 rounded-xl outline-none border focus:border-blue-500">
-                <div class="flex gap-2 pt-4">
-                    <button type="button" onclick="fecharModal()" class="flex-1 bg-gray-200 py-3 rounded-xl font-bold hover:bg-gray-300 transition">Cancelar</button>
-                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 transition text-white py-3 rounded-xl font-bold">Salvar</button>
+                <input type="text" id="modNome" required placeholder="Nome Completo" class="w-full p-3 md:p-4 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 text-sm md:text-base">
+                <input type="tel" id="modCpf" required placeholder="CPF (Apenas números)" class="w-full p-3 md:p-4 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 text-sm md:text-base">
+                <input type="tel" id="modTel" required placeholder="WhatsApp (DDD+Número)" class="w-full p-3 md:p-4 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 text-sm md:text-base">
+                <input type="text" id="modLote" required placeholder="Lote / Morada" class="w-full p-3 md:p-4 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 text-sm md:text-base">
+                <div class="flex gap-2 pt-2 md:pt-4">
+                    <button type="button" onclick="fecharModal()" class="flex-1 bg-gray-200 py-3 md:py-4 rounded-xl font-bold hover:bg-gray-300 transition text-sm md:text-base">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 transition text-white py-3 md:py-4 rounded-xl font-bold text-sm md:text-base">Salvar</button>
                 </div>
             </form>
         </div>
@@ -315,7 +348,6 @@
             }
         };
 
-        // Pular linha rápida na Grelha
         window.pularLinhaGrelha = (event, atualInput) => {
             if (event.key === "Enter") {
                 event.preventDefault();
@@ -327,7 +359,9 @@
             }
         };
 
-        window.entrarAdmin = () => {
+        // NOVO LOGIN VIA ENTER (Submissão de Form)
+        window.entrarAdmin = (e) => {
+            e.preventDefault();
             if(document.getElementById("senhaAdmin").value === "admin123") {
                 localStorage.setItem("admin_saoluiz_logado", "sim");
                 document.getElementById("loginAdmin").style.display = "none";
@@ -349,9 +383,9 @@
                 else { el.classList.add('text-blue-600'); el.classList.remove('text-gray-400'); }
             }
 
-            if(id === 'aba-leituras') window.carregarLoteFaturas();
-            if(id === 'aba-avulso') window.carregarSelectAvulso();
-            if(id === 'aba-relatorios') window.carregarRelatorio();
+            if(id === 'aba-leituras' && window.carregarLoteFaturas) window.carregarLoteFaturas();
+            if(id === 'aba-avulso' && window.carregarSelectAvulso) window.carregarSelectAvulso();
+            if(id === 'aba-relatorios' && window.carregarRelatorio) window.carregarRelatorio();
             if(id === 'aba-abertas' && window.iniciarListenerAbertas) window.iniciarListenerAbertas();
             if(id === 'aba-recebimentos' && window.iniciarListenerPagos) window.iniciarListenerPagos();
         };
@@ -387,7 +421,7 @@
         window.calcularLinha = (id) => {
             const ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0;
             const atu_str = document.getElementById(`atu-${id}`).value;
-            const atu = atu_str === "" ? ant : parseFloat(atu_str); // Se vazio, assume a leitura anterior
+            const atu = atu_str === "" ? ant : parseFloat(atu_str); 
             
             const multa = parseFloat(document.getElementById(`multa-${id}`).value) || 0;
             const taxa = parseFloat(document.getElementById(`h-taxa-${id}`).value) || 0;
@@ -466,17 +500,17 @@
                 select.value = 'TODOS';
                 displayNome.innerText = "🌟 RATEIO: COBRAR TODOS";
                 displayNome.classList.remove('hidden');
-                displayNome.className = "text-sm font-bold text-blue-700 bg-blue-50 p-2 rounded mt-2";
+                displayNome.className = "text-xs md:text-sm font-bold text-blue-700 bg-blue-50 p-2 md:p-3 rounded-xl mt-2";
             } else if (firstMatchId) {
                 select.value = firstMatchId;
                 displayNome.innerText = `✅ Selecionado: ${firstMatchName}`;
                 displayNome.classList.remove('hidden');
-                displayNome.className = "text-sm font-bold text-green-700 bg-green-50 p-2 rounded mt-2 border border-green-200";
+                displayNome.className = "text-xs md:text-sm font-bold text-green-700 bg-green-50 p-2 md:p-3 rounded-xl mt-2 border border-green-200";
             } else {
                 select.value = "";
                 displayNome.innerText = "❌ Nenhum cliente encontrado";
                 displayNome.classList.remove('hidden');
-                displayNome.className = "text-sm font-bold text-red-700 bg-red-50 p-2 rounded mt-2";
+                displayNome.className = "text-xs md:text-sm font-bold text-red-700 bg-red-50 p-2 md:p-3 rounded-xl mt-2";
             }
         };
 
@@ -530,7 +564,7 @@
             await window.atualizarCacheFamilias();
             let html = "";
             Object.entries(window.familiasGlobal).forEach(([id, f]) => {
-                html += `<tr class="border-b hover:bg-slate-50"><td class="p-3"><strong>${f.nome}</strong><br><small>${f.lote_endereco}</small></td><td class="p-3 text-slate-500 font-mono">${f.cpf}</td><td class="p-3"><button onclick="window.abrirModalEdicao('${id}','${f.nome}','${f.cpf}','${f.telefone}','${f.lote_endereco}')" class="text-blue-600 bg-blue-50 px-3 py-1 rounded font-bold mr-2 transition hover:bg-blue-100">Editar</button><button onclick="window.excluirMorador('${id}','${f.nome}')" class="text-red-600 bg-red-50 px-3 py-1 rounded font-bold transition hover:bg-red-100">🗑️</button></td></tr>`;
+                html += `<tr class="border-b hover:bg-slate-50"><td class="p-3"><strong>${f.nome}</strong><br><small>${f.lote_endereco}</small></td><td class="p-3 text-slate-500 font-mono">${f.cpf}</td><td class="p-3"><button onclick="window.abrirModalEdicao('${id}','${f.nome}','${f.cpf}','${f.telefone}','${f.lote_endereco}')" class="text-blue-600 bg-blue-50 px-3 py-2 md:px-4 md:py-2 rounded-lg font-bold mr-2 transition hover:bg-blue-100 shadow-sm text-xs md:text-sm">Editar</button><button onclick="window.excluirMorador('${id}','${f.nome}')" class="text-red-600 bg-red-50 px-3 py-2 md:px-4 md:py-2 rounded-lg font-bold transition hover:bg-red-100 shadow-sm text-xs md:text-sm">🗑️</button></td></tr>`;
             });
             tbody.innerHTML = html;
         };
@@ -539,7 +573,6 @@
             const corpo = document.getElementById("corpoTabelaLote");
             corpo.innerHTML = "<tr><td colspan='7' class='p-8 text-center text-blue-600 font-bold'>A sincronizar dados recentes do servidor...</td></tr>";
             try {
-                // ATUALIZAÇÃO FORÇADA: Sempre atualiza o cache para garantir que apanha as taxas marcadas recentemente
                 await window.atualizarCacheFamilias();
                 
                 const fatSnap = await getDocs(collection(db, "faturas"));
@@ -557,31 +590,30 @@
                     const taxaPendente = f.taxa_pendente_valor || 0;
                     const descTaxa = f.taxa_pendente_desc || "";
                     
-                    const avisoTaxa = taxaPendente > 0 ? `<br><span class="text-blue-600 font-black text-[10px] uppercase bg-blue-50 px-1 rounded inline-block mt-1">+ R$ ${taxaPendente} (${descTaxa})</span>` : "";
+                    const avisoTaxa = taxaPendente > 0 ? `<br><span class="text-blue-600 font-black text-[9px] md:text-[10px] uppercase bg-blue-50 px-1 rounded inline-block mt-1">+ R$ ${taxaPendente} (${descTaxa})</span>` : "";
 
                     html += `
                         <tr id="linha-${famId}" class="hover:bg-blue-50 border-b">
-                            <td class="p-3 coluna-fixa leading-tight">
-                                <strong class="text-xs text-slate-800">${f.nome}</strong><br>
+                            <td class="p-2 md:p-3 coluna-fixa leading-tight">
+                                <strong class="text-[11px] md:text-xs text-slate-800">${f.nome}</strong><br>
                                 <small class="text-gray-400 font-normal">${f.cpf}</small>
                                 ${avisoTaxa}
                             </td>
-                            <td class="p-3 text-center"><input type="number" id="ant-${famId}" value="${ultimaLeitura}" onkeyup="window.calcularLinha('${famId}')" class="input-leitura w-32 p-3 border bg-gray-100 rounded-xl text-center outline-none text-gray-600 font-bold"></td>
-                            <td class="p-3 text-center"><input type="number" id="atu-${famId}" onkeyup="window.calcularLinha('${famId}')" onkeydown="window.pularLinhaGrelha(event, this)" class="input-leitura w-32 p-3 border-2 border-blue-400 bg-blue-50 rounded-xl text-center font-black outline-none text-blue-800"></td>
-                            <td class="p-3 text-center font-bold text-blue-600"><span id="cons-${famId}">0</span><span class="text-xs ml-1">m³</span></td>
-                            <td class="p-3 text-center"><input type="number" step="0.01" id="multa-${famId}" value="${multa}" onkeyup="window.calcularLinha('${famId}')" class="w-24 p-3 border border-red-200 rounded-xl text-center outline-none text-red-600 font-bold"></td>
-                            <td class="p-3 text-right font-black text-green-700 text-lg">R$ <span id="valTotal-${famId}">0,00</span>
+                            <td class="p-2 md:p-3 text-center"><input type="number" id="ant-${famId}" value="${ultimaLeitura}" onkeyup="window.calcularLinha('${famId}')" class="input-leitura p-2 md:p-3 border bg-gray-100 rounded-xl text-center outline-none text-gray-600 font-bold"></td>
+                            <td class="p-2 md:p-3 text-center"><input type="number" id="atu-${famId}" onkeyup="window.calcularLinha('${famId}')" onkeydown="window.pularLinhaGrelha(event, this)" class="input-leitura p-2 md:p-3 border-2 border-blue-400 bg-blue-50 rounded-xl text-center font-black outline-none text-blue-800"></td>
+                            <td class="p-2 md:p-3 text-center font-bold text-blue-600"><span id="cons-${famId}">0</span><span class="text-[10px] md:text-xs ml-1">m³</span></td>
+                            <td class="p-2 md:p-3 text-center"><input type="number" step="0.01" id="multa-${famId}" value="${multa}" onkeyup="window.calcularLinha('${famId}')" class="w-16 md:w-24 p-2 md:p-3 border border-red-200 rounded-xl text-center outline-none text-red-600 font-bold text-sm md:text-base"></td>
+                            <td class="p-2 md:p-3 text-right font-black text-green-700 text-sm md:text-lg">R$ <span id="valTotal-${famId}">0,00</span>
                                 <input type="hidden" id="h-total-${famId}" value="0" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}">
                                 <input type="hidden" id="h-agua-${famId}" value="0">
                                 <input type="hidden" id="h-taxa-${famId}" value="${taxaPendente}" data-desc="${descTaxa}">
                             </td>
-                            <td class="p-3 text-center" id="status-${famId}"><span class="bg-gray-200 px-3 py-1 rounded-full text-[10px] text-gray-500 font-bold uppercase">Espera</span></td>
+                            <td class="p-2 md:p-3 text-center" id="status-${famId}"><span class="bg-gray-200 px-2 py-1 md:px-3 md:py-1 rounded-full text-[9px] md:text-[10px] text-gray-500 font-bold uppercase">Espera</span></td>
                         </tr>
                     `;
                 });
                 corpo.innerHTML = html;
 
-                // Força o cálculo inicial de todas as linhas (Faz com que as taxas e multas apareçam logo no total R$)
                 Object.keys(window.familiasGlobal).forEach(famId => {
                     if(document.getElementById(`atu-${famId}`)) window.calcularLinha(famId);
                 });
@@ -598,7 +630,6 @@
                 const taxa = parseFloat(document.getElementById(`h-taxa-${id}`).value) || 0;
                 const multa = parseFloat(document.getElementById(`multa-${id}`).value) || 0;
                 const total = parseFloat(i.value) || 0;
-                // Exige que algo tenha sido faturado (Água nova, Multa avulsa ou Taxa pendente)
                 return total > 0 && (atuVal !== "" || taxa > 0 || multa > 0);
             });
 
@@ -635,7 +666,7 @@
                         
                         await updateDoc(doc(db, "familias", id), { ultima_leitura: l_atu, taxa_pendente_valor: 0, taxa_pendente_desc: "" });
                         
-                        document.getElementById(`status-${id}`).innerHTML = `<span class="bg-green-100 text-green-700 px-3 py-1.5 rounded-xl text-xs font-bold shadow-sm">Salvo!</span>`;
+                        document.getElementById(`status-${id}`).innerHTML = `<span class="bg-green-100 text-green-700 px-3 py-1.5 rounded-xl text-[10px] md:text-xs font-bold shadow-sm">Salvo!</span>`;
                         document.getElementById(`atu-${id}`).disabled = true;
                         document.getElementById(`multa-${id}`).disabled = true;
                     }
@@ -701,9 +732,9 @@
                     const isOverdue = new Date(f.vencimento + "T00:00:00") < hoje;
                     const rowClass = isOverdue ? "bg-red-50" : "hover:bg-amber-50";
                     const tel = f.telefone || window.familiasGlobal[f.familia_id]?.telefone;
-                    const zap = `💧 *ÁGUA SÃO LUIZ*\nOlá *${f.nome_morador}*! 👋\n\nA sua fatura de ${f.mes_referencia} está disponível. 🏠✨\n\n💰 *Total:* R$ ${f.valor_total.toFixed(2)}\n📅 *Venc:* ${f.vencimento.split('-').reverse().join('/')}\n\n👉 *Acesse o site para ver e pagar o PIX:*\nhttps://agua-sao-luiz.vercel.app\n\n🔐 *Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456 (caso não tenha alterado).*`;
-                    const btnZap = `<button onclick="window.open('https://wa.me/${tel}?text=${encodeURIComponent(zap)}')" class="bg-green-500 text-white px-3 py-2 rounded-lg text-xs font-bold shadow mr-1 transition hover:bg-green-600"><i class="fa-brands fa-whatsapp"></i></button>`;
-                    html += `<tr class="${rowClass} border-b"><td class="p-4 font-mono text-sm">${isOverdue ? "🚨 " : "⏳ "}${f.vencimento.split('-').reverse().join('/')}</td><td class="p-4"><strong>${f.nome_morador}</strong><br><small class="text-gray-500">${f.mes_referencia}</small></td><td class="p-4 text-right font-bold text-amber-700">R$ ${f.valor_total.toFixed(2)}</td><td class="p-4 text-right whitespace-nowrap">${btnZap} <button onclick="window.marcarPago('${f.id}')" class="bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-bold mr-1 transition hover:bg-blue-700">Baixa</button> <button onclick="window.excluirFatura('${f.id}')" class="bg-red-100 text-red-600 px-3 py-2 rounded-lg text-xs font-bold transition hover:bg-red-200">🗑️</button></td></tr>`;
+                    const zap = `💧 *ÁGUA SÃO LUIZ*\nOlá *${f.nome_morador}*! 👋\n\nA sua fatura de ${f.mes_referencia} está disponível. 🏠✨\n\n💰 *Total:* R$ ${f.valor_total.toFixed(2)}\n📅 *Venc:* ${f.vencimento.split('-').reverse().join('/')}\n\n👉 *Aceda ao site para ver e pagar o PIX:*\nhttps://agua-sao-luiz.vercel.app\n\n🔐 *Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456 (caso não tenha alterado).*`;
+                    const btnZap = `<button onclick="window.open('https://wa.me/${tel}?text=${encodeURIComponent(zap)}')" class="bg-green-500 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg text-[10px] md:text-xs font-bold shadow mr-1 transition hover:bg-green-600"><i class="fa-brands fa-whatsapp"></i></button>`;
+                    html += `<tr class="${rowClass} border-b"><td class="p-3 md:p-4 font-mono text-[10px] md:text-sm">${isOverdue ? "🚨 " : "⏳ "}${f.vencimento.split('-').reverse().join('/')}</td><td class="p-3 md:p-4"><strong>${f.nome_morador}</strong><br><small class="text-gray-500 text-[10px] md:text-xs">${f.mes_referencia}</small></td><td class="p-3 md:p-4 text-right font-bold text-amber-700 text-sm md:text-base">R$ ${f.valor_total.toFixed(2)}</td><td class="p-3 md:p-4 text-right whitespace-nowrap">${btnZap} <button onclick="window.marcarPago('${f.id}')" class="bg-blue-600 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg text-[10px] md:text-xs font-bold mr-1 transition hover:bg-blue-700">Baixa</button> <button onclick="window.excluirFatura('${f.id}')" class="bg-red-100 text-red-600 px-3 py-2 md:px-4 md:py-2 rounded-lg text-[10px] md:text-xs font-bold transition hover:bg-red-200">🗑️</button></td></tr>`;
                 }
                 tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center text-green-600 font-bold'>Tudo Pago!</td></tr>";
             });
@@ -722,7 +753,7 @@
                     const dt = new Date(p.data_pagamento);
                     const dtF = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
                     const nsu = p.pix_txid ? `NSU: ${p.pix_txid.slice(-6)}` : '';
-                    html += `<tr class="border-b"><td class="p-4 text-xs font-mono text-gray-500">${dtF} <br><span class="text-[9px] text-green-600 font-bold uppercase">${nsu}</span></td><td class="p-4 font-bold">${p.nome_morador}</td><td class="p-4 text-right font-black text-green-600">R$ ${p.valor_total.toFixed(2)}</td><td class="p-4 text-center"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold uppercase shadow-sm">Confirmado</span></td></tr>`;
+                    html += `<tr class="border-b"><td class="p-3 md:p-4 text-[10px] md:text-xs font-mono text-gray-500">${dtF} <br><span class="text-[8px] md:text-[9px] text-green-600 font-bold uppercase">${nsu}</span></td><td class="p-3 md:p-4 font-bold text-sm md:text-base">${p.nome_morador}</td><td class="p-3 md:p-4 text-right font-black text-green-600 text-sm md:text-base">R$ ${p.valor_total.toFixed(2)}</td><td class="p-3 md:p-4 text-center"><span class="bg-green-100 text-green-700 px-2 py-1 md:px-3 md:py-1 rounded-lg text-[9px] md:text-[10px] font-bold uppercase shadow-sm">Confirmado</span></td></tr>`;
                 }
                 tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center text-gray-400'>Nenhum recebimento.</td></tr>";
             });
@@ -731,6 +762,8 @@
         window.excluirFatura = async (id) => { if(confirm("Tem certeza que deseja apagar?")) { await deleteDoc(doc(db, "faturas", id)); } };
         window.marcarPago = async (id) => { if(confirm("Confirmar baixa de pagamento manual?")) { await updateDoc(doc(db, "faturas", id), {status: "pago", data_pagamento: new Date().toISOString()}); } };
 
+        // --- RELATÓRIOS COM ORDENAÇÃO INTELIGENTE (PENDENTES NO TOPO) ---
+        let todasFaturasCache = [];
         window.carregarRelatorio = async () => {
             window.mostrarLoading("A consultar...");
             const snap = await getDocs(collection(db, "faturas"));
@@ -745,6 +778,7 @@
             const dtFim = document.getElementById("relDataFim").value;
             const statusF = document.getElementById("relStatus").value;
             const termo = document.getElementById("relBusca").value.toLowerCase();
+            
             let filtradas = faturas.filter(f => {
                 let matchD = true;
                 if(dtIni || dtFim) {
@@ -756,19 +790,29 @@
                 let matchB = !termo || (f.nome_morador || "").toLowerCase().includes(termo);
                 return matchD && matchS && matchB;
             });
-            filtradas.sort((a,b) => new Date(b.vencimento) - new Date(a.vencimento));
+
+            // NOVO SISTEMA DE ORDENAÇÃO
+            filtradas.sort((a,b) => {
+                // 1. Força as pendentes para o topo
+                if (a.status !== b.status) {
+                    return a.status === 'pendente' ? -1 : 1;
+                }
+                // 2. Ordena por data (as mais recentes primeiro)
+                return new Date(b.vencimento) - new Date(a.vencimento);
+            });
+
             let tPago = 0, tPend = 0, tM3 = 0, html = "";
             filtradas.forEach(f => {
                 if(f.status === "pago") tPago += f.valor_total; else tPend += f.valor_total;
                 tM3 += (f.consumo_m3 || 0);
                 const badge = f.status === 'pago' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
-                html += `<tr class="border-b hover:bg-slate-50"><td class="p-4 font-bold text-slate-800">${f.nome_morador}</td><td class="p-4 text-xs">${f.mes_referencia}<br>Venc: ${f.vencimento.split('-').reverse().join('/')}</td><td class="p-4 text-center font-bold">${f.consumo_m3 || 0} m³</td><td class="p-4 text-center"><span class="px-2 py-1 rounded text-[10px] uppercase font-bold ${badge}">${f.status}</span></td><td class="p-4 text-right font-black">R$ ${f.valor_total.toFixed(2)}</td></tr>`;
+                html += `<tr class="border-b hover:bg-slate-50"><td class="p-3 md:p-4 pl-4 font-bold text-slate-800 text-xs md:text-sm">${f.nome_morador}</td><td class="p-3 md:p-4 text-[10px] md:text-xs">${f.mes_referencia}<br>Venc: ${f.vencimento.split('-').reverse().join('/')}</td><td class="p-3 md:p-4 text-center font-bold text-blue-600 text-xs md:text-sm">${f.consumo_m3 || 0} m³</td><td class="p-3 md:p-4 text-center"><span class="px-2 py-1 rounded text-[9px] md:text-[10px] uppercase font-bold ${badge}">${f.status}</span></td><td class="p-3 md:p-4 text-right font-black pr-4 text-sm md:text-base">R$ ${f.valor_total.toFixed(2)}</td></tr>`;
             });
             document.getElementById("relCardM3").innerText = tM3.toFixed(0);
             document.getElementById("relCardQtd").innerText = filtradas.length;
             document.getElementById("relCardPendente").innerText = "R$ " + tPend.toFixed(2).replace('.',',');
             document.getElementById("relCardPago").innerText = "R$ " + tPago.toFixed(2).replace('.',',');
-            document.getElementById("tabelaRelatorio").innerHTML = html || "<tr><td colspan='5' class='p-8 text-center'>Sem resultados.</td></tr>";
+            document.getElementById("tabelaRelatorio").innerHTML = html || "<tr><td colspan='5' class='p-8 text-center text-gray-400'>Sem resultados.</td></tr>";
         };
 
         window.exportarBase = async () => {
