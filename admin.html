@@ -462,7 +462,7 @@
                     html += `
                         <tr id="linha-${famId}" class="hover:bg-blue-50">
                             <td class="p-2 coluna-fixa leading-tight">
-                                <strong class="text-xs text-slate-800">${f.nome.split(' ')[0]}</strong><br>
+                                <strong class="text-xs text-slate-800">${f.nome}</strong><br>
                                 <small class="text-gray-400 font-normal">${f.cpf}</small>
                                 ${avisoTaxa}
                             </td>
@@ -648,8 +648,10 @@
                 let html = "";
                 for(let p of pagas) {
                     const dataObj = new Date(p.data_pagamento);
-                    const dtFormat = dataObj.toLocaleDateString('pt-BR');
-                    html += `<tr class="border-b"><td class="p-4 text-xs font-mono text-gray-500">${dtFormat}</td><td class="p-4 font-bold">${p.nome_morador || "Morador"}</td><td class="p-4 text-right font-black text-green-600">R$ ${p.valor_total.toFixed(2)}</td><td class="p-4 text-center"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold uppercase">Recebido via Pix</span></td></tr>`;
+                    const dtFormat = dataObj.toLocaleDateString('pt-BR') + ' ' + dataObj.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+                    // Usamos o ID do PIX se disponível para simular um NSU (Número Sequencial Único) do banco.
+                    const nsu = p.pix_txid ? `NSU: ${p.pix_txid.slice(-6)}` : '';
+                    html += `<tr class="border-b"><td class="p-4 text-xs font-mono text-gray-500">${dtFormat} <br><span class="text-[9px] text-green-600 font-bold">${nsu}</span></td><td class="p-4 font-bold">${p.nome_morador || "Morador"}</td><td class="p-4 text-right font-black text-green-600">R$ ${p.valor_total.toFixed(2)}</td><td class="p-4 text-center"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold uppercase">Recebido via Pix</span></td></tr>`;
                 }
                 tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center'>Nenhum pagamento.</td></tr>";
             });
