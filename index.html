@@ -3,109 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minha Conta - Água São Luiz</title>
+    <title>Meu Consumo - Água São Luiz</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; color: #333; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
         
-        header { background-color: #0056b3; color: white; padding: 20px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        header h1 { margin: 0; font-size: 24px; }
-        header p { margin: 5px 0 0 0; font-size: 14px; opacity: 0.9; }
-
-        .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
+        /* Modal de Pagamento */
+        .modal-fundo { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; justify-content: center; align-items: center; padding: 1rem; backdrop-filter: blur(4px); }
         
-        #telaLogin { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; margin-top: 50px; }
-        #telaLogin input { width: 100%; max-width: 300px; padding: 12px; margin: 15px 0; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; text-align: center; }
-        .btn-principal { background-color: #28a745; color: white; padding: 12px 20px; border: none; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; width: 100%; max-width: 300px; }
-        
-        #painelInterno { display: none; }
-        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .card h2 { margin-top: 0; color: #0056b3; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; font-size: 20px; }
-
-        .fatura-alerta { background: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; border-radius: 6px; margin-bottom: 20px; display: none; }
-        .pix-box { background: #f8f9fa; border: 1px dashed #ccc; padding: 15px; text-align: center; margin-top: 15px; border-radius: 6px; }
-        .pix-box textarea { width: 100%; height: 60px; font-size: 12px; margin-top: 10px; padding: 5px; box-sizing: border-box; resize: none; border-radius: 4px; border: 1px solid #ccc; }
-
-        .tabela-responsiva { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th { background-color: #f8f9fa; padding: 12px; text-align: left; font-size: 14px; color: #555; border-bottom: 2px solid #ddd; }
-        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 14px; }
-        
-        .status-pendente { color: #d9534f; font-weight: bold; }
-        .status-pago { color: #28a745; font-weight: bold; }
-
-        .btn-pdf { background-color: #17a2b8; color: white; padding: 10px 15px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; float: right; }
-
+        /* Regras para Impressão (PDF) */
+        .no-print { display: block; }
         @media print {
-            body { background: white; }
             .no-print { display: none !important; }
-            .card { box-shadow: none; border: 1px solid #ccc; margin-bottom: 10px; }
-            header { background: white; color: black; border-bottom: 2px solid black; }
+            .card-print { border: 1px solid #e2e8f0; box-shadow: none !important; }
+            body { background: white; }
+            #modalPagamento { display: none !important; }
         }
     </style>
 </head>
-<body>
+<body class="p-4 md:p-8">
 
-    <header>
-        <h1>💧 Sistema Água São Luiz</h1>
-        <p class="no-print">Portal Transparente do Morador</p>
+    <!-- CABEÇALHO -->
+    <header class="max-w-4xl mx-auto mb-8 flex flex-col sm:flex-row justify-between items-center border-b pb-6 gap-4">
+        <div class="text-center sm:text-left">
+            <h1 class="text-3xl font-black text-blue-700 tracking-tight">💧 ÁGUA SÃO LUIZ</h1>
+            <p class="text-slate-500 font-medium uppercase text-xs tracking-widest mt-1">Portal Transparente do Morador</p>
+        </div>
+        <button onclick="window.print()" class="no-print bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold py-2 px-4 rounded-xl transition flex items-center gap-2 shadow-sm">
+            <span>🖨️</span> Salvar Extrato (PDF)
+        </button>
     </header>
 
-    <div class="container">
-        <div id="telaLogin" class="no-print">
-            <h2>Bem-vindo!</h2>
-            <p style="color: #666;">Digite o seu CPF para acessar suas faturas e histórico de consumo.</p>
-            <input type="tel" id="cpfLogin" placeholder="Somente números">
-            <br>
-            <button class="btn-principal" onclick="acessarPainel()">Acessar Minhas Contas</button>
-            <p id="erroLogin" style="color: red; display: none; font-weight: bold; margin-top: 15px;">CPF não encontrado.</p>
+    <main class="max-w-4xl mx-auto space-y-6">
+        
+        <!-- TELA DE LOGIN -->
+        <div id="loginArea" class="bg-white p-8 md:p-12 rounded-3xl shadow-xl border text-center no-print max-w-md mx-auto mt-10">
+            <div class="bg-blue-100 text-blue-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">👤</div>
+            <h2 class="text-2xl font-bold mb-2 text-slate-800">Acesse sua conta</h2>
+            <p class="text-slate-500 text-sm mb-8">Digite o CPF do titular para consultar faturas, multas e QR Code.</p>
+            
+            <input type="tel" id="cpfLogin" placeholder="Somente números do CPF" class="w-full p-4 border-2 border-slate-200 rounded-2xl text-center text-xl font-mono outline-none focus:border-blue-500 focus:bg-blue-50 transition mb-4">
+            
+            <button onclick="acessar()" id="btnAcessar" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-[0_8px_15px_rgba(37,99,235,0.3)] active:scale-95 transition text-lg">
+                Consultar Débitos
+            </button>
+            <p id="erro" class="text-red-500 font-bold mt-4 hidden bg-red-50 py-2 rounded-lg text-sm border border-red-100">❌ CPF não localizado em nossa base.</p>
         </div>
 
-        <div id="painelInterno">
+        <!-- PAINEL DO CLIENTE (OCULTO POR PADRÃO) -->
+        <div id="painelCliente" class="hidden space-y-6">
             
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;" class="no-print">
-                <h3 id="nomeMorador" style="color: #333;">Olá, Morador</h3>
-                <button class="btn-pdf" onclick="window.print()">🖨️ Salvar Extrato PDF</button>
-            </div>
-
-            <div id="avisoFaturaAberta" class="fatura-alerta no-print">
-                <h3 style="margin-top:0; color: #856404;">⚠️ Você tem uma fatura em aberto!</h3>
-                <p>Referência: <strong id="refAberta">--</strong> | Valor Total: <strong id="valAberta">--</strong></p>
-                
-                <div class="pix-box">
-                    <strong>📱 Pague escaneando o QR Code:</strong><br>
-                    <!-- IMAGEM DO QR CODE ADICIONADA AQUI -->
-                    <img id="imgQrCodeAberta" src="" style="width: 200px; height: 200px; margin: 15px auto; display: block; border: 2px solid #ddd; border-radius: 8px;">
-                    
-                    <p style="font-size: 14px; margin-top: 15px;"><strong>Ou use a opção Pix Copia e Cola:</strong></p>
-                    <textarea id="codigoPixAberta" readonly></textarea>
+            <div class="bg-blue-50 border border-blue-100 p-4 rounded-2xl flex justify-between items-center no-print">
+                <div>
+                    <p class="text-xs text-blue-500 font-bold uppercase tracking-wider">Bem-vindo(a)</p>
+                    <h2 class="text-xl font-black text-blue-800" id="nomeCliente">---</h2>
                 </div>
             </div>
 
-            <div class="card">
-                <h2>Histórico de Consumo e Faturas</h2>
-                <div class="tabela-responsiva">
-                    <table id="tabelaHistorico">
+            <!-- TABELA DE HISTÓRICO COM BOTÕES DE PAGAMENTO INDIVIDUAIS -->
+            <div class="bg-white p-4 md:p-8 rounded-3xl shadow-sm border card-print overflow-hidden relative">
+                <h3 class="text-lg font-bold mb-6 flex items-center gap-2 text-slate-700">📊 Suas Faturas e Consumo</h3>
+                
+                <div class="overflow-x-auto pb-4">
+                    <table class="w-full text-left border-collapse whitespace-nowrap min-w-[600px]">
                         <thead>
-                            <tr>
-                                <th>Mês / Ref</th>
-                                <th>Leit. Anterior</th>
-                                <th>Leit. Atual</th>
-                                <th>Consumo</th>
-                                <th>Valor Total</th>
-                                <th>Vencimento</th>
-                                <th>Status</th>
+                            <tr class="text-slate-400 uppercase text-[10px] font-bold tracking-widest border-b-2 border-slate-100">
+                                <th class="pb-3 pl-2">Mês Ref.</th>
+                                <th class="pb-3 text-center">Consumo</th>
+                                <th class="pb-3 text-center">Vencimento</th>
+                                <th class="pb-3 text-right">Valor Total</th>
+                                <th class="pb-3 text-center">Situação / Ação</th>
                             </tr>
                         </thead>
-                        <tbody id="corpoHistorico">
-                            <tr><td colspan="7" style="text-align: center;">Carregando seu histórico...</td></tr>
+                        <tbody id="listaHistorico" class="divide-y divide-slate-100 text-sm text-slate-700">
+                            <!-- Preenchido via Javascript -->
+                            <tr><td colspan="5" class="py-8 text-center">Buscando faturas...</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
+        </div>
+    </main>
 
+    <!-- MODAL DE PAGAMENTO ESPECÍFICO (ABRE QUANDO CLICA EM PAGAR) -->
+    <div id="modalPagamento" class="modal-fundo no-print">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm mx-auto overflow-hidden animate-[fade-in_0.2s_ease-out]">
+            
+            <div class="bg-slate-900 p-4 flex justify-between items-center text-white">
+                <h3 class="font-bold text-lg">Pagar Fatura <span id="modRef" class="text-blue-400"></span></h3>
+                <button onclick="fecharPagamento()" class="text-slate-400 hover:text-white text-2xl px-2">×</button>
+            </div>
+            
+            <div class="p-6 bg-slate-50 border-b border-slate-200">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Detalhamento da Cobrança</p>
+                <div class="space-y-2 text-sm text-slate-600 mb-4">
+                    <div class="flex justify-between"><span>💧 Água / Consumo:</span> <strong id="modAgua">R$ 0,00</strong></div>
+                    <div id="linhaMulta" class="flex justify-between text-red-600 hidden"><span>🚨 Multa por Atraso:</span> <strong id="modMulta">R$ 0,00</strong></div>
+                    <div id="linhaTaxa" class="flex justify-between text-blue-600 hidden"><span>🔧 Serviços Avulsos:</span> <strong id="modTaxa">R$ 0,00</strong></div>
+                </div>
+                <div class="flex justify-between items-center pt-3 border-t border-slate-200">
+                    <span class="font-bold text-slate-800">Total a Pagar:</span>
+                    <span class="text-2xl font-black text-green-600" id="modTotal">R$ 0,00</span>
+                </div>
+            </div>
+
+            <div class="p-6 text-center">
+                <p class="text-xs font-bold text-slate-400 mb-3 uppercase">Escanear QR Code</p>
+                <div class="bg-white p-2 inline-block rounded-xl border-2 border-dashed border-slate-300 mb-4">
+                    <img id="modImgQr" class="w-48 h-48" src="">
+                </div>
+                
+                <p class="text-xs font-bold text-slate-400 mb-2 uppercase">Ou copie o código Pix</p>
+                <button onclick="copiarPixAtual()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition shadow-lg flex justify-center items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                    Copiar Pix Copia e Cola
+                </button>
+            </div>
+            
         </div>
     </div>
 
+    <!-- TOAST DE SUCESSO AO COPIAR -->
+    <div id="toast" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-full font-bold shadow-lg transition-opacity duration-300 opacity-0 pointer-events-none z-[110]">
+        ✅ Código copiado com sucesso!
+    </div>
+
+    <!-- Scripts -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -119,87 +143,171 @@
             appId: "1:815174423700:web:d1ffa58c09738c29a99081",
             measurementId: "G-K300HKHY2J"
         };
-
         const db = getFirestore(initializeApp(firebaseConfig));
 
-        window.acessarPainel = async () => {
-            const btn = document.querySelector(".btn-principal");
-            const erro = document.getElementById("erroLogin");
-            let cpfDigitado = document.getElementById("cpfLogin").value.replace(/\D/g, '');
+        let faturasDoCliente = []; // Guarda todas as faturas para usar no modal
+        let pixCopiaEColaAtual = ""; // Guarda o código da fatura selecionada no momento
+
+        window.acessar = async () => {
+            const cpfInput = document.getElementById("cpfLogin").value;
+            const cpf = cpfInput.replace(/\D/g, ''); // Tira pontos e traços
+            const btn = document.getElementById("btnAcessar");
+            const erro = document.getElementById("erro");
             
-            if(!cpfDigitado) return alert("Digite o CPF!");
-
-            btn.innerText = "Buscando..."; btn.disabled = true; erro.style.display = "none";
-
+            if(!cpf) return;
+            
+            btn.innerText = "Buscando dados..."; 
+            btn.disabled = true;
+            erro.classList.add('hidden');
+            
             try {
-                const q = query(collection(db, "familias"), where("cpf", "==", cpfDigitado));
-                const querySnapshot = await getDocs(q);
+                const q = query(collection(db, "familias"), where("cpf", "==", cpf));
+                const snap = await getDocs(q);
                 
-                if (querySnapshot.empty) {
-                    erro.style.display = "block"; btn.innerText = "Acessar Minhas Contas"; btn.disabled = false;
+                if(snap.empty) {
+                    erro.classList.remove('hidden');
+                    btn.innerText = "Consultar Débitos"; 
+                    btn.disabled = false;
                     return;
                 }
 
-                let familiaId = ""; let familiaNome = "";
-                querySnapshot.forEach((doc) => { familiaId = doc.id; familiaNome = doc.data().nome; });
-
-                document.getElementById("telaLogin").style.display = "none";
-                document.getElementById("painelInterno").style.display = "block";
-                document.getElementById("nomeMorador").innerText = `Olá, ${familiaNome}`;
-
-                buscarFaturas(familiaId);
-            } catch (error) {
-                alert("Erro de conexão."); btn.innerText = "Acessar"; btn.disabled = false;
+                let id = ""; 
+                let nome = "";
+                snap.forEach(d => { 
+                    id = d.id; 
+                    nome = d.data().nome; 
+                });
+                
+                document.getElementById("loginArea").classList.add('hidden');
+                document.getElementById("painelCliente").classList.remove('hidden');
+                document.getElementById("nomeCliente").innerText = nome;
+                
+                carregarDados(id);
+            } catch(e) { 
+                alert("Erro de conexão. Verifique sua internet."); 
+                btn.innerText = "Consultar Débitos"; 
+                btn.disabled = false;
             }
         };
 
-        async function buscarFaturas(familiaId) {
-            const corpo = document.getElementById("corpoHistorico");
+        async function carregarDados(familiaId) {
+            const tbody = document.getElementById("listaHistorico");
             try {
-                const qFaturas = query(collection(db, "faturas"), where("familia_id", "==", familiaId));
-                const faturasSnap = await getDocs(qFaturas);
+                const q = query(collection(db, "faturas"), where("familia_id", "==", familiaId));
+                const snap = await getDocs(q);
                 
-                if (faturasSnap.empty) {
-                    corpo.innerHTML = "<tr><td colspan='7' style='text-align:center;'>Nenhum histórico.</td></tr>";
+                faturasDoCliente = [];
+                snap.forEach(d => faturasDoCliente.push({ id_firebase: d.id, ...d.data() }));
+                
+                // Ordena: Primeiro as pendentes, depois por data de vencimento
+                faturasDoCliente.sort((a,b) => {
+                    if (a.status === 'pendente' && b.status === 'pago') return -1;
+                    if (a.status === 'pago' && b.status === 'pendente') return 1;
+                    return new Date(b.vencimento) - new Date(a.vencimento);
+                });
+
+                if (faturasDoCliente.length === 0) {
+                    tbody.innerHTML = "<tr><td colspan='5' class='py-8 text-center text-slate-400'>Nenhum histórico encontrado para este CPF.</td></tr>";
                     return;
                 }
 
-                let htmlHistorico = ""; let temPendente = false;
+                let html = "";
+                const hoje = new Date(); hoje.setHours(0,0,0,0);
 
-                faturasSnap.forEach((doc) => {
-                    const f = doc.data();
-                    const statusClass = f.status === 'pendente' ? 'status-pendente' : 'status-pago';
-                    const statusTexto = f.status === 'pendente' ? 'Aberto' : 'Pago';
-                    const valorFormatado = parseFloat(f.valor_total).toFixed(2).replace('.', ',');
+                faturasDoCliente.forEach(f => {
+                    const isPago = f.status === 'pago';
+                    const dataVencObj = new Date(f.vencimento + "T00:00:00");
+                    const isAtrasado = !isPago && (dataVencObj < hoje);
                     
-                    htmlHistorico += `
-                        <tr>
-                            <td><strong>${f.mes_referencia}</strong></td>
-                            <td>${f.leitura_anterior || '--'}</td>
-                            <td>${f.leitura_atual || '--'}</td>
-                            <td>${f.consumo_m3 !== undefined ? f.consumo_m3 + ' m³' : '--'}</td>
-                            <td>R$ ${valorFormatado}</td>
-                            <td>${f.vencimento.split('-').reverse().join('/')}</td>
-                            <td class="${statusClass}">${statusTexto}</td>
+                    const vencFormatado = f.vencimento.split('-').reverse().join('/');
+                    const consumoTxt = f.consumo_m3 !== undefined ? f.consumo_m3 + ' m³' : '--';
+                    const valorTotalStr = "R$ " + (f.valor_total || 0).toFixed(2).replace('.',',');
+
+                    // Lógica visual da última coluna (Ação/Status)
+                    let acaoHtml = "";
+                    if (isPago) {
+                        acaoHtml = `<span class="bg-green-100 text-green-700 px-3 py-1.5 rounded-lg text-[11px] font-black uppercase tracking-wider">✓ Pago</span>`;
+                    } else if (isAtrasado) {
+                        acaoHtml = `<button onclick="abrirPagamento('${f.id_firebase}')" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md shadow-red-500/30 active:scale-95 transition flex items-center justify-center mx-auto gap-1">🚨 Pagar Atrasada</button>`;
+                    } else {
+                        acaoHtml = `<button onclick="abrirPagamento('${f.id_firebase}')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md shadow-blue-500/30 active:scale-95 transition flex items-center justify-center mx-auto gap-1">💳 Pagar Fatura</button>`;
+                    }
+
+                    html += `
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="py-4 pl-2 font-bold text-slate-800">${f.mes_referencia}</td>
+                            <td class="py-4 text-center font-bold text-slate-500">${consumoTxt}</td>
+                            <td class="py-4 text-center text-sm ${isAtrasado ? 'text-red-500 font-bold' : 'text-slate-600'}">${vencFormatado}</td>
+                            <td class="py-4 text-right font-black text-lg text-slate-900">${valorTotalStr}</td>
+                            <td class="py-4 text-center">${acaoHtml}</td>
                         </tr>
                     `;
-
-                    if(f.status === 'pendente' && !temPendente) {
-                        temPendente = true;
-                        document.getElementById("avisoFaturaAberta").style.display = "block";
-                        document.getElementById("refAberta").innerText = f.mes_referencia;
-                        document.getElementById("valAberta").innerText = `R$ ${valorFormatado}`;
-                        document.getElementById("codigoPixAberta").value = f.pix_copia_cola;
-                        
-                        // MÁGICA: Puxa o QR Code do banco de dados e exibe a imagem
-                        if(f.qr_code_base64) {
-                            document.getElementById("imgQrCodeAberta").src = "data:image/jpeg;base64," + f.qr_code_base64;
-                        }
-                    }
                 });
-                corpo.innerHTML = htmlHistorico;
-            } catch (error) { corpo.innerHTML = "<tr><td colspan='7' style='color:red;'>Erro.</td></tr>"; }
+                tbody.innerHTML = html;
+
+            } catch (error) { 
+                tbody.innerHTML = "<tr><td colspan='5' class='py-8 text-center text-red-500'>Erro ao carregar o histórico.</td></tr>"; 
+            }
         }
+
+        // Ação de clicar no botão "Pagar" na linha da tabela
+        window.abrirPagamento = (idFirebase) => {
+            // Acha a fatura completa no array
+            const fatura = faturasDoCliente.find(f => f.id_firebase === idFirebase);
+            if(!fatura) return;
+
+            // Preenche o Modal com a transparência de valores
+            document.getElementById("modRef").innerText = fatura.mes_referencia;
+            document.getElementById("modAgua").innerText = "R$ " + (fatura.valor_agua || 0).toFixed(2).replace('.',',');
+            
+            // Trata a Multa
+            const multa = fatura.valor_multa || 0;
+            const divMulta = document.getElementById("linhaMulta");
+            if(multa > 0) {
+                document.getElementById("modMulta").innerText = "R$ " + multa.toFixed(2).replace('.',',');
+                divMulta.classList.remove('hidden');
+            } else { divMulta.classList.add('hidden'); }
+
+            // Trata a Taxa Avulsa / Serviço
+            const taxa = fatura.taxa_extra || 0;
+            const divTaxa = document.getElementById("linhaTaxa");
+            if(taxa > 0) {
+                document.getElementById("modTaxa").innerText = "R$ " + taxa.toFixed(2).replace('.',',');
+                divTaxa.classList.remove('hidden');
+            } else { divTaxa.classList.add('hidden'); }
+
+            // Total
+            document.getElementById("modTotal").innerText = "R$ " + (fatura.valor_total || 0).toFixed(2).replace('.',',');
+            
+            // Imagem do QR Code e Copia e Cola
+            document.getElementById("modImgQr").src = "data:image/jpeg;base64," + fatura.qr_code_base64;
+            pixCopiaEColaAtual = fatura.pix_copia_cola; // Salva na memória para o botão copiar
+
+            // Mostra o Modal
+            document.getElementById("modalPagamento").style.display = "flex";
+        };
+
+        window.fecharPagamento = () => {
+            document.getElementById("modalPagamento").style.display = "none";
+        };
+
+        window.copiarPixAtual = () => {
+            const dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = pixCopiaEColaAtual;
+            dummy.select();
+            document.execCommand("copy");
+            document.body.removeChild(dummy);
+            
+            // Animação bonita de "Copiado"
+            const toast = document.getElementById("toast");
+            toast.classList.remove("opacity-0");
+            toast.classList.add("opacity-100");
+            setTimeout(() => {
+                toast.classList.remove("opacity-100");
+                toast.classList.add("opacity-0");
+            }, 3000);
+        };
     </script>
 </body>
 </html>
