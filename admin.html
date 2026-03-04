@@ -762,24 +762,28 @@
         window.excluirFatura = async (id) => { if(confirm("Tem certeza que deseja apagar?")) { await deleteDoc(doc(db, "faturas", id)); } };
         window.marcarPago = async (id) => { if(confirm("Confirmar baixa de pagamento manual?")) { await updateDoc(doc(db, "faturas", id), {status: "pago", data_pagamento: new Date().toISOString()}); } };
 
-        // --- RELATÓRIOS COM ORDENAÇÃO INTELIGENTE (PENDENTES NO TOPO) ---
+        // --- RELATÓRIOS COM ORDENAÇÃO INTELIGENTE E FILTRO CORRIGIDO ---
         let todasFaturasCache = [];
+        
         window.carregarRelatorio = async () => {
             window.mostrarLoading("A consultar...");
             const snap = await getDocs(collection(db, "faturas"));
-            const faturas = []; snap.forEach(d => faturas.push(d.data()));
+            
+            todasFaturasCache = []; // Limpa e carrega a memória global
+            snap.forEach(d => todasFaturasCache.push(d.data()));
+            
             window.esconderLoading();
-            window.gerarRelatorioFiltrado(faturas);
+            window.gerarRelatorioFiltrado(); // Executa o filtro inicial
         };
 
-        window.gerarRelatorioFiltrado = (faturasRaw) => {
-            const faturas = faturasRaw || [];
+        window.gerarRelatorioFiltrado = () => {
             const dtIni = document.getElementById("relDataInicio").value;
             const dtFim = document.getElementById("relDataFim").value;
             const statusF = document.getElementById("relStatus").value;
             const termo = document.getElementById("relBusca").value.toLowerCase();
             
-            let filtradas = faturas.filter(f => {
+            // Usa a memória cache para filtrar
+            let filtradas = todasFaturasCache.filter(f => {
                 let matchD = true;
                 if(dtIni || dtFim) {
                     const dtB = f.data_lancamento ? f.data_lancamento.split('T')[0] : f.vencimento;
