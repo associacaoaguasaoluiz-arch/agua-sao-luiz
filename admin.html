@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>App Gestão 9.2 - Água São Luiz</title>
+    <title>App Gestão 10.0 - Água São Luiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -21,6 +21,7 @@
         .input-leitura:focus { background-color: #fffbeb; border-color: #f59e0b; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2); }
         .modal-fundo { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; justify-content: center; align-items: center; padding: 1rem; }
         
+        /* Efeito de Voz Ativa */
         .mic-ativo { animation: pulse-red 1.5s infinite; background-color: #ef4444 !important; color: white !important; }
         @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
     </style>
@@ -33,7 +34,7 @@
         <i class="fa-solid fa-microphone"></i> <span id="txtToastVoz">Comando reconhecido</span>
     </div>
 
-    <!-- TELA DE LOGIN BLINDADA -->
+    <!-- TELA DE LOGIN BLINDADA COM MEMÓRIA -->
     <div id="loginAdmin" class="fixed inset-0 bg-slate-900 flex justify-center items-center z-50 p-4">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center">
             <span class="text-5xl">💧</span>
@@ -44,6 +45,7 @@
         </div>
     </div>
 
+    <!-- DASHBOARD -->
     <div id="painelAdmin" class="flex w-full h-full tela-oculta relative">
         <aside class="w-64 bg-slate-900 text-white flex-col hidden md:flex shadow-xl z-30">
             <div class="p-6 text-center border-b border-slate-700"><h1 class="text-xl font-bold">💧 São Luiz</h1></div>
@@ -55,7 +57,6 @@
                 <button onclick="mudarAba('aba-recebimentos', this); if(window.carregarPagamentos) window.carregarPagamentos();" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition">✅ Pagos</button>
                 <button onclick="mudarAba('aba-config', this);" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition">⚙️ Config / Backup</button>
                 
-                <!-- NOVO BOTÃO DE SAIR -->
                 <div class="pt-6 mt-6 border-t border-slate-700">
                     <button onclick="sairAdmin()" class="w-full flex items-center justify-center p-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold transition">🚪 Sair do Painel</button>
                 </div>
@@ -84,7 +85,7 @@
                     </div>
                 </div>
 
-                <!-- LEITURAS MENSAL COM VOZ -->
+                <!-- LEITURAS MENSAL -->
                 <div id="aba-leituras" class="conteudo-aba tela-oculta">
                     <div class="mb-4 flex justify-between items-end flex-wrap gap-2">
                         <div>
@@ -141,7 +142,8 @@
 
                 <!-- ABERTAS -->
                 <div id="aba-abertas" class="conteudo-aba tela-oculta">
-                    <h2 class="text-2xl font-bold text-amber-600 mb-6">⏳ Faturas Pendentes</h2>
+                    <h2 class="text-2xl font-bold text-amber-600 mb-6 flex items-center gap-2">⏳ Faturas Pendentes <span class="flex h-3 w-3 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span></span></h2>
+                    <p class="text-xs text-gray-500 mb-4">Esta tela se atualiza sozinha. Se o morador pagar, a conta some daqui.</p>
                     <div class="bg-white rounded-2xl shadow-sm border border-amber-100 overflow-hidden">
                         <div class="overflow-x-auto"><table class="w-full text-left whitespace-nowrap"><tbody id="tabelaAbertas" class="divide-y"></tbody></table></div>
                     </div>
@@ -149,11 +151,12 @@
 
                 <!-- PAGAS -->
                 <div id="aba-recebimentos" class="conteudo-aba tela-oculta">
-                    <h2 class="text-2xl font-bold text-green-700 mb-6">✅ Recebidos</h2>
+                    <h2 class="text-2xl font-bold text-green-700 mb-6 flex items-center gap-2">✅ Recebidos <span class="flex h-3 w-3 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span></span></h2>
+                    <p class="text-xs text-gray-500 mb-4">Pagamentos confirmados aparecem aqui automaticamente.</p>
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden"><table class="w-full text-left whitespace-nowrap"><tbody id="tabelaPagos" class="divide-y"></tbody></table></div>
                 </div>
 
-                <!-- CONFIGURACOES -->
+                <!-- CONFIGURAÇÕES -->
                 <div id="aba-config" class="conteudo-aba tela-oculta">
                     <h2 class="text-2xl font-bold text-slate-700 mb-6">⚙️ Sistema e Banco de Dados</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -191,15 +194,16 @@
             </form>
         </div>
     </div>
-    <!-- SCRIPT 1: INTERFACE BLINDADA E MEMÓRIA DE SENHA -->
+
+    <!-- SCRIPT 1: INTERFACE E MEMÓRIA -->
     <script>
-        // MÁGICA: Verifica se você já logou antes ao abrir a página
+        window.autoRefreshTimer = null;
+
         window.onload = () => {
             if(localStorage.getItem("admin_saoluiz_logado") === "sim") {
                 document.getElementById("loginAdmin").style.display = "none";
                 document.getElementById("painelAdmin").classList.remove('tela-oculta');
-                // Aguarda 1 segundo para o Firebase carregar e puxa os moradores
-                setTimeout(() => { if(window.carregarFamilias) window.carregarFamilias(); }, 1000);
+                setTimeout(() => { if(window.carregarFamilias) window.carregarFamilias(); }, 800);
             }
         };
 
@@ -209,29 +213,41 @@
 
         window.entrarAdmin = () => {
             if(document.getElementById("senhaAdmin").value === "admin123") {
-                localStorage.setItem("admin_saoluiz_logado", "sim"); // SALVA NA MEMÓRIA!
+                localStorage.setItem("admin_saoluiz_logado", "sim");
                 document.getElementById("loginAdmin").style.display = "none";
                 document.getElementById("painelAdmin").classList.remove('tela-oculta');
                 if(window.carregarFamilias) window.carregarFamilias();
             } else { document.getElementById("erroLogin").classList.remove('hidden'); }
         };
 
-        // BOTÃO DE SAIR
         window.sairAdmin = () => {
-            localStorage.removeItem("admin_saoluiz_logado"); // Limpa a memória
-            location.reload(); // Recarrega a página e volta pro cadeado
+            localStorage.removeItem("admin_saoluiz_logado");
+            location.reload(); 
         };
 
         window.mudarAba = (id, el) => {
+            clearInterval(window.autoRefreshTimer);
             document.querySelectorAll('.conteudo-aba').forEach(a => a.classList.add('tela-oculta'));
             document.getElementById(id).classList.remove('tela-oculta');
             document.querySelectorAll('.menu-btn').forEach(b => { b.classList.remove('bg-blue-600', 'text-white'); b.classList.add('text-slate-400'); });
             if(el) { el.classList.add('bg-blue-600', 'text-white'); }
+
+            if(id === 'aba-moradores' && window.carregarFamilias) window.carregarFamilias();
+            if(id === 'aba-leituras' && window.carregarLoteFaturas) window.carregarLoteFaturas();
+            if(id === 'aba-avulso' && window.carregarSelectAvulso) window.carregarSelectAvulso();
+            
+            if(id === 'aba-abertas' && window.carregarAbertas) {
+                window.carregarAbertas();
+                window.autoRefreshTimer = setInterval(() => { window.carregarAbertas(true); }, 10000); 
+            }
+            if(id === 'aba-recebimentos' && window.carregarPagamentos) {
+                window.carregarPagamentos();
+                window.autoRefreshTimer = setInterval(() => { window.carregarPagamentos(true); }, 10000);
+            }
         };
 
         window.abrirModalCadastro = () => { document.getElementById("formMorador").reset(); document.getElementById("modId").value = ""; document.getElementById("modalMorador").style.display = "flex"; };
         window.abrirModalEdicao = (id, nome, cpf, tel, lote) => { document.getElementById("modId").value = id; document.getElementById("modNome").value = nome; document.getElementById("modCpf").value = cpf; document.getElementById("modTel").value = tel; document.getElementById("modLote").value = lote; document.getElementById("modalMorador").style.display = "flex"; };
-
         window.filtrarTabela = (inputId, tabelaId) => {
             const filtro = document.getElementById(inputId).value.toLowerCase();
             const linhas = document.getElementById(tabelaId).getElementsByTagName('tr');
@@ -265,7 +281,6 @@
             document.getElementById(`h-total-${id}`).value = total;
         };
 
-        // --- SISTEMA DE VOZ ---
         window.vozAtiva = false;
         let recognition;
         window.alternarVoz = () => {
@@ -278,12 +293,12 @@
                 return;
             }
             window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!window.SpeechRecognition) return alert("Seu navegador não suporta comando de voz.");
+            if (!window.SpeechRecognition) return alert("Seu navegador não suporta voz.");
             recognition = new SpeechRecognition();
             recognition.lang = 'pt-BR';
             recognition.continuous = true;
             recognition.interimResults = false;
-            recognition.onstart = () => { window.vozAtiva = true; btn.classList.add('mic-ativo'); mostrarToastVoz("Estou te ouvindo..."); };
+            recognition.onstart = () => { window.vozAtiva = true; btn.classList.add('mic-ativo'); mostrarToastVoz("Estou ouvindo..."); };
             recognition.onresult = (event) => { processarComandoVoz(event.results[event.results.length - 1][0].transcript.toLowerCase().trim()); };
             recognition.onerror = (e) => { console.log("Erro na voz", e); };
             recognition.start();
@@ -291,7 +306,7 @@
 
         function processarComandoVoz(texto) {
             if (texto.includes("enviar para todos") || texto.includes("salvar tudo")) {
-                mostrarToastVoz("Iniciando geração em lote!");
+                mostrarToastVoz("Geração em lote iniciada!");
                 if(window.gerarFaturasEmLote) window.gerarFaturasEmLote();
                 return;
             }
@@ -309,7 +324,7 @@
                         mostrarToastVoz(`Lançado: ${primeiroNome} -> ${match[0]}`);
                         document.getElementById('linha-'+id).style.backgroundColor = "#fffbeb";
                         setTimeout(()=> { document.getElementById('linha-'+id).style.backgroundColor = ""; }, 2000);
-                    } else { mostrarToastVoz(`Entendi ${primeiroNome}, mas não ouvi o número.`); }
+                    } else { mostrarToastVoz(`Ouvi ${primeiroNome}, mas cadê o número?`); }
                     break;
                 }
             }
@@ -323,7 +338,7 @@
         }
     </script>
 
-    <!-- SCRIPT 2: BANCO DE DADOS -->
+    <!-- SCRIPT 2: BANCO DE DADOS FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -347,7 +362,7 @@
             try {
                 if(id) await updateDoc(doc(db, "familias", id), d); else await addDoc(collection(db, "familias"), {...d, senha: "123456", status_ativo: true});
                 window.fecharModal(); window.carregarFamilias(); 
-            } catch(err) { alert("Erro de comunicação com o banco."); }
+            } catch(err) { alert("Erro de comunicação."); }
             window.esconderLoading();
         };
 
@@ -358,10 +373,10 @@
                 let html = "";
                 snap.forEach(d => {
                     const data = d.data();
-                    html += `<tr><td class="p-4"><strong>${data.nome}</strong><br><small>${data.lote_endereco}</small></td><td class="p-4 text-xs font-mono text-gray-500">${data.cpf}</td><td class="p-4 text-xs font-mono text-gray-500">${data.telefone}</td><td class="p-4 text-center"><button onclick="abrirModalEdicao('${d.id}','${data.nome}','${data.cpf}','${data.telefone}','${data.lote_endereco}')" class="text-blue-600 font-bold px-3 py-1 bg-blue-50 rounded">Editar</button></td></tr>`;
+                    html += `<tr><td class="p-4"><strong>${data.nome}</strong><br><small>${data.lote_endereco}</small></td><td class="p-4 text-xs font-mono text-gray-500">${data.cpf}</td><td class="p-4 text-xs font-mono text-gray-500">${data.telefone}</td><td class="p-4 text-center"><button onclick="window.abrirModalEdicao('${d.id}','${data.nome}','${data.cpf}','${data.telefone}','${data.lote_endereco}')" class="text-blue-600 font-bold px-3 py-1 bg-blue-50 rounded">Editar</button></td></tr>`;
                 });
                 tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center'>Nenhum cadastro.</td></tr>";
-            } catch (e) { tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center text-red-500'>Erro ao buscar no Banco de Dados.</td></tr>"; }
+            } catch (e) { tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center text-red-500'>Erro no Banco.</td></tr>"; }
         };
 
         window.carregarLoteFaturas = async () => {
@@ -449,7 +464,7 @@
             select.innerHTML = "<option value=''>Buscando moradores...</option>";
             try {
                 const snap = await getDocs(collection(db, "familias"));
-                let html = "<option value='TODOS' class='font-bold text-blue-700 bg-blue-50'>🌟 RATEIO: COBRAR TODOS OS MORADORES</option>";
+                let html = "<option value='TODOS' class='font-bold text-blue-700 bg-blue-50'>🌟 RATEIO: COBRAR TODOS</option>";
                 snap.forEach(d => { const f = d.data(); html += `<option value="${d.id}" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}">${f.nome} (${f.lote_endereco})</option>`; });
                 select.innerHTML = html;
             } catch(e) { select.innerHTML = "<option value=''>Erro</option>"; }
@@ -513,9 +528,9 @@
         };
 
         // --- ABA ABERTAS ---
-        window.carregarAbertas = async () => {
+        window.carregarAbertas = async (silencioso = false) => {
             const tbody = document.getElementById("tabelaAbertas");
-            tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center'>Buscando...</td></tr>";
+            if(!silencioso) tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center'>Buscando...</td></tr>";
             try {
                 const fatSnap = await getDocs(collection(db, "faturas"));
                 const hoje = new Date(); hoje.setHours(0,0,0,0);
@@ -528,7 +543,7 @@
                     const isOverdue = new Date(f.vencimento + "T00:00:00") < hoje;
                     const rowClass = isOverdue ? "bg-red-50" : "hover:bg-amber-50";
                     const nomeReal = f.nome_morador || "Morador";
-                    const zap = `💧 *ÁGUA SÃO LUIZ*\nOlá *${nomeReal}*!\nSua fatura de ${f.mes_referencia} está disponível.\n\n💰 *Total:* R$ ${f.valor_total.toFixed(2)}\n📅 *Venc:* ${f.vencimento.split('-').reverse().join('/')}\n\n👉 Pague pelo portal:\nhttps://agua-sao-luiz.vercel.app`;
+                    const zap = `💧 *ÁGUA SÃO LUIZ*\nOlá *${nomeReal}*!\nSua fatura de ${f.mes_referencia} está disponível.\n\n💰 *Total:* R$ ${f.valor_total.toFixed(2)}\n📅 *Venc:* ${f.vencimento.split('-').reverse().join('/')}\n\n👉 Acesse para ver o PIX:\nhttps://agua-sao-luiz.vercel.app`;
                     const btnZap = `<button onclick="window.open('https://wa.me/${f.telefone}?text=${encodeURIComponent(zap)}')" class="bg-green-500 text-white px-3 py-2 rounded-lg text-xs font-bold shadow mr-1"><i class="fa-brands fa-whatsapp"></i></button>`;
 
                     html += `<tr class="${rowClass} border-b">
@@ -539,7 +554,7 @@
                     </tr>`;
                 }
                 tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center text-green-600 font-bold'>Tudo Pago!</td></tr>";
-            } catch(e) { tbody.innerHTML = "Erro"; }
+            } catch(e) { if(!silencioso) tbody.innerHTML = "Erro"; }
         };
 
         window.excluirFatura = async (id) => {
@@ -559,8 +574,9 @@
         };
 
         // --- ABA PAGOS ---
-        window.carregarPagamentos = async () => {
+        window.carregarPagamentos = async (silencioso = false) => {
             const tbody = document.getElementById("tabelaPagos");
+            if(!silencioso) tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center'>Buscando...</td></tr>";
             try {
                 const fatSnap = await getDocs(collection(db, "faturas"));
                 const pagas = [];
@@ -574,7 +590,7 @@
                     html += `<tr class="border-b"><td class="p-4 text-xs font-mono text-gray-500">${dtFormat}</td><td class="p-4 font-bold">${p.nome_morador || "Morador"}</td><td class="p-4 text-right font-black text-green-600">R$ ${p.valor_total.toFixed(2)}</td><td class="p-4 text-center"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold uppercase">Recebido</span></td></tr>`;
                 }
                 tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center'>Nenhum pagamento.</td></tr>";
-            } catch(e) { tbody.innerHTML = "Erro"; }
+            } catch(e) { if(!silencioso) tbody.innerHTML = "Erro"; }
         };
 
         // --- BACKUP E LIMPEZA ---
