@@ -168,7 +168,8 @@
     <!-- SCRIPTS E FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, where, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        // 1. Adicionar o onSnapshot na importação abaixo:
+        import { getFirestore, collection, getDocs, query, where, doc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ",
@@ -181,6 +182,7 @@
         let pixCopiaEColaAtual = ""; 
         let clienteIDGlobal = ""; 
         let senhaAtualBanco = "";
+        let unsubscribeFaturas = null; // NOVO: Variável para controlar a escuta em tempo real
 
         // AUTO-LOGIN
         window.onload = () => {
@@ -263,6 +265,7 @@
         }
 
         window.sairConta = () => {
+            if(unsubscribeFaturas) unsubscribeFaturas(); // Para de escutar ao sair
             localStorage.removeItem("cliente_saoluiz_id");
             localStorage.removeItem("cliente_saoluiz_nome");
             location.reload();
@@ -289,104 +292,104 @@
             } catch (error) { alert("Erro ao salvar senha."); }
         };
 
-        // --- CARREGAMENTO DIVIDIDO (BALÕES E RELATÓRIO) ---
-        async function carregarDados(familiaId) {
+        // --- CARREGAMENTO DIVIDIDO EM TEMPO REAL (BALÕES E RELATÓRIO) ---
+        function carregarDados(familiaId) {
             const tbody = document.getElementById("listaHistorico");
             const divPendencias = document.getElementById("areaPendencias");
             
             try {
                 const q = query(collection(db, "faturas"), where("familia_id", "==", familiaId));
-                const snap = await getDocs(q);
                 
-                faturasDoCliente = [];
-                snap.forEach(d => faturasDoCliente.push({ id_firebase: d.id, ...d.data() }));
+                // Se já houver um ouvinte, limpa antes de criar outro
+                if (unsubscribeFaturas) unsubscribeFaturas();
                 
-                // Ordenar por data (mais recentes primeiro)
-                faturasDoCliente.sort((a,b) => new Date(b.vencimento) - new Date(a.vencimento));
-
-                if (faturasDoCliente.length === 0) {
-                    divPendencias.innerHTML = `<div class="bg-white border border-slate-200 p-4 rounded-2xl text-center text-slate-500 shadow-sm">Nenhuma fatura encontrada.</div>`;
-                    tbody.innerHTML = "<tr><td colspan='6' class='py-8 text-center text-slate-400'>Nenhum histórico de consumo encontrado.</td></tr>";
-                    return;
-                }
-
-                let htmlHistorico = "";
-                let htmlPendencias = "";
-                let temPendente = false;
-                const hoje = new Date(); hoje.setHours(0,0,0,0);
-
-                faturasDoCliente.forEach(f => {
-                    const isPago = f.status === 'pago';
-                    const dataVencObj = new Date(f.vencimento + "T00:00:00");
-                    const isAtrasado = !isPago && (dataVencObj < hoje);
+                // onSnapshot fica ouvindo mudanças 24h por dia
+                unsubscribeFaturas = onSnapshot(q, (snap) => {
+                    faturasDoCliente = [];
+                    snap.forEach(d => faturasDoCliente.push({ id_firebase: d.id, ...d.data() }));
                     
-                    const vencFormatado = f.vencimento.split('-').reverse().join('/');
-                    const valorTotalStr = "R$ " + (f.valor_total || 0).toFixed(2).replace('.',',');
+                    // Ordenar por data (mais recentes primeiro)
+                    faturasDoCliente.sort((a,b) => new Date(b.vencimento) - new Date(a.vencimento));
 
-                    // 1. CRIAR OS BALÕES DE PENDÊNCIAS
-                    if (!isPago) {
-                        temPendente = true;
-                        const cor = isAtrasado ? 'red' : 'amber';
-                        const bgCor = isAtrasado ? 'bg-red-50' : 'bg-amber-50';
-                        const borderCor = isAtrasado ? 'border-red-200' : 'border-amber-200';
-                        const barraLado = isAtrasado ? 'bg-red-500' : 'bg-amber-500';
-                        const textCor = isAtrasado ? 'text-red-800' : 'text-amber-800';
-                        const icone = isAtrasado ? '🚨' : '⏳';
-                        const titulo = isAtrasado ? 'Fatura em Atraso' : 'Fatura a Vencer';
+                    if (faturasDoCliente.length === 0) {
+                        divPendencias.innerHTML = `<div class="bg-white border border-slate-200 p-4 rounded-2xl text-center text-slate-500 shadow-sm">Nenhuma fatura encontrada.</div>`;
+                        tbody.innerHTML = "<tr><td colspan='6' class='py-8 text-center text-slate-400'>Nenhum histórico de consumo encontrado.</td></tr>";
+                        fecharPagamento(); // Fecha modal caso ele esteja aberto lendo algo que foi deletado
+                        return;
+                    }
 
-                        htmlPendencias += `
-                            <div class="${bgCor} border ${borderCor} p-4 md:p-5 rounded-2xl shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative overflow-hidden">
-                                <div class="absolute top-0 left-0 w-1.5 h-full ${barraLado}"></div>
+                    let htmlHistorico = "";
+                    let htmlPendencias = "";
+                    let temPendente = false;
+                    const hoje = new Date(); hoje.setHours(0,0,0,0);
+                    let modalFaturaAindaExiste = false;
+
+                    faturasDoCliente.forEach(f => {
+                        // Verifica se a fatura aberta no modal Pix ainda existe e está pendente
+                        if (document.getElementById("modalPagamento").style.display === "flex" && pixCopiaEColaAtual === f.pix_copia_cola && f.status === 'pendente') {
+                            modalFaturaAindaExiste = true;
+                        }
+
+                        const isPago = f.status === 'pago';
+                        const dataVencObj = new Date(f.vencimento + "T00:00:00");
+                        const isAtrasado = !isPago && (dataVencObj < hoje);
+                        
+                        const vencFormatado = f.vencimento.split('-').reverse().join('/');
+                        const valorTotalStr = "R$ " + (f.valor_total || 0).toFixed(2).replace('.',',');
+
+                        // 1. CRIAR OS BALÕES DE PENDÊNCIAS
+                        if (!isPago) {
+                            temPendente = true;
                                 <div class="pl-2">
                                     <h4 class="${textCor} font-black text-sm md:text-base flex items-center gap-2">${icone} ${titulo}</h4>
                                     <p class="text-slate-600 text-xs md:text-sm mt-1">Ref: ${f.mes_referencia} | Venc: <span class="font-bold">${vencFormatado}</span></p>
                                 </div>
                                 <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto mt-2 md:mt-0">
-                                    <span class="text-xl md:text-2xl font-black text-slate-800">${valorTotalStr}</span>
-                                    <button onclick="abrirPagamento('${f.id_firebase}')" class="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-6 rounded-xl shadow-md transition active:scale-95 flex justify-center items-center gap-2 text-sm md:text-base">
-                                        📱 Pagar Pix
-                                    </button>
-                                </div>
-                            </div>
+                        // 2. CRIAR A TABELA DO RELATÓRIO (Apenas Leitura)
+                        const lAnt = (f.leitura_anterior === 0 && f.leitura_atual === 0 && f.consumo_m3 === 0) ? "-" : (f.leitura_anterior || 0);
+                        const lAtu = (f.leitura_anterior === 0 && f.leitura_atual === 0 && f.consumo_m3 === 0) ? "-" : (f.leitura_atual || 0);
+                        const cM3 = (f.consumo_m3 !== undefined && f.consumo_m3 !== null) ? f.consumo_m3 : "-";
+
+                        let badgeStatus = isPago 
+                            ? `<span class="bg-green-100 text-green-700 px-2 md:px-3 py-1 rounded text-[9px] md:text-[10px] font-black uppercase tracking-wider">✓ Pago</span>`
+                            : `<span class="bg-amber-100 text-amber-700 px-2 md:px-3 py-1 rounded text-[9px] md:text-[10px] font-black uppercase tracking-wider">Pendente</span>`;
+
+                        htmlHistorico += `
+                            <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100">
+                                <td class="py-3 md:py-4 pl-4">
+                                    <p class="font-bold text-slate-800 text-xs md:text-sm">${f.mes_referencia}</p>
+                                    <p class="text-[9px] md:text-[10px] text-slate-500">Venc: ${vencFormatado}</p>
+                                </td>
+                                <td class="py-3 md:py-4 text-center font-mono text-slate-500 text-[10px] md:text-xs">${lAnt}</td>
+                                <td class="py-3 md:py-4 text-center font-mono text-slate-800 font-bold text-[10px] md:text-xs">${lAtu}</td>
+                                <td class="py-3 md:py-4 text-center font-black text-blue-600 text-xs md:text-sm">${cM3}</td>
+                                <td class="py-3 md:py-4 text-right font-black text-sm md:text-base text-slate-900 pr-4">${valorTotalStr}</td>
+                                <td class="py-3 md:py-4 text-center pr-4">${badgeStatus}</td>
+                            </tr>
                         `;
+                    });
+
+                    // Renderiza Balões
+                    if (temPendente) {
+                        divPendencias.innerHTML = htmlPendencias;
+                    } else {
+                        divPendencias.innerHTML = `<div class="bg-green-50 border border-green-200 p-4 md:p-5 rounded-2xl text-center text-green-700 font-bold shadow-sm flex items-center justify-center gap-2"><span class="text-xl">✨</span> Parabéns! Todas as suas faturas estão pagas e em dia.</div>`;
                     }
 
-                    // 2. CRIAR A TABELA DO RELATÓRIO (Apenas Leitura)
-                    const lAnt = (f.leitura_anterior === 0 && f.leitura_atual === 0 && f.consumo_m3 === 0) ? "-" : (f.leitura_anterior || 0);
-                    const lAtu = (f.leitura_anterior === 0 && f.leitura_atual === 0 && f.consumo_m3 === 0) ? "-" : (f.leitura_atual || 0);
-                    const cM3 = (f.consumo_m3 !== undefined && f.consumo_m3 !== null) ? f.consumo_m3 : "-";
+                    // Se a fatura estava aberta no Modal de Pix e foi apagada ou paga pelo admin, fecha o modal sozinho
+                    if (document.getElementById("modalPagamento").style.display === "flex" && !modalFaturaAindaExiste) {
+                        fecharPagamento();
+                    }
 
-                    let badgeStatus = isPago 
-                        ? `<span class="bg-green-100 text-green-700 px-2 md:px-3 py-1 rounded text-[9px] md:text-[10px] font-black uppercase tracking-wider">✓ Pago</span>`
-                        : `<span class="bg-amber-100 text-amber-700 px-2 md:px-3 py-1 rounded text-[9px] md:text-[10px] font-black uppercase tracking-wider">Pendente</span>`;
+                    // Renderiza Tabela
+                    tbody.innerHTML = htmlHistorico;
 
-                    htmlHistorico += `
-                        <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100">
-                            <td class="py-3 md:py-4 pl-4">
-                                <p class="font-bold text-slate-800 text-xs md:text-sm">${f.mes_referencia}</p>
-                                <p class="text-[9px] md:text-[10px] text-slate-500">Venc: ${vencFormatado}</p>
-                            </td>
-                            <td class="py-3 md:py-4 text-center font-mono text-slate-500 text-[10px] md:text-xs">${lAnt}</td>
-                            <td class="py-3 md:py-4 text-center font-mono text-slate-800 font-bold text-[10px] md:text-xs">${lAtu}</td>
-                            <td class="py-3 md:py-4 text-center font-black text-blue-600 text-xs md:text-sm">${cM3}</td>
-                            <td class="py-3 md:py-4 text-right font-black text-sm md:text-base text-slate-900 pr-4">${valorTotalStr}</td>
-                            <td class="py-3 md:py-4 text-center pr-4">${badgeStatus}</td>
-                        </tr>
-                    `;
+                }, (error) => {
+                    tbody.innerHTML = "<tr><td colspan='6' class='py-8 text-center text-red-500'>Erro ao escutar dados em tempo real.</td></tr>";
                 });
 
-                // Renderiza Balões
-                if (temPendente) {
-                    divPendencias.innerHTML = htmlPendencias;
-                } else {
-                    divPendencias.innerHTML = `<div class="bg-green-50 border border-green-200 p-4 md:p-5 rounded-2xl text-center text-green-700 font-bold shadow-sm flex items-center justify-center gap-2"><span class="text-xl">✨</span> Parabéns! Todas as suas faturas estão pagas e em dia.</div>`;
-                }
-
-                // Renderiza Tabela
-                tbody.innerHTML = htmlHistorico;
-
             } catch (error) { 
-                tbody.innerHTML = "<tr><td colspan='6' class='py-8 text-center text-red-500'>Erro ao carregar o histórico.</td></tr>"; 
+                tbody.innerHTML = "<tr><td colspan='6' class='py-8 text-center text-red-500'>Erro ao iniciar o histórico.</td></tr>"; 
             }
         }
 
