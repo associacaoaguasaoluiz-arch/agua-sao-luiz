@@ -59,7 +59,7 @@
                 <button onclick="mudarAba('aba-abertas', this); if(window.carregarAbertas) window.carregarAbertas();" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition"><i class="fa-solid fa-hourglass-half w-6"></i> Pendentes</button>
                 <button onclick="mudarAba('aba-recebimentos', this); if(window.carregarPagamentos) window.carregarPagamentos();" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition"><i class="fa-solid fa-check-double w-6"></i> Pagos</button>
                 <button onclick="mudarAba('aba-relatorios', this); if(window.carregarRelatorio) window.carregarRelatorio();" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition"><i class="fa-solid fa-chart-pie w-6"></i> Relatórios</button>
-                <button onclick="mudarAba('aba-config', this);" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition"><i class="fa-solid fa-gear w-6"></i> Configuração</button>
+                <button onclick="mudarAba('aba-config', this); if(window.carregarConfigAgua) window.carregarConfigAgua();" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition"><i class="fa-solid fa-gear w-6"></i> Configuração</button>
                 
                 <div class="pt-6 mt-6 border-t border-slate-700">
                     <button onclick="sairAdmin()" class="w-full flex items-center justify-center p-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold transition">Sair</button>
@@ -89,7 +89,6 @@
 
                 <!-- LEITURAS MENSAL -->
                 <div id="aba-leituras" class="conteudo-aba tela-oculta">
-                    <!-- Código existente de leituras (mantido igual) -->
                     <div class="mb-4 flex justify-between items-end flex-wrap gap-2">
                         <div>
                             <h2 class="text-2xl font-bold flex items-center gap-2">📝 Consumo <button id="btnVoz" onclick="alternarVoz()" class="bg-slate-200 text-slate-600 w-10 h-10 rounded-full flex justify-center items-center shadow-sm"><i class="fa-solid fa-microphone"></i></button></h2>
@@ -105,7 +104,7 @@
                             <table class="w-full text-left border-collapse whitespace-nowrap">
                                 <thead>
                                     <tr class="bg-slate-100 text-[10px] uppercase font-bold text-slate-500 border-b">
-                                        <th class="p-3 coluna-fixa">Morador / Lote</th>
+                                        <th class="p-3 coluna-fixa">Morador / CPF</th>
                                         <th class="p-3 text-center">Ant.</th>
                                         <th class="p-3 text-center">Atual</th>
                                         <th class="p-3 text-center">Cons.</th>
@@ -154,7 +153,7 @@
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden"><table class="w-full text-left whitespace-nowrap"><tbody id="tabelaPagos" class="divide-y text-sm"></tbody></table></div>
                 </div>
 
-                <!-- NOVA ABA: RELATÓRIOS -->
+                <!-- RELATÓRIOS -->
                 <div id="aba-relatorios" class="conteudo-aba tela-oculta">
                     <div class="flex justify-between items-center mb-6 no-print">
                         <h2 class="text-2xl font-bold text-slate-800">📊 Relatórios Financeiros</h2>
@@ -229,10 +228,24 @@
 
                 <!-- CONFIGURAÇÕES -->
                 <div id="aba-config" class="conteudo-aba tela-oculta">
-                    <h2 class="text-2xl font-bold text-slate-700 mb-6">⚙️ Configurações</h2>
+                    <h2 class="text-2xl font-bold text-slate-700 mb-6">⚙️ Configurações do Sistema</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-blue-100"><h3 class="font-bold text-lg text-blue-700 mb-2">💾 Salvar Backup</h3><button onclick="if(window.exportarBase) window.exportarBase()" class="w-full bg-blue-100 text-blue-700 font-bold py-3 rounded-xl">Baixar Arquivo JSON</button></div>
+                        
+                        <!-- Alterador de Preços da Água -->
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-amber-100 md:col-span-2">
+                            <h3 class="font-bold text-lg text-amber-700 mb-4">💰 Valores da Mensalidade (Água)</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div><label class="block text-xs font-bold text-gray-500 mb-1">Até 10m³ (R$)</label><input type="number" step="0.01" id="cfgVal1" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none focus:border-blue-500"></div>
+                                <div><label class="block text-xs font-bold text-gray-500 mb-1">De 11m³ a 30m³ (R$)</label><input type="number" step="0.01" id="cfgVal2" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none focus:border-blue-500"></div>
+                                <div><label class="block text-xs font-bold text-gray-500 mb-1">Acima de 30m³ (R$)</label><input type="number" step="0.01" id="cfgVal3" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none focus:border-blue-500"></div>
+                            </div>
+                            <button onclick="salvarConfigAgua()" class="mt-4 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-6 rounded-xl shadow transition">💾 Guardar Novos Valores</button>
+                        </div>
+
+                        <!-- Backups e Segurança -->
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-blue-100"><h3 class="font-bold text-lg text-blue-700 mb-2">💾 Salvar Backup</h3><button onclick="if(window.exportarBase) window.exportarBase()" class="w-full bg-blue-100 text-blue-700 font-bold py-3 rounded-xl mt-2">Baixar Arquivo JSON</button></div>
                         <div class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-100"><h3 class="font-bold text-lg text-emerald-700 mb-2">📂 Importar Backup</h3><input type="file" id="fileImport" accept=".json" class="mb-3 w-full text-sm"><button onclick="if(window.importarBase) window.importarBase()" class="w-full bg-emerald-100 text-emerald-700 font-bold py-3 rounded-xl">Importar Dados</button></div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-red-100 md:col-span-2"><h3 class="font-bold text-lg text-red-600 mb-2">🗑️ Limpar Todas as Faturas</h3><button onclick="if(window.limparFaturas) window.limparFaturas()" class="w-full bg-red-600 text-white font-bold py-3 rounded-xl shadow-md">Apagar Definitivamente</button></div>
                     </div>
                 </div>
             </div>
@@ -247,7 +260,7 @@
         </nav>
     </div>
 
-    <!-- MODAL CADASTRO (Mantido) -->
+    <!-- MODAL CADASTRO -->
     <div id="modalMorador" class="modal-fundo no-print">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm mx-auto overflow-hidden">
             <div class="bg-slate-900 p-5 flex justify-between items-center text-white"><h3 id="tituloModal" class="font-bold">Morador</h3><button onclick="fecharModal()" class="text-2xl">×</button></div>
@@ -265,19 +278,19 @@
         </div>
     </div>
 
-    <!-- SCRIPT 1: INTERFACE -->
+    <!-- SCRIPT 1: INTERFACE E CONFIGURAÇÃO -->
     <script>
-        window.autoRefreshTimer = null;
         window.onload = () => {
             if(localStorage.getItem("admin_saoluiz_logado") === "sim") {
                 document.getElementById("loginAdmin").style.display = "none";
                 document.getElementById("painelAdmin").classList.remove('tela-oculta');
                 setTimeout(() => { if(window.carregarFamilias) window.carregarFamilias(); }, 800);
             }
-            // Setar data inicial no relatório (primeiro dia do mês atual)
             const date = new Date();
             document.getElementById("relDataInicio").value = new Date(date.getFullYear(), date.getMonth(), 1).toISOString().split('T')[0];
             document.getElementById("relDataFim").value = date.toISOString().split('T')[0];
+            
+            if(window.carregarConfigAgua) window.carregarConfigAgua();
         };
 
         window.mostrarLoading = (msg) => { document.getElementById("loadingMsg").innerText = msg; document.getElementById("loading").style.display = "flex"; };
@@ -296,7 +309,6 @@
         window.sairAdmin = () => { localStorage.removeItem("admin_saoluiz_logado"); location.reload(); };
 
         window.mudarAba = (id, el) => {
-            clearInterval(window.autoRefreshTimer);
             document.querySelectorAll('.conteudo-aba').forEach(a => a.classList.add('tela-oculta'));
             document.getElementById(id).classList.remove('tela-oculta');
             document.querySelectorAll('.menu-btn, nav button').forEach(b => { 
@@ -308,21 +320,29 @@
                 if(el.classList.contains('menu-btn')) { el.classList.add('bg-blue-600', 'text-white'); el.classList.remove('text-slate-400'); }
                 else { el.classList.add('text-blue-600'); el.classList.remove('text-gray-400'); }
             }
-
-            if(id === 'aba-abertas' || id === 'aba-recebimentos') {
-                window.autoRefreshTimer = setInterval(() => { 
-                    if(id === 'aba-abertas') window.carregarAbertas(true); 
-                    if(id === 'aba-recebimentos') window.carregarPagamentos(true); 
-                }, 10000); 
-            }
         };
 
         window.abrirModalCadastro = () => { document.getElementById("formMorador").reset(); document.getElementById("modId").value = ""; document.getElementById("modalMorador").style.display = "flex"; };
         window.abrirModalEdicao = (id, n, c, t, l) => { document.getElementById("modId").value=id; document.getElementById("modNome").value=n; document.getElementById("modCpf").value=c; document.getElementById("modTel").value=t; document.getElementById("modLote").value=l; document.getElementById("modalMorador").style.display="flex"; };
+        
         window.filtrarTabela = (inputId, tabelaId) => {
             const filtro = document.getElementById(inputId).value.toLowerCase();
             const linhas = document.getElementById(tabelaId).getElementsByTagName('tr');
             for (let i=0; i<linhas.length; i++) linhas[i].style.display = linhas[i].innerText.toLowerCase().includes(filtro) ? "" : "none";
+        };
+
+        // --- VALORES DA ÁGUA CONFIGURÁVEIS ---
+        window.carregarConfigAgua = () => {
+            document.getElementById('cfgVal1').value = localStorage.getItem('agua_val1') || 25;
+            document.getElementById('cfgVal2').value = localStorage.getItem('agua_val2') || 50;
+            document.getElementById('cfgVal3').value = localStorage.getItem('agua_val3') || 100;
+        };
+        
+        window.salvarConfigAgua = () => {
+            localStorage.setItem('agua_val1', document.getElementById('cfgVal1').value);
+            localStorage.setItem('agua_val2', document.getElementById('cfgVal2').value);
+            localStorage.setItem('agua_val3', document.getElementById('cfgVal3').value);
+            alert("✅ Valores da mensalidade atualizados!");
         };
         
         window.calcularLinha = (id, multa) => {
@@ -330,16 +350,86 @@
             const atu = parseFloat(document.getElementById(`atu-${id}`).value) || 0;
             let consumo = (atu >= ant && atu > 0) ? atu - ant : 0;
             document.getElementById(`cons-${id}`).innerText = consumo;
+            
+            let v1 = parseFloat(localStorage.getItem('agua_val1')) || 25;
+            let v2 = parseFloat(localStorage.getItem('agua_val2')) || 50;
+            let v3 = parseFloat(localStorage.getItem('agua_val3')) || 100;
+
             let vAgua = 0;
-            if (consumo > 0) { if (consumo <= 10) vAgua = 25.0; else if (consumo <= 30) vAgua = 50.0; else vAgua = 100.0; }
+            if (consumo > 0) { 
+                if (consumo <= 10) vAgua = v1; 
+                else if (consumo <= 30) vAgua = v2; 
+                else vAgua = v3; 
+            }
+            
             const total = vAgua > 0 ? vAgua + multa : 0;
             document.getElementById(`valTotal-${id}`).innerText = total.toFixed(2).replace('.', ',');
             document.getElementById(`h-agua-${id}`).value = vAgua;
             document.getElementById(`h-total-${id}`).value = total;
         };
+
+        // --- MICROFONE ATUALIZADO (IGNORA ACENTOS E MAIÚSCULAS) ---
+        window.vozAtiva = false;
+        let recognition;
+        window.alternarVoz = () => {
+            const btn = document.getElementById("btnVoz");
+            if (window.vozAtiva) {
+                if(recognition) recognition.stop();
+                btn.classList.remove('mic-ativo');
+                window.vozAtiva = false;
+                mostrarToastVoz("Voz Desativada");
+                return;
+            }
+            window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!window.SpeechRecognition) return alert("Navegador não suporta voz.");
+            recognition = new SpeechRecognition();
+            recognition.lang = 'pt-BR';
+            recognition.continuous = true;
+            recognition.interimResults = false;
+            recognition.onstart = () => { window.vozAtiva = true; btn.classList.add('mic-ativo'); mostrarToastVoz("A escutar comando..."); };
+            recognition.onresult = (event) => { processarComandoVoz(event.results[event.results.length - 1][0].transcript); };
+            recognition.start();
+        };
+
+        function processarComandoVoz(textoOriginal) {
+            const textoLimpo = textoOriginal.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+            
+            if (textoLimpo.includes("enviar para todos") || textoLimpo.includes("salvar tudo")) {
+                mostrarToastVoz("Iniciando geração em lote!");
+                if(window.gerarFaturasEmLote) window.gerarFaturasEmLote();
+                return;
+            }
+            const linhas = document.querySelectorAll('input[id^="h-total-"]');
+            let nomeEncontrado = false;
+            for (let input of linhas) {
+                const id = input.id.replace('h-total-', '');
+                const nomeNoBanco = input.dataset.nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+                const primeiroNome = nomeNoBanco.split(' ')[0];
+                
+                if (textoLimpo.includes(primeiroNome)) {
+                    nomeEncontrado = true;
+                    const match = textoLimpo.match(/\d+/);
+                    if (match) {
+                        document.getElementById('atu-' + id).value = match[0];
+                        window.calcularLinha(id, parseFloat(input.dataset.multa));
+                        mostrarToastVoz(`Marcado: ${input.dataset.nome} -> ${match[0]}`);
+                        document.getElementById('linha-'+id).style.backgroundColor = "#fffbeb";
+                        setTimeout(()=> { document.getElementById('linha-'+id).style.backgroundColor = ""; }, 2000);
+                    } else { mostrarToastVoz(`Nome: ${primeiroNome}. Faltou o número!`); }
+                    break;
+                }
+            }
+            if(!nomeEncontrado) mostrarToastVoz("Nome não reconhecido.");
+        }
+        function mostrarToastVoz(msg) {
+            const t = document.getElementById("toastVoz");
+            document.getElementById("txtToastVoz").innerText = msg;
+            t.classList.remove("opacity-0"); t.classList.add("opacity-100");
+            setTimeout(() => { t.classList.remove("opacity-100"); t.classList.add("opacity-0"); }, 3000);
+        }
     </script>
 
-    <!-- SCRIPT 2: FIREBASE E LÓGICA -->
+    <!-- SCRIPT 2: FIREBASE E LÓGICA DE NEGÓCIO -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -352,7 +442,7 @@
         };
         const db = getFirestore(initializeApp(firebaseConfig));
 
-        let todasFaturasCache = []; // Para acelerar o relatório
+        let todasFaturasCache = []; 
 
         window.submitMorador = async (e) => {
             e.preventDefault();
@@ -397,16 +487,19 @@
 
                     html += `
                         <tr id="linha-${famId}" class="hover:bg-blue-50">
-                            <td class="p-2 coluna-fixa font-bold text-xs">${f.nome.split(' ')[0]}<br><span class="text-gray-400 font-normal">${f.lote_endereco}</span></td>
-                            <td class="p-2"><input type="number" id="ant-${famId}" onkeyup="window.calcularLinha('${famId}', ${multa})" class="w-16 p-2 border rounded text-center outline-none"></td>
-                            <td class="p-2"><input type="number" id="atu-${famId}" onkeyup="window.calcularLinha('${famId}', ${multa})" class="w-16 p-2 border-2 border-blue-400 bg-blue-50 rounded text-center font-bold outline-none"></td>
+                            <td class="p-2 coluna-fixa leading-tight">
+                                <strong class="text-xs text-slate-800">${f.nome}</strong><br>
+                                <small class="text-gray-400 font-normal tracking-wider">${f.cpf}</small>
+                            </td>
+                            <td class="p-2 text-center"><input type="number" id="ant-${famId}" onkeyup="window.calcularLinha('${famId}', ${multa})" class="w-16 p-2 border rounded text-center outline-none"></td>
+                            <td class="p-2 text-center"><input type="number" id="atu-${famId}" onkeyup="window.calcularLinha('${famId}', ${multa})" class="w-16 p-2 border-2 border-blue-400 bg-blue-50 rounded text-center font-bold outline-none"></td>
                             <td class="p-2 text-center font-bold text-blue-600"><span id="cons-${famId}">0</span><span class="text-[10px]">m³</span></td>
                             <td class="p-2 text-right text-red-500 text-xs">R$ ${multa.toFixed(2)}</td>
                             <td class="p-2 text-right font-black text-green-700">R$ <span id="valTotal-${famId}">0,00</span>
                                 <input type="hidden" id="h-total-${famId}" value="0" data-multa="${multa}" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}">
                                 <input type="hidden" id="h-agua-${famId}" value="0">
                             </td>
-                            <td class="p-2 text-center" id="status-${famId}"><small class="bg-gray-200 px-2 rounded-full text-[10px] text-gray-500">Espera</small></td>
+                            <td class="p-2 text-center" id="status-${famId}"><small class="bg-gray-200 px-2 rounded-full text-[10px] text-gray-500 font-bold uppercase">Espera</small></td>
                         </tr>
                     `;
                 });
@@ -449,45 +542,122 @@
             window.esconderLoading(); alert("Lote Concluído!");
         };
 
-        // --- MÉTODOS ABERTAS/PAGAS (Simplificados para focar no Relatório) ---
-        window.carregarAbertas = async (silencioso=false) => {
-            if(!silencioso) window.mostrarLoading("Buscando abertas...");
-            const snap = await getDocs(query(collection(db, "faturas"), where("status", "==", "pendente")));
-            let html=""; const hoje = new Date(); hoje.setHours(0,0,0,0);
-            let arr = []; snap.forEach(d => arr.push({id: d.id, ...d.data()}));
-            arr.sort((a,b) => new Date(a.vencimento) - new Date(b.vencimento));
-            
-            arr.forEach(f => {
-                const isOverdue = new Date(f.vencimento + "T00:00:00") < hoje;
-                html += `<tr class="${isOverdue ? 'bg-red-50' : ''} border-b"><td class="p-3 text-xs">${f.vencimento.split('-').reverse().join('/')}</td><td class="p-3"><strong>${f.nome_morador}</strong><br><small>${f.mes_referencia}</small></td><td class="p-3 text-right font-bold text-amber-700">R$ ${f.valor_total.toFixed(2)}</td><td class="p-3 text-right"><button onclick="window.marcarPago('${f.id}')" class="bg-blue-600 text-white px-2 py-1 rounded text-xs mr-1">Pago</button><button onclick="window.excluirFatura('${f.id}')" class="bg-red-100 text-red-600 px-2 py-1 rounded text-xs">🗑️</button></td></tr>`;
-            });
-            document.getElementById("tabelaAbertas").innerHTML = html || "<tr><td colspan='4' class='p-4 text-center'>Tudo Pago!</td></tr>";
-            if(!silencioso) window.esconderLoading();
+        // --- ABA TAXAS AVULSAS ---
+        window.carregarSelectAvulso = async () => {
+            const select = document.getElementById("avulsoFamilia");
+            select.innerHTML = "<option value=''>Buscando moradores...</option>";
+            try {
+                const snap = await getDocs(collection(db, "familias"));
+                let html = "<option value='TODOS' class='font-bold text-blue-700 bg-blue-50'>🌟 RATEIO: COBRAR TODOS</option>";
+                snap.forEach(d => { const f = d.data(); html += `<option value="${d.id}" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}">${f.nome} (${f.lote_endereco})</option>`; });
+                select.innerHTML = html;
+            } catch(e) { select.innerHTML = "<option value=''>Erro ao buscar moradores.</option>"; }
         };
 
-        window.carregarPagamentos = async (silencioso=false) => {
-            const snap = await getDocs(query(collection(db, "faturas"), where("status", "==", "pago")));
-            let arr = []; snap.forEach(d => arr.push(d.data()));
-            arr.sort((a,b) => new Date(b.data_pagamento) - new Date(a.data_pagamento));
-            let html="";
-            arr.forEach(f => {
-                const dtFormat = new Date(f.data_pagamento).toLocaleDateString('pt-BR');
-                html += `<tr class="border-b"><td class="p-3 text-xs text-gray-500">${dtFormat}</td><td class="p-3 font-bold">${f.nome_morador}</td><td class="p-3 text-right text-green-600 font-bold">R$ ${f.valor_total.toFixed(2)}</td></tr>`;
-            });
-            document.getElementById("tabelaPagos").innerHTML = html || "<tr><td colspan='3' class='p-4 text-center'>Nenhum recebimento.</td></tr>";
+        window.submitAvulso = async (e) => {
+            e.preventDefault();
+            const select = document.getElementById("avulsoFamilia");
+            const opt = select.options[select.selectedIndex];
+            const familiaId = select.value;
+            const descricao = document.getElementById("avulsoDescricao").value;
+            const valor = parseFloat(document.getElementById("avulsoValor").value);
+            const vencimento = document.getElementById("avulsoVencimento").value;
+
+            if(familiaId === 'TODOS') {
+                if(!confirm(`⚠️ RATEIO: Gerar cobrança de R$ ${valor.toFixed(2)} para TODOS?`)) return;
+                window.mostrarLoading("Gerando boletos para todos...");
+                const snap = await getDocs(collection(db, "familias"));
+                const families = []; snap.forEach(d => families.push({id: d.id, ...d.data()}));
+                
+                let count = 0;
+                for(let f of families) {
+                    count++; document.getElementById("loadingMsg").innerText = `Gerando ${count} de ${families.length}...`;
+                    try {
+                        const res = await fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor: valor, descricao: descricao, nome: f.nome, cpf: f.cpf.replace(/\D/g, '')}) });
+                        const pix = await res.json();
+                        if(pix.sucesso) {
+                            await addDoc(collection(db, "faturas"), {
+                                familia_id: f.id, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento: vencimento, status: "pendente", pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: f.telefone, nome_morador: f.nome, data_lancamento: new Date().toISOString()
+                            });
+                        }
+                    } catch(err) { }
+                }
+                window.esconderLoading(); alert(`✅ Sucesso! ${count} faturas geradas.`); document.getElementById("formAvulso").reset();
+            } else {
+                window.mostrarLoading("Gerando fatura extra...");
+                try {
+                    const res = await fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor: valor, descricao: descricao, nome: opt.dataset.nome, cpf: opt.dataset.cpf.replace(/\D/g, '')}) });
+                    const pix = await res.json();
+                    if(pix.sucesso) {
+                        await addDoc(collection(db, "faturas"), {
+                            familia_id: familiaId, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento: vencimento, status: "pendente", pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: opt.dataset.tel, nome_morador: opt.dataset.nome, data_lancamento: new Date().toISOString()
+                        });
+                        window.esconderLoading(); alert("Taxa gerada com sucesso!"); document.getElementById("formAvulso").reset();
+                    }
+                } catch(e) { window.esconderLoading(); alert("Erro."); }
+            }
+        };
+
+        // --- MÉTODOS ABERTAS/PAGAS ---
+        window.carregarAbertas = async () => {
+            const tbody = document.getElementById("tabelaAbertas");
+            tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center'>Buscando...</td></tr>";
+            try {
+                const fatSnap = await getDocs(collection(db, "faturas"));
+                const hoje = new Date(); hoje.setHours(0,0,0,0);
+                let abertas = [];
+                fatSnap.forEach(d => { if(d.data().status === 'pendente') abertas.push({id: d.id, ...d.data()}); });
+                abertas.sort((a,b) => new Date(a.vencimento) - new Date(b.vencimento));
+
+                let html = "";
+                for(let f of abertas) {
+                    const isOverdue = new Date(f.vencimento + "T00:00:00") < hoje;
+                    const rowClass = isOverdue ? "bg-red-50" : "hover:bg-amber-50";
+                    const nomeReal = f.nome_morador || "Morador";
+                    const zap = `💧 *ÁGUA SÃO LUIZ*\nOlá *${nomeReal}*!\nSua fatura de ${f.mes_referencia} está disponível.\n\n💰 *Total:* R$ ${f.valor_total.toFixed(2)}\n📅 *Venc:* ${f.vencimento.split('-').reverse().join('/')}\n\n👉 Acesse para ver o PIX:\nhttps://agua-sao-luiz.vercel.app`;
+                    const btnZap = `<button onclick="window.open('https://wa.me/${f.telefone}?text=${encodeURIComponent(zap)}')" class="bg-green-500 text-white px-3 py-2 rounded-lg text-xs font-bold shadow mr-1"><i class="fa-brands fa-whatsapp"></i></button>`;
+
+                    html += `<tr class="${rowClass} border-b">
+                        <td class="p-4 font-mono text-sm">${isOverdue ? "🚨 " : "⏳ "}${f.vencimento.split('-').reverse().join('/')}</td>
+                        <td class="p-4"><strong>${nomeReal}</strong><br><small class="text-gray-500">Ref: ${f.mes_referencia}</small></td>
+                        <td class="p-4 text-right font-bold text-amber-700">R$ ${f.valor_total.toFixed(2)}</td>
+                        <td class="p-4 text-right whitespace-nowrap">${btnZap} <button onclick="window.marcarPago('${f.id}')" class="bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-bold mr-1">Baixa</button> <button onclick="window.excluirFatura('${f.id}')" class="bg-red-100 text-red-600 px-3 py-2 rounded-lg text-xs font-bold">🗑️</button></td>
+                    </tr>`;
+                }
+                tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center text-green-600 font-bold'>Tudo Pago!</td></tr>";
+            } catch(e) { tbody.innerHTML = "Erro ao buscar"; }
+        };
+
+        window.carregarPagamentos = async () => {
+            const tbody = document.getElementById("tabelaPagos");
+            tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center'>Buscando...</td></tr>";
+            try {
+                const fatSnap = await getDocs(collection(db, "faturas"));
+                const pagas = [];
+                fatSnap.forEach(d => { if(d.data().status === 'pago') pagas.push({id: d.id, ...d.data()}); });
+                pagas.sort((a,b) => new Date(b.data_pagamento) - new Date(a.data_pagamento));
+
+                let html = "";
+                for(let p of pagas) {
+                    const dataObj = new Date(p.data_pagamento);
+                    const dtFormat = dataObj.toLocaleDateString('pt-BR');
+                    html += `<tr class="border-b"><td class="p-4 text-xs font-mono text-gray-500">${dtFormat}</td><td class="p-4 font-bold">${p.nome_morador || "Morador"}</td><td class="p-4 text-right font-black text-green-600">R$ ${p.valor_total.toFixed(2)}</td><td class="p-4 text-center"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold uppercase">Recebido</span></td></tr>`;
+                }
+                tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center'>Nenhum pagamento.</td></tr>";
+            } catch(e) { tbody.innerHTML = "Erro ao buscar"; }
         };
 
         window.excluirFatura = async (id) => { if(confirm("Apagar Fatura?")) { await deleteDoc(doc(db, "faturas", id)); window.carregarAbertas(); } };
         window.marcarPago = async (id) => { if(confirm("Baixar Manualmente?")) { await updateDoc(doc(db, "faturas", id), {status: "pago", data_pagamento: new Date().toISOString()}); window.carregarAbertas(); } };
 
-        // --- RELATÓRIOS (NOVO REQ 6) ---
+        // --- RELATÓRIOS ---
         window.carregarRelatorio = async () => {
             window.mostrarLoading("Carregando Base de Dados...");
             const snap = await getDocs(collection(db, "faturas"));
             todasFaturasCache = [];
             snap.forEach(d => todasFaturasCache.push({id: d.id, ...d.data()}));
             window.esconderLoading();
-            window.gerarRelatorioFiltrado(); // Gera primeira vez
+            window.gerarRelatorioFiltrado();
         };
 
         window.gerarRelatorioFiltrado = () => {
@@ -499,41 +669,30 @@
             let filtradas = todasFaturasCache.filter(f => {
                 let matchData = true;
                 if(dtIni || dtFim) {
-                    // Pega a data de lançamento ou cria do vencimento se for antiga
                     const dtBase = f.data_lancamento ? f.data_lancamento.split('T')[0] : f.vencimento;
                     if(dtIni && dtBase < dtIni) matchData = false;
                     if(dtFim && dtBase > dtFim) matchData = false;
                 }
-                
                 let matchStatus = true;
                 if(statusFiltro !== "TODOS" && f.status !== statusFiltro) matchStatus = false;
-
                 let matchBusca = true;
                 if(termoBusca) {
                     const nome = (f.nome_morador || "").toLowerCase();
                     matchBusca = nome.includes(termoBusca);
                 }
-
                 return matchData && matchStatus && matchBusca;
             });
 
-            // Ordena mais recentes primeiro
             filtradas.sort((a,b) => new Date(b.vencimento) - new Date(a.vencimento));
 
-            // Totais
-            let totalPago = 0;
-            let totalPendente = 0;
-            let totalM3 = 0;
-
+            let totalPago = 0, totalPendente = 0, totalM3 = 0;
             let html = "";
             filtradas.forEach(f => {
                 if(f.status === "pago") totalPago += f.valor_total;
                 else totalPendente += f.valor_total;
-                
                 totalM3 += (f.consumo_m3 || 0);
 
                 const badgeClass = f.status === 'pago' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
-                
                 html += `
                     <tr class="hover:bg-slate-50 border-b">
                         <td class="p-4 font-bold text-slate-800">${f.nome_morador || "Cliente"}</td>
@@ -545,12 +704,10 @@
                 `;
             });
 
-            // Atualiza Cards
             document.getElementById("relCardM3").innerText = totalM3.toFixed(0);
             document.getElementById("relCardQtd").innerText = filtradas.length;
             document.getElementById("relCardPendente").innerText = "R$ " + totalPendente.toFixed(2).replace('.',',');
             document.getElementById("relCardPago").innerText = "R$ " + totalPago.toFixed(2).replace('.',',');
-            
             document.getElementById("tabelaRelatorio").innerHTML = html || "<tr><td colspan='5' class='p-8 text-center'>Nenhum dado encontrado para este filtro.</td></tr>";
         };
     </script>
