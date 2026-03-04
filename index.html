@@ -4,10 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meu Consumo - Água São Luiz</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
+        
+        /* Modais */
         .modal-fundo { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; justify-content: center; align-items: center; padding: 1rem; backdrop-filter: blur(4px); }
+        
+        /* Regras de Impressão */
         .no-print { display: block; }
         @media print {
             .no-print { display: none !important; }
@@ -41,11 +46,11 @@
         <div id="loginArea" class="bg-white p-8 md:p-10 rounded-3xl shadow-xl border text-center no-print max-w-md mx-auto mt-10">
             <div class="bg-blue-100 text-blue-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">👤</div>
             <h2 class="text-2xl font-bold mb-2 text-slate-800">Acesse sua conta</h2>
-            <p class="text-slate-500 text-sm mb-6">Consulte suas faturas, consumo e pagamentos.</p>
+            <p class="text-slate-500 text-sm mb-6">Consulte faturas, consumo e pagamentos.</p>
             
             <div class="space-y-4">
                 <input type="tel" id="cpfLogin" placeholder="CPF do Titular (só números)" class="w-full p-4 border-2 border-slate-200 rounded-2xl text-center text-lg font-mono outline-none focus:border-blue-500 focus:bg-blue-50 transition">
-                <input type="password" id="senhaLogin" placeholder="Senha de Acesso" class="w-full p-4 border-2 border-slate-200 rounded-2xl text-center text-lg outline-none focus:border-blue-500 focus:bg-blue-50 transition">
+                <input type="password" id="senhaLogin" placeholder="Senha (Padrão: 123456)" class="w-full p-4 border-2 border-slate-200 rounded-2xl text-center text-lg outline-none focus:border-blue-500 focus:bg-blue-50 transition">
             </div>
             
             <button onclick="acessar()" id="btnAcessar" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-[0_8px_15px_rgba(37,99,235,0.3)] active:scale-95 transition text-lg mt-6">
@@ -94,8 +99,8 @@
         </div>
     </main>
 
-    <!-- MODAL ALTERAR SENHA (PRIMEIRO ACESSO) -->
-    <div id="modalSenha" class="modal-fundo no-print">
+    <!-- MODAL ALTERAR SENHA (SÓ APARECE 1 VEZ) -->
+    <div id="modalSenha" class="modal-fundo no-print" style="display: none;">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm mx-auto p-8 text-center animate-[fade-in_0.2s_ease-out]">
             <div class="text-4xl mb-4">🔐</div>
             <h3 class="font-bold text-xl text-slate-800 mb-2">Segurança da Conta</h3>
@@ -141,7 +146,7 @@
             <div class="p-6 text-center">
                 <p class="text-xs font-bold text-slate-400 mb-3 uppercase">Escanear QR Code</p>
                 <div class="bg-white p-2 inline-block rounded-xl border-2 border-dashed border-slate-300 mb-4">
-                    <img id="modImgQr" class="w-48 h-48" src="">
+                    <img id="modImgQr" class="w-48 h-48" src="" alt="QR Code">
                 </div>
                 <button onclick="copiarPixAtual()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition shadow-lg flex justify-center items-center gap-2">
                     Copiar Pix Copia e Cola
@@ -150,11 +155,12 @@
         </div>
     </div>
 
-    <!-- TOAST -->
+    <!-- TOAST DE SUCESSO -->
     <div id="toast" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-full font-bold shadow-lg transition-opacity duration-300 opacity-0 pointer-events-none z-[110]">
         ✅ Código copiado!
     </div>
 
+    <!-- SCRIPTS E FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, getDocs, query, where, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -169,10 +175,10 @@
 
         let faturasDoCliente = []; 
         let pixCopiaEColaAtual = ""; 
-        let clienteIDGlobal = ""; // ID do Firestore
+        let clienteIDGlobal = ""; 
         let senhaAtualBanco = "";
 
-        // AUTO-LOGIN (Verifica se já logou antes)
+        // AUTO-LOGIN
         window.onload = () => {
             const idSalvo = localStorage.getItem("cliente_saoluiz_id");
             const nomeSalvo = localStorage.getItem("cliente_saoluiz_nome");
@@ -210,7 +216,7 @@
                 snap.forEach(d => { 
                     id = d.id; 
                     nome = d.data().nome;
-                    senhaAtualBanco = d.data().senha || "123456"; // Trata legado
+                    senhaAtualBanco = d.data().senha || "123456"; 
                 });
 
                 if (senhaInput !== senhaAtualBanco) {
@@ -219,7 +225,7 @@
                     return;
                 }
                 
-                // Login de Sucesso!
+                // Login OK
                 clienteIDGlobal = id;
                 localStorage.setItem("cliente_saoluiz_id", id);
                 localStorage.setItem("cliente_saoluiz_nome", nome);
@@ -227,7 +233,7 @@
                 mostrarPainel(nome);
                 carregarDados(id);
 
-                // Verifica se precisa mudar a senha
+                // Só exibe a janela de trocar senha se a senha for "123456"
                 if (senhaAtualBanco === "123456") {
                     document.getElementById("modalSenha").style.display = "flex";
                 }
@@ -258,7 +264,7 @@
             location.reload();
         };
 
-        // --- LÓGICA DE TROCA DE SENHA ---
+        // SENHA LÓGICA
         window.mostrarInputSenha = () => {
             document.getElementById("botoesSenha1").classList.add('hidden');
             document.getElementById("areaNovaSenha").classList.remove('hidden');
@@ -282,7 +288,7 @@
             }
         };
 
-        // --- CARREGAMENTO DE FATURAS ---
+        // FATURAS E RELATÓRIO
         async function carregarDados(familiaId) {
             const tbody = document.getElementById("listaHistorico");
             try {
@@ -314,7 +320,6 @@
                     const vencFormatado = f.vencimento.split('-').reverse().join('/');
                     const valorTotalStr = "R$ " + (f.valor_total || 0).toFixed(2).replace('.',',');
 
-                    // Lógica para mostrar as leituras no relatório (se for taxa avulsa, mostra traço)
                     const lAnt = (f.leitura_anterior === 0 && f.leitura_atual === 0 && f.consumo_m3 === 0) ? "-" : (f.leitura_anterior || 0);
                     const lAtu = (f.leitura_anterior === 0 && f.leitura_atual === 0 && f.consumo_m3 === 0) ? "-" : (f.leitura_atual || 0);
                     const cM3 = (f.consumo_m3 !== undefined && f.consumo_m3 !== null) ? f.consumo_m3 : "-";
@@ -349,7 +354,7 @@
             }
         }
 
-        // --- MODAL DE PAGAMENTO ---
+        // --- PAGAMENTO ---
         window.abrirPagamento = (idFirebase) => {
             const fatura = faturasDoCliente.find(f => f.id_firebase === idFirebase);
             if(!fatura) return;
@@ -371,7 +376,6 @@
             document.getElementById("modImgQr").src = "data:image/jpeg;base64," + fatura.qr_code_base64;
             pixCopiaEColaAtual = fatura.pix_copia_cola;
 
-            // Garantia absoluta de que exibe corretamente
             document.getElementById("modalPagamento").style.display = "flex";
         };
 
