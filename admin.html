@@ -120,7 +120,7 @@
                     </div>
                 </div>
 
-                <!-- TAXAS AVULSAS -->
+                <!-- TAXAS AVULSAS COM NAVEGAÇÃO POR ENTER E AUTO-SELECT -->
                 <div id="aba-avulso" class="conteudo-aba tela-oculta">
                     <h2 class="text-2xl font-bold text-blue-800 mb-6">🔧 Lançar Serviço Avulso</h2>
                     <div class="bg-white rounded-2xl shadow-sm border p-6 max-w-2xl">
@@ -133,23 +133,31 @@
                                 </select>
                             </div>
                             
-                            <!-- MELHORIA AQUI: BUSCA DE CLIENTES E NOVO LABEL -->
-                            <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Selecione o Cliente</label>
-                                <input type="text" id="buscaClienteAvulso" onkeyup="if(window.filtrarAvulso) window.filtrarAvulso()" placeholder="🔍 Digite para pesquisar cliente ou lote..." class="w-full p-3 mb-2 bg-gray-100 border border-gray-200 rounded-xl outline-none focus:border-blue-500 transition text-sm">
-                                <select id="avulsoFamilia" required class="w-full p-3 bg-gray-50 border rounded-xl outline-none font-bold text-gray-700">
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-inner">
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Busque por Nome ou CPF</label>
+                                <input type="text" id="buscaClienteAvulso" onkeyup="if(window.filtrarAvulso) window.filtrarAvulso()" onkeydown="if(window.focarProximo) window.focarProximo(event, 'avulsoDescricao')" placeholder="🔍 Digite para auto-selecionar e pressione Enter..." class="w-full p-3 mb-3 bg-white border-2 border-blue-100 rounded-xl outline-none focus:border-blue-500 transition text-sm shadow-sm font-bold text-blue-800">
+                                
+                                <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Cliente Selecionado:</label>
+                                <select id="avulsoFamilia" required class="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none font-bold text-gray-700 shadow-sm pointer-events-none">
+                                    <!-- Options rendered via JS -->
                                 </select>
                             </div>
 
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Título do Serviço</label>
-                                <input type="text" id="avulsoDescricao" required placeholder="Ex: Conserto do encanamento" class="w-full p-3 bg-gray-50 border rounded-xl outline-none">
+                                <input type="text" id="avulsoDescricao" required placeholder="Ex: Conserto do encanamento" onkeydown="if(window.focarProximo) window.focarProximo(event, 'avulsoValor')" class="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500 focus:bg-white transition shadow-sm">
                             </div>
                             <div class="flex flex-col sm:flex-row gap-4">
-                                <div class="flex-1"><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Valor (R$)</label><input type="number" step="0.01" id="avulsoValor" required class="w-full p-3 bg-gray-50 border rounded-xl outline-none text-blue-600 font-bold text-lg"></div>
-                                <div class="flex-1" id="divVencimentoAvulso"><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Vencimento (Só p/ Pix Separado)</label><input type="date" id="avulsoVencimento" class="w-full p-3 bg-gray-50 border rounded-xl outline-none"></div>
+                                <div class="flex-1">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Valor (R$)</label>
+                                    <input type="number" step="0.01" id="avulsoValor" required class="w-full p-3 bg-gray-50 border rounded-xl outline-none text-blue-600 font-bold text-lg focus:border-blue-500 focus:bg-white transition shadow-sm" onkeydown="if(document.getElementById('avulsoTipo').value === 'pix_agora') { if(window.focarProximo) window.focarProximo(event, 'avulsoVencimento'); } else { if(window.focarProximo) window.focarProximo(event, 'btnSubmitAvulso'); }">
+                                </div>
+                                <div class="flex-1" id="divVencimentoAvulso">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Vencimento (Só p/ Pix Separado)</label>
+                                    <input type="date" id="avulsoVencimento" onkeydown="if(window.focarProximo) window.focarProximo(event, 'btnSubmitAvulso')" class="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500 focus:bg-white transition shadow-sm">
+                                </div>
                             </div>
-                            <button type="submit" class="w-full bg-blue-800 text-white font-black py-4 rounded-xl shadow-lg mt-4">Confirmar Lançamento</button>
+                            <button type="submit" id="btnSubmitAvulso" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-black py-4 rounded-xl shadow-lg mt-4 active:scale-95 transition">Confirmar Lançamento</button>
                         </form>
                     </div>
                 </div>
@@ -266,6 +274,15 @@
         window.esconderLoading = () => { document.getElementById("loading").style.display = "none"; };
         window.fecharModal = () => document.getElementById("modalMorador").style.display = "none";
 
+        // --- SISTEMA DE NAVEGAÇÃO POR ENTER NOS FORMULÁRIOS ---
+        window.focarProximo = (event, nextId) => {
+            if (event.key === "Enter") {
+                event.preventDefault(); // Impede o formulário de enviar antes da hora
+                const nextEl = document.getElementById(nextId);
+                if(nextEl) nextEl.focus();
+            }
+        };
+
         window.entrarAdmin = () => {
             if(document.getElementById("senhaAdmin").value === "admin123") {
                 localStorage.setItem("admin_saoluiz_logado", "sim");
@@ -370,17 +387,30 @@
             recognition.start();
         };
 
-        // --- RENDERIZA O SELECT DE BUSCA DOS AVULSOS ---
+        // --- MÓDULO INTELIGENTE DO SELECT AVULSO ---
         window.renderizarSelectAvulso = (filtro = "") => {
             const select = document.getElementById("avulsoFamilia");
             let html = "<option value='TODOS' class='font-bold text-blue-700 bg-blue-50'>🌟 RATEIO: COBRAR TODOS</option>";
+            let matchCount = 0;
+            let firstMatchId = null;
+
             Object.entries(window.familiasGlobal).forEach(([id, f]) => {
-                const texto = `${f.nome} ${f.lote_endereco}`.toLowerCase();
+                // A Busca agora verifica Nome, CPF e Endereço!
+                const texto = `${f.nome} ${f.cpf} ${f.lote_endereco}`.toLowerCase();
                 if(texto.includes(filtro.toLowerCase())) {
                     html += `<option value="${id}" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}">${f.nome} (${f.lote_endereco})</option>`;
+                    if(matchCount === 0) firstMatchId = id; // Guarda o primeiro que bater com a busca
+                    matchCount++;
                 }
             });
             select.innerHTML = html;
+
+            // Lógica de Auto-Seleção! Se digitou algo e achou alguém, já seleciona esse morador.
+            if (filtro.trim() !== "" && firstMatchId) {
+                select.value = firstMatchId;
+            } else if (filtro.trim() === "") {
+                select.value = 'TODOS';
+            }
         };
 
         window.filtrarAvulso = () => {
@@ -560,6 +590,8 @@
                 window.esconderLoading();
                 alert("✅ Serviço agendado! Ele aparecerá automaticamente quando for lançar a próxima conta de Água Mensal.");
                 document.getElementById("formAvulso").reset();
+                document.getElementById("buscaClienteAvulso").value = "";
+                window.filtrarAvulso(); // Reseta o filtro
                 return;
             }
 
@@ -592,6 +624,8 @@
                 } catch(e) { window.esconderLoading(); alert("Erro de conexão."); }
             }
             document.getElementById("formAvulso").reset();
+            document.getElementById("buscaClienteAvulso").value = "";
+            window.filtrarAvulso(); // Reseta o filtro
         };
 
         // --- TEMPO REAL: ABERTAS (COM NOVO TEXTO WHATSAPP) ---
@@ -616,7 +650,7 @@
                     const nomeReal = f.nome_morador || window.familiasGlobal[f.familia_id]?.nome || "Morador";
                     const tel = f.telefone || window.familiasGlobal[f.familia_id]?.telefone;
                     
-                    // NOVA MENSAGEM WHATSAPP (Emojis e Negrito corrigido)
+                    // NOVA MENSAGEM WHATSAPP
                     const nomeLimpo = nomeReal.trim();
                     const zap = `💧 *ÁGUA SÃO LUIZ*\nOlá *${nomeLimpo}*! 👋\n\nA sua fatura de ${f.mes_referencia} já está disponível. 🏠✨\n\n💰 *Total:* R$ ${f.valor_total.toFixed(2)}\n📅 *Venc:* ${f.vencimento.split('-').reverse().join('/')}\n\n👉 *Acesse o site para ver e pagar o PIX:*\nhttps://agua-sao-luiz.vercel.app\n\n🔐 *Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456 (caso não tenha alterado).*`;
                     
@@ -649,7 +683,6 @@
                 for(let p of pagas) {
                     const dataObj = new Date(p.data_pagamento);
                     const dtFormat = dataObj.toLocaleDateString('pt-BR') + ' ' + dataObj.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-                    // Usamos o ID do PIX se disponível para simular um NSU (Número Sequencial Único) do banco.
                     const nsu = p.pix_txid ? `NSU: ${p.pix_txid.slice(-6)}` : '';
                     html += `<tr class="border-b"><td class="p-4 text-xs font-mono text-gray-500">${dtFormat} <br><span class="text-[9px] text-green-600 font-bold">${nsu}</span></td><td class="p-4 font-bold">${p.nome_morador || "Morador"}</td><td class="p-4 text-right font-black text-green-600">R$ ${p.valor_total.toFixed(2)}</td><td class="p-4 text-center"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold uppercase">Recebido via Pix</span></td></tr>`;
                 }
