@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>App Gestão 9.1 IA - Água São Luiz</title>
+    <title>App Gestão 9.2 - Água São Luiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -21,7 +21,6 @@
         .input-leitura:focus { background-color: #fffbeb; border-color: #f59e0b; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2); }
         .modal-fundo { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; justify-content: center; align-items: center; padding: 1rem; }
         
-        /* Efeito de Voz Ativa */
         .mic-ativo { animation: pulse-red 1.5s infinite; background-color: #ef4444 !important; color: white !important; }
         @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
     </style>
@@ -34,6 +33,7 @@
         <i class="fa-solid fa-microphone"></i> <span id="txtToastVoz">Comando reconhecido</span>
     </div>
 
+    <!-- TELA DE LOGIN BLINDADA -->
     <div id="loginAdmin" class="fixed inset-0 bg-slate-900 flex justify-center items-center z-50 p-4">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center">
             <span class="text-5xl">💧</span>
@@ -54,16 +54,25 @@
                 <button onclick="mudarAba('aba-abertas', this); if(window.carregarAbertas) window.carregarAbertas();" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition">⏳ Abertas / Lixeira</button>
                 <button onclick="mudarAba('aba-recebimentos', this); if(window.carregarPagamentos) window.carregarPagamentos();" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition">✅ Pagos</button>
                 <button onclick="mudarAba('aba-config', this);" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition">⚙️ Config / Backup</button>
+                
+                <!-- NOVO BOTÃO DE SAIR -->
+                <div class="pt-6 mt-6 border-t border-slate-700">
+                    <button onclick="sairAdmin()" class="w-full flex items-center justify-center p-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold transition">🚪 Sair do Painel</button>
+                </div>
             </nav>
         </aside>
 
         <main class="flex-1 overflow-y-auto bg-gray-100 conteudo-principal w-full">
-            <div class="md:hidden bg-slate-900 text-white p-4 text-center sticky top-0 z-40 shadow-md font-bold flex justify-between px-6">
+            <div class="md:hidden bg-slate-900 text-white p-4 text-center sticky top-0 z-40 shadow-md font-bold flex justify-between px-6 items-center">
                 <span>💧 Gestão São Luiz</span>
-                <button onclick="mudarAba('aba-config', this);">⚙️</button>
+                <div class="flex gap-4">
+                    <button onclick="mudarAba('aba-config', this);">⚙️</button>
+                    <button onclick="sairAdmin()" class="text-red-400"><i class="fa-solid fa-right-from-bracket"></i></button>
+                </div>
             </div>
             
             <div class="p-4 md:p-8 max-w-7xl mx-auto w-full">
+                <!-- MORADORES -->
                 <div id="aba-moradores" class="conteudo-aba">
                     <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
                         <h2 class="text-2xl font-bold">👥 Moradores</h2>
@@ -75,6 +84,7 @@
                     </div>
                 </div>
 
+                <!-- LEITURAS MENSAL COM VOZ -->
                 <div id="aba-leituras" class="conteudo-aba tela-oculta">
                     <div class="mb-4 flex justify-between items-end flex-wrap gap-2">
                         <div>
@@ -107,6 +117,7 @@
                     </div>
                 </div>
 
+                <!-- TAXAS AVULSAS -->
                 <div id="aba-avulso" class="conteudo-aba tela-oculta">
                     <h2 class="text-2xl font-bold text-blue-800 mb-6">🔧 Lançar Taxa ou Manutenção</h2>
                     <div class="bg-white rounded-2xl shadow-sm border p-6 max-w-2xl">
@@ -128,6 +139,7 @@
                     </div>
                 </div>
 
+                <!-- ABERTAS -->
                 <div id="aba-abertas" class="conteudo-aba tela-oculta">
                     <h2 class="text-2xl font-bold text-amber-600 mb-6">⏳ Faturas Pendentes</h2>
                     <div class="bg-white rounded-2xl shadow-sm border border-amber-100 overflow-hidden">
@@ -135,11 +147,13 @@
                     </div>
                 </div>
 
+                <!-- PAGAS -->
                 <div id="aba-recebimentos" class="conteudo-aba tela-oculta">
                     <h2 class="text-2xl font-bold text-green-700 mb-6">✅ Recebidos</h2>
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden"><table class="w-full text-left whitespace-nowrap"><tbody id="tabelaPagos" class="divide-y"></tbody></table></div>
                 </div>
 
+                <!-- CONFIGURACOES -->
                 <div id="aba-config" class="conteudo-aba tela-oculta">
                     <h2 class="text-2xl font-bold text-slate-700 mb-6">⚙️ Sistema e Banco de Dados</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -160,6 +174,7 @@
         </nav>
     </div>
 
+    <!-- MODAL CADASTRO -->
     <div id="modalMorador" class="modal-fundo">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm mx-auto overflow-hidden">
             <div class="bg-slate-900 p-5 flex justify-between items-center text-white"><h3 id="tituloModal" class="font-bold">Morador</h3><button onclick="fecharModal()" class="text-2xl">×</button></div>
@@ -176,17 +191,35 @@
             </form>
         </div>
     </div>
+    <!-- SCRIPT 1: INTERFACE BLINDADA E MEMÓRIA DE SENHA -->
     <script>
+        // MÁGICA: Verifica se você já logou antes ao abrir a página
+        window.onload = () => {
+            if(localStorage.getItem("admin_saoluiz_logado") === "sim") {
+                document.getElementById("loginAdmin").style.display = "none";
+                document.getElementById("painelAdmin").classList.remove('tela-oculta');
+                // Aguarda 1 segundo para o Firebase carregar e puxa os moradores
+                setTimeout(() => { if(window.carregarFamilias) window.carregarFamilias(); }, 1000);
+            }
+        };
+
         window.mostrarLoading = (msg) => { document.getElementById("loadingMsg").innerText = msg; document.getElementById("loading").style.display = "flex"; };
         window.esconderLoading = () => { document.getElementById("loading").style.display = "none"; };
         window.fecharModal = () => document.getElementById("modalMorador").style.display = "none";
 
         window.entrarAdmin = () => {
             if(document.getElementById("senhaAdmin").value === "admin123") {
+                localStorage.setItem("admin_saoluiz_logado", "sim"); // SALVA NA MEMÓRIA!
                 document.getElementById("loginAdmin").style.display = "none";
                 document.getElementById("painelAdmin").classList.remove('tela-oculta');
                 if(window.carregarFamilias) window.carregarFamilias();
             } else { document.getElementById("erroLogin").classList.remove('hidden'); }
+        };
+
+        // BOTÃO DE SAIR
+        window.sairAdmin = () => {
+            localStorage.removeItem("admin_saoluiz_logado"); // Limpa a memória
+            location.reload(); // Recarrega a página e volta pro cadeado
         };
 
         window.mudarAba = (id, el) => {
@@ -290,6 +323,7 @@
         }
     </script>
 
+    <!-- SCRIPT 2: BANCO DE DADOS -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -305,7 +339,6 @@
         };
         const db = getFirestore(initializeApp(firebaseConfig));
 
-        // Cadastrar ou Editar Morador
         window.submitMorador = async (e) => {
             e.preventDefault();
             const id = document.getElementById("modId").value;
@@ -328,7 +361,7 @@
                     html += `<tr><td class="p-4"><strong>${data.nome}</strong><br><small>${data.lote_endereco}</small></td><td class="p-4 text-xs font-mono text-gray-500">${data.cpf}</td><td class="p-4 text-xs font-mono text-gray-500">${data.telefone}</td><td class="p-4 text-center"><button onclick="abrirModalEdicao('${d.id}','${data.nome}','${data.cpf}','${data.telefone}','${data.lote_endereco}')" class="text-blue-600 font-bold px-3 py-1 bg-blue-50 rounded">Editar</button></td></tr>`;
                 });
                 tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center'>Nenhum cadastro.</td></tr>";
-            } catch (e) { tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center text-red-500'>O Banco de Dados foi bloqueado pela rede.</td></tr>"; }
+            } catch (e) { tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center text-red-500'>Erro ao buscar no Banco de Dados.</td></tr>"; }
         };
 
         window.carregarLoteFaturas = async () => {
@@ -351,8 +384,8 @@
                     html += `
                         <tr id="linha-${famId}" class="hover:bg-blue-50 transition-colors">
                             <td class="p-2 coluna-fixa"><strong>${f.nome}</strong><br><small class="text-gray-500">${f.lote_endereco}</small></td>
-                            <td class="p-2 text-center"><input type="number" id="ant-${famId}" onkeyup="calcularLinha('${famId}', ${multa})" onkeydown="handleEnter(event, '${famId}', 'ant')" class="w-16 p-2 border rounded-lg text-center outline-none input-leitura"></td>
-                            <td class="p-2 text-center"><input type="number" id="atu-${famId}" onkeyup="calcularLinha('${famId}', ${multa})" onkeydown="handleEnter(event, '${famId}', 'atu')" class="w-16 p-2 border-2 border-blue-400 bg-blue-50 rounded-lg text-center font-bold outline-none input-leitura"></td>
+                            <td class="p-2 text-center"><input type="number" id="ant-${famId}" onkeyup="window.calcularLinha('${famId}', ${multa})" onkeydown="window.handleEnter(event, '${famId}', 'ant')" class="w-16 p-2 border rounded-lg text-center outline-none input-leitura"></td>
+                            <td class="p-2 text-center"><input type="number" id="atu-${famId}" onkeyup="window.calcularLinha('${famId}', ${multa})" onkeydown="window.handleEnter(event, '${famId}', 'atu')" class="w-16 p-2 border-2 border-blue-400 bg-blue-50 rounded-lg text-center font-bold outline-none input-leitura"></td>
                             <td class="p-2 text-center font-bold text-blue-600"><span id="cons-${famId}">0</span><span class="text-[10px] font-normal">m³</span></td>
                             <td class="p-2 text-right text-red-500 font-bold text-xs">R$ ${multa.toFixed(2)}</td>
                             <td class="p-2 text-right font-black text-green-700 text-base">R$ <span id="valTotal-${famId}">0,00</span>
@@ -399,9 +432,11 @@
                         document.getElementById(`linha-${id}`).style.backgroundColor = "#f0fdf4";
                         document.getElementById(`atu-${id}`).disabled = true;
                     } else {
-                        alert(`Erro Mercado Pago para ${nome}: ${pix.detalhes?.message || 'Erro Desconhecido'}`);
+                        let erroReal = pix.erro || (pix.detalhes && pix.detalhes.message) || JSON.stringify(pix.detalhes) || "Token inválido/revogado.";
+                        document.getElementById(`status-${id}`).innerHTML = `<span class='text-red-500 font-bold text-[10px]'>Erro</span>`;
+                        alert(`Erro Mercado Pago para ${nome}: ${erroReal}`);
                     }
-                } catch(e) { document.getElementById(`status-${id}`).innerHTML = "<span class='text-red-500 font-bold'>Erro API</span>"; }
+                } catch(e) { document.getElementById(`status-${id}`).innerHTML = "<span class='text-red-500 font-bold text-[10px]'>Falha na Rede</span>"; }
             }
             window.esconderLoading();
             alert("✅ Lote Concluído!");
@@ -409,6 +444,17 @@
         };
 
         // --- ABA TAXAS AVULSAS ---
+        window.carregarSelectAvulso = async () => {
+            const select = document.getElementById("avulsoFamilia");
+            select.innerHTML = "<option value=''>Buscando moradores...</option>";
+            try {
+                const snap = await getDocs(collection(db, "familias"));
+                let html = "<option value='TODOS' class='font-bold text-blue-700 bg-blue-50'>🌟 RATEIO: COBRAR TODOS OS MORADORES</option>";
+                snap.forEach(d => { const f = d.data(); html += `<option value="${d.id}" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}">${f.nome} (${f.lote_endereco})</option>`; });
+                select.innerHTML = html;
+            } catch(e) { select.innerHTML = "<option value=''>Erro</option>"; }
+        };
+
         window.submitAvulso = async (e) => {
             e.preventDefault();
             const select = document.getElementById("avulsoFamilia");
@@ -458,26 +504,18 @@
                         alert("Taxa gerada com sucesso! Vá na aba de Abertas para enviar o Zap.");
                         document.getElementById("formAvulso").reset();
                     } else {
-                        window.esconderLoading(); alert(`Erro do Banco: ${pix.detalhes?.message}`);
+                        let erroReal = pix.erro || (pix.detalhes && pix.detalhes.message) || JSON.stringify(pix.detalhes) || "Token do Mercado Pago Inválido ou Revogado.";
+                        window.esconderLoading(); 
+                        alert(`❌ Erro do Banco: ${erroReal}`);
                     }
-                } catch(e) { window.esconderLoading(); alert("Erro de conexão."); }
+                } catch(e) { window.esconderLoading(); alert("Erro de conexão na API."); }
             }
-        };
-
-        window.carregarSelectAvulso = async () => {
-            const select = document.getElementById("avulsoFamilia");
-            select.innerHTML = "<option value=''>Buscando moradores...</option>";
-            try {
-                const snap = await getDocs(collection(db, "familias"));
-                let html = "<option value='TODOS' class='font-bold text-blue-700 bg-blue-50'>🌟 RATEIO: COBRAR TODOS OS MORADORES</option>";
-                snap.forEach(d => { const f = d.data(); html += `<option value="${d.id}" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}">${f.nome} (${f.lote_endereco})</option>`; });
-                select.innerHTML = html;
-            } catch(e) { select.innerHTML = "<option value=''>Erro</option>"; }
         };
 
         // --- ABA ABERTAS ---
         window.carregarAbertas = async () => {
             const tbody = document.getElementById("tabelaAbertas");
+            tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center'>Buscando...</td></tr>";
             try {
                 const fatSnap = await getDocs(collection(db, "faturas"));
                 const hoje = new Date(); hoje.setHours(0,0,0,0);
