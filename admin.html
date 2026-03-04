@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>App Gestão 10.0 - Água São Luiz</title>
+    <title>App Gestão 11.0 - Água São Luiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -12,13 +12,15 @@
         .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .coluna-fixa { position: sticky; left: 0; z-index: 20; background-color: white; border-right: 2px solid #e5e7eb; max-width: 140px; min-width: 140px; white-space: normal; font-size: 0.8rem; line-height: 1.1; }
+        
+        .coluna-fixa { position: sticky; left: 0; z-index: 20; background-color: white; border-right: 2px solid #e5e7eb; max-width: 150px; min-width: 150px; white-space: normal; font-size: 0.8rem; line-height: 1.2; }
         th.coluna-fixa { background-color: #f8fafc; }
         .scroll-suave::-webkit-scrollbar { height: 8px; }
         .scroll-suave::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         .conteudo-principal { padding-bottom: 90px; }
         .input-leitura:focus { background-color: #fffbeb; border-color: #f59e0b; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2); }
         .modal-fundo { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; justify-content: center; align-items: center; padding: 1rem; }
+        
         .mic-ativo { animation: pulse-red 1.5s infinite; background-color: #ef4444 !important; color: white !important; }
         @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
         
@@ -37,7 +39,7 @@
         <i class="fa-solid fa-microphone"></i> <span id="txtToastVoz">Comando</span>
     </div>
 
-    <!-- TELA LOGIN ADMIN -->
+    <!-- LOGIN -->
     <div id="loginAdmin" class="fixed inset-0 bg-slate-900 flex justify-center items-center z-50 p-4">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center">
             <span class="text-5xl">💧</span>
@@ -49,17 +51,16 @@
     </div>
 
     <div id="painelAdmin" class="flex w-full h-full tela-oculta relative">
-        <!-- MENU LATERAL -->
         <aside class="w-64 bg-slate-900 text-white flex-col hidden md:flex shadow-xl z-30">
             <div class="p-6 text-center border-b border-slate-700"><h1 class="text-xl font-bold">💧 São Luiz</h1></div>
             <nav class="flex-1 p-4 space-y-2 overflow-y-auto scroll-suave text-sm">
                 <button onclick="mudarAba('aba-moradores', this)" class="menu-btn w-full flex items-center p-3 rounded-xl bg-blue-600 text-white font-bold transition"><i class="fa-solid fa-users w-6"></i> Moradores</button>
-                <button onclick="mudarAba('aba-leituras', this); if(window.carregarLoteFaturas) window.carregarLoteFaturas();" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition"><i class="fa-solid fa-pen-to-square w-6"></i> Água (Mensal)</button>
-                <button onclick="mudarAba('aba-avulso', this); if(window.carregarSelectAvulso) window.carregarSelectAvulso();" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition"><i class="fa-solid fa-wrench w-6"></i> Taxas Avulsas</button>
-                <button onclick="mudarAba('aba-abertas', this); if(window.carregarAbertas) window.carregarAbertas();" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition"><i class="fa-solid fa-hourglass-half w-6"></i> Pendentes</button>
-                <button onclick="mudarAba('aba-recebimentos', this); if(window.carregarPagamentos) window.carregarPagamentos();" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition"><i class="fa-solid fa-check-double w-6"></i> Pagos</button>
-                <button onclick="mudarAba('aba-relatorios', this); if(window.carregarRelatorio) window.carregarRelatorio();" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition"><i class="fa-solid fa-chart-pie w-6"></i> Relatórios</button>
-                <button onclick="mudarAba('aba-config', this); if(window.carregarConfigAgua) window.carregarConfigAgua();" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition"><i class="fa-solid fa-gear w-6"></i> Configuração</button>
+                <button onclick="mudarAba('aba-leituras', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition"><i class="fa-solid fa-pen-to-square w-6"></i> Água (Mensal)</button>
+                <button onclick="mudarAba('aba-avulso', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition"><i class="fa-solid fa-wrench w-6"></i> Serviços Avulsos</button>
+                <button onclick="mudarAba('aba-abertas', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition"><i class="fa-solid fa-hourglass-half w-6"></i> Pendentes</button>
+                <button onclick="mudarAba('aba-recebimentos', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition"><i class="fa-solid fa-check-double w-6"></i> Pagos</button>
+                <button onclick="mudarAba('aba-relatorios', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition"><i class="fa-solid fa-chart-pie w-6"></i> Relatórios</button>
+                <button onclick="mudarAba('aba-config', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition"><i class="fa-solid fa-gear w-6"></i> Configuração</button>
                 
                 <div class="pt-6 mt-6 border-t border-slate-700">
                     <button onclick="sairAdmin()" class="w-full flex items-center justify-center p-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold transition">Sair</button>
@@ -91,23 +92,23 @@
                 <div id="aba-leituras" class="conteudo-aba tela-oculta">
                     <div class="mb-4 flex justify-between items-end flex-wrap gap-2">
                         <div>
-                            <h2 class="text-2xl font-bold flex items-center gap-2">📝 Consumo <button id="btnVoz" onclick="alternarVoz()" class="bg-slate-200 text-slate-600 w-10 h-10 rounded-full flex justify-center items-center shadow-sm"><i class="fa-solid fa-microphone"></i></button></h2>
+                            <h2 class="text-2xl font-bold flex items-center gap-2">📝 Consumo Mensal <button id="btnVoz" onclick="alternarVoz()" class="bg-slate-200 text-slate-600 w-10 h-10 rounded-full flex justify-center items-center shadow-sm"><i class="fa-solid fa-microphone"></i></button></h2>
                         </div>
                         <div class="flex gap-2 text-xs">
-                            <input type="text" id="mesReferencia" value="03/2026" class="w-20 p-2 border rounded font-bold text-center">
-                            <input type="date" id="dataVencimento" value="2026-03-20" class="p-2 border rounded font-bold text-center">
+                            <input type="text" id="mesReferencia" value="04/2026" class="w-20 p-2 border rounded font-bold text-center">
+                            <input type="date" id="dataVencimento" value="2026-04-20" class="p-2 border rounded font-bold text-center">
                         </div>
                     </div>
-                    <button onclick="if(window.gerarFaturasEmLote) window.gerarFaturasEmLote()" class="w-full bg-green-500 text-white py-4 rounded-2xl font-black text-xl shadow-xl hover:bg-green-600 active:scale-95 transition mb-6">🚀 GERAR E SALVAR TUDO</button>
+                    <button onclick="if(window.gerarFaturasEmLote) window.gerarFaturasEmLote()" class="w-full bg-green-500 text-white py-4 rounded-2xl font-black text-xl shadow-xl hover:bg-green-600 active:scale-95 transition mb-6">🚀 GERAR FATURAS E SALVAR HODÔMETROS</button>
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden relative">
                         <div class="overflow-x-auto scroll-suave">
                             <table class="w-full text-left border-collapse whitespace-nowrap">
                                 <thead>
                                     <tr class="bg-slate-100 text-[10px] uppercase font-bold text-slate-500 border-b">
                                         <th class="p-3 coluna-fixa">Morador / CPF</th>
-                                        <th class="p-3 text-center">Ant.</th>
-                                        <th class="p-3 text-center">Atual</th>
-                                        <th class="p-3 text-center">Cons.</th>
+                                        <th class="p-3 text-center">Hodômetro Ant.</th>
+                                        <th class="p-3 text-center">Hodômetro Atual</th>
+                                        <th class="p-3 text-center">Gasto m³</th>
                                         <th class="p-3 text-right text-red-600">Multa</th>
                                         <th class="p-3 text-right text-green-700">Total R$</th>
                                         <th class="p-3 text-center">Status</th>
@@ -121,35 +122,48 @@
 
                 <!-- TAXAS AVULSAS -->
                 <div id="aba-avulso" class="conteudo-aba tela-oculta">
-                    <h2 class="text-2xl font-bold text-blue-800 mb-6">🔧 Lançar Taxa</h2>
+                    <h2 class="text-2xl font-bold text-blue-800 mb-6">🔧 Lançar Serviço Avulso</h2>
                     <div class="bg-white rounded-2xl shadow-sm border p-6 max-w-2xl">
                         <form id="formAvulso" class="space-y-4" onsubmit="if(window.submitAvulso) window.submitAvulso(event)">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Como deseja cobrar?</label>
+                                <select id="avulsoTipo" class="w-full p-3 bg-blue-50 border border-blue-200 rounded-xl outline-none font-bold text-blue-900">
+                                    <option value="somar_proxima">➕ Somar na Próxima Conta de Água</option>
+                                    <option value="pix_agora">⚡ Gerar um PIX Separado Agora</option>
+                                </select>
+                            </div>
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Selecione o Alvo</label>
                                 <select id="avulsoFamilia" required class="w-full p-3 bg-gray-50 border rounded-xl outline-none font-bold text-gray-700"></select>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Título</label>
-                                <input type="text" id="avulsoDescricao" required class="w-full p-3 bg-gray-50 border rounded-xl outline-none">
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Título do Serviço</label>
+                                <input type="text" id="avulsoDescricao" required placeholder="Ex: Conserto do encanamento" class="w-full p-3 bg-gray-50 border rounded-xl outline-none">
                             </div>
                             <div class="flex flex-col sm:flex-row gap-4">
                                 <div class="flex-1"><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Valor (R$)</label><input type="number" step="0.01" id="avulsoValor" required class="w-full p-3 bg-gray-50 border rounded-xl outline-none text-blue-600 font-bold text-lg"></div>
-                                <div class="flex-1"><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Vencimento</label><input type="date" id="avulsoVencimento" required class="w-full p-3 bg-gray-50 border rounded-xl outline-none"></div>
+                                <div class="flex-1" id="divVencimentoAvulso"><label class="block text-xs font-bold text-gray-500 uppercase mb-1">Vencimento (Só p/ Pix Separado)</label><input type="date" id="avulsoVencimento" class="w-full p-3 bg-gray-50 border rounded-xl outline-none"></div>
                             </div>
-                            <button type="submit" class="w-full bg-blue-800 text-white font-black py-4 rounded-xl shadow-lg mt-4">Gerar Fatura Extra</button>
+                            <button type="submit" class="w-full bg-blue-800 text-white font-black py-4 rounded-xl shadow-lg mt-4">Confirmar Lançamento</button>
                         </form>
                     </div>
                 </div>
 
-                <!-- ABERTAS -->
+                <!-- ABERTAS (REAL-TIME) -->
                 <div id="aba-abertas" class="conteudo-aba tela-oculta">
-                    <h2 class="text-2xl font-bold text-amber-600 mb-6 flex items-center gap-2">⏳ Pendentes</h2>
+                    <div class="flex justify-between items-end mb-6">
+                        <h2 class="text-2xl font-bold text-amber-600 flex items-center gap-2">⏳ Pendentes <span class="flex h-3 w-3 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span></span></h2>
+                        <span class="text-xs font-bold text-slate-400 uppercase bg-slate-100 px-3 py-1 rounded-full">Atualização em Tempo Real</span>
+                    </div>
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left whitespace-nowrap"><tbody id="tabelaAbertas" class="divide-y text-sm"></tbody></table></div></div>
                 </div>
 
-                <!-- PAGAS -->
+                <!-- PAGAS (REAL-TIME) -->
                 <div id="aba-recebimentos" class="conteudo-aba tela-oculta">
-                    <h2 class="text-2xl font-bold text-green-700 mb-6 flex items-center gap-2">✅ Recebidos</h2>
+                    <div class="flex justify-between items-end mb-6">
+                        <h2 class="text-2xl font-bold text-green-700 flex items-center gap-2">✅ Recebidos <span class="flex h-3 w-3 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span></span></h2>
+                        <span class="text-xs font-bold text-slate-400 uppercase bg-slate-100 px-3 py-1 rounded-full">Atualização em Tempo Real</span>
+                    </div>
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden"><table class="w-full text-left whitespace-nowrap"><tbody id="tabelaPagos" class="divide-y text-sm"></tbody></table></div>
                 </div>
 
@@ -157,95 +171,37 @@
                 <div id="aba-relatorios" class="conteudo-aba tela-oculta">
                     <div class="flex justify-between items-center mb-6 no-print">
                         <h2 class="text-2xl font-bold text-slate-800">📊 Relatórios Financeiros</h2>
-                        <button onclick="window.print()" class="bg-slate-800 text-white px-4 py-2 rounded-lg font-bold shadow-md"><i class="fa-solid fa-print"></i> PDF / Imprimir</button>
+                        <button onclick="window.print()" class="bg-slate-800 text-white px-4 py-2 rounded-lg font-bold shadow-md"><i class="fa-solid fa-print"></i> Imprimir</button>
                     </div>
-
-                    <!-- Filtros -->
                     <div class="bg-white p-4 rounded-2xl shadow-sm border mb-6 no-print flex flex-wrap gap-4 items-end">
-                        <div class="flex-1 min-w-[150px]">
-                            <label class="block text-xs font-bold text-gray-500 mb-1">De (Lançamento)</label>
-                            <input type="date" id="relDataInicio" class="w-full p-2 border rounded-lg text-sm outline-none">
-                        </div>
-                        <div class="flex-1 min-w-[150px]">
-                            <label class="block text-xs font-bold text-gray-500 mb-1">Até</label>
-                            <input type="date" id="relDataFim" class="w-full p-2 border rounded-lg text-sm outline-none">
-                        </div>
-                        <div class="flex-1 min-w-[150px]">
-                            <label class="block text-xs font-bold text-gray-500 mb-1">Status</label>
-                            <select id="relStatus" class="w-full p-2 border rounded-lg text-sm outline-none bg-white">
-                                <option value="TODOS">Todos (Geral)</option>
-                                <option value="pago">Apenas Pagos</option>
-                                <option value="pendente">Apenas Pendentes/Inadimplentes</option>
-                            </select>
-                        </div>
-                        <div class="flex-[2] min-w-[200px]">
-                            <label class="block text-xs font-bold text-gray-500 mb-1">Buscar (Nome, CPF)</label>
-                            <input type="text" id="relBusca" placeholder="Ex: João, 000..." class="w-full p-2 border rounded-lg text-sm outline-none">
-                        </div>
-                        <button onclick="window.gerarRelatorioFiltrado()" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold shadow hover:bg-blue-700 h-[38px]">Filtrar</button>
+                        <div class="flex-1 min-w-[150px]"><label class="block text-xs font-bold text-gray-500 mb-1">De (Lançamento)</label><input type="date" id="relDataInicio" class="w-full p-2 border rounded-lg text-sm outline-none"></div>
+                        <div class="flex-1 min-w-[150px]"><label class="block text-xs font-bold text-gray-500 mb-1">Até</label><input type="date" id="relDataFim" class="w-full p-2 border rounded-lg text-sm outline-none"></div>
+                        <div class="flex-1 min-w-[150px]"><label class="block text-xs font-bold text-gray-500 mb-1">Status</label><select id="relStatus" class="w-full p-2 border rounded-lg text-sm outline-none bg-white"><option value="TODOS">Geral</option><option value="pago">Apenas Pagos</option><option value="pendente">Apenas Pendentes</option></select></div>
+                        <div class="flex-[2] min-w-[200px]"><label class="block text-xs font-bold text-gray-500 mb-1">Buscar Nome</label><input type="text" id="relBusca" class="w-full p-2 border rounded-lg text-sm outline-none"></div>
+                        <button onclick="window.gerarRelatorioFiltrado()" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold shadow h-[38px]">Filtrar</button>
                     </div>
-
-                    <!-- Cards de Resumo -->
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                        <div class="bg-white p-4 rounded-xl border border-blue-100 shadow-sm text-center">
-                            <p class="text-xs text-gray-500 font-bold uppercase">Volume (m³)</p>
-                            <p class="text-xl font-black text-blue-600" id="relCardM3">0</p>
-                        </div>
-                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center">
-                            <p class="text-xs text-gray-500 font-bold uppercase">Faturas (Qtd)</p>
-                            <p class="text-xl font-black text-slate-700" id="relCardQtd">0</p>
-                        </div>
-                        <div class="bg-white p-4 rounded-xl border border-red-100 shadow-sm text-center">
-                            <p class="text-xs text-red-500 font-bold uppercase">Inadimplência</p>
-                            <p class="text-xl font-black text-red-600" id="relCardPendente">R$ 0,00</p>
-                        </div>
-                        <div class="bg-white p-4 rounded-xl border border-green-100 shadow-sm text-center">
-                            <p class="text-xs text-green-600 font-bold uppercase">Total Recebido</p>
-                            <p class="text-xl font-black text-green-600" id="relCardPago">R$ 0,00</p>
-                        </div>
+                        <div class="bg-white p-4 rounded-xl border shadow-sm text-center"><p class="text-xs text-gray-500 font-bold">Vol (m³)</p><p class="text-xl font-black text-blue-600" id="relCardM3">0</p></div>
+                        <div class="bg-white p-4 rounded-xl border shadow-sm text-center"><p class="text-xs text-gray-500 font-bold">Faturas</p><p class="text-xl font-black" id="relCardQtd">0</p></div>
+                        <div class="bg-white p-4 rounded-xl border shadow-sm text-center"><p class="text-xs text-red-500 font-bold">Pendente</p><p class="text-xl font-black text-red-600" id="relCardPendente">R$ 0,00</p></div>
+                        <div class="bg-white p-4 rounded-xl border shadow-sm text-center"><p class="text-xs text-green-600 font-bold">Recebido</p><p class="text-xl font-black text-green-600" id="relCardPago">R$ 0,00</p></div>
                     </div>
-
-                    <!-- Tabela de Relatório -->
-                    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left whitespace-nowrap text-sm">
-                                <thead>
-                                    <tr class="bg-slate-50 text-slate-500 uppercase text-[10px] font-bold border-b">
-                                        <th class="p-4">Cliente</th>
-                                        <th class="p-4">Ref. / Data</th>
-                                        <th class="p-4 text-center">Consumo</th>
-                                        <th class="p-4 text-center">Status</th>
-                                        <th class="p-4 text-right">Valor Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tabelaRelatorio" class="divide-y">
-                                    <tr><td colspan="5" class="p-8 text-center text-slate-400">Clique em Filtrar para carregar os dados.</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left whitespace-nowrap text-sm"><thead><tr class="bg-slate-50 text-slate-500 uppercase text-[10px] font-bold border-b"><th class="p-4">Cliente</th><th class="p-4">Ref</th><th class="p-4 text-center">M³</th><th class="p-4 text-center">Status</th><th class="p-4 text-right">Total</th></tr></thead><tbody id="tabelaRelatorio" class="divide-y"><tr><td colspan="5" class="p-8 text-center">Filtrar...</td></tr></tbody></table></div></div>
                 </div>
 
                 <!-- CONFIGURAÇÕES -->
                 <div id="aba-config" class="conteudo-aba tela-oculta">
-                    <h2 class="text-2xl font-bold text-slate-700 mb-6">⚙️ Configurações do Sistema</h2>
+                    <h2 class="text-2xl font-bold text-slate-700 mb-6">⚙️ Configurações</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        
-                        <!-- Alterador de Preços da Água -->
                         <div class="bg-white p-6 rounded-2xl shadow-sm border border-amber-100 md:col-span-2">
                             <h3 class="font-bold text-lg text-amber-700 mb-4">💰 Valores da Mensalidade (Água)</h3>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div><label class="block text-xs font-bold text-gray-500 mb-1">Até 10m³ (R$)</label><input type="number" step="0.01" id="cfgVal1" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none focus:border-blue-500"></div>
-                                <div><label class="block text-xs font-bold text-gray-500 mb-1">De 11m³ a 30m³ (R$)</label><input type="number" step="0.01" id="cfgVal2" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none focus:border-blue-500"></div>
-                                <div><label class="block text-xs font-bold text-gray-500 mb-1">Acima de 30m³ (R$)</label><input type="number" step="0.01" id="cfgVal3" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none focus:border-blue-500"></div>
+                                <div><label class="block text-xs font-bold text-gray-500 mb-1">Até 10m³ (R$)</label><input type="number" step="0.01" id="cfgVal1" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none"></div>
+                                <div><label class="block text-xs font-bold text-gray-500 mb-1">De 11m³ a 30m³ (R$)</label><input type="number" step="0.01" id="cfgVal2" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none"></div>
+                                <div><label class="block text-xs font-bold text-gray-500 mb-1">Acima de 30m³ (R$)</label><input type="number" step="0.01" id="cfgVal3" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none"></div>
                             </div>
-                            <button onclick="salvarConfigAgua()" class="mt-4 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-6 rounded-xl shadow transition">💾 Guardar Novos Valores</button>
+                            <button onclick="salvarConfigAgua()" class="mt-4 bg-amber-500 text-white font-bold py-3 px-6 rounded-xl shadow">💾 Guardar Valores</button>
                         </div>
-
-                        <!-- Backups e Segurança -->
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-blue-100"><h3 class="font-bold text-lg text-blue-700 mb-2">💾 Salvar Backup</h3><button onclick="if(window.exportarBase) window.exportarBase()" class="w-full bg-blue-100 text-blue-700 font-bold py-3 rounded-xl mt-2">Baixar Arquivo JSON</button></div>
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-100"><h3 class="font-bold text-lg text-emerald-700 mb-2">📂 Importar Backup</h3><input type="file" id="fileImport" accept=".json" class="mb-3 w-full text-sm"><button onclick="if(window.importarBase) window.importarBase()" class="w-full bg-emerald-100 text-emerald-700 font-bold py-3 rounded-xl">Importar Dados</button></div>
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-red-100 md:col-span-2"><h3 class="font-bold text-lg text-red-600 mb-2">🗑️ Limpar Todas as Faturas</h3><button onclick="if(window.limparFaturas) window.limparFaturas()" class="w-full bg-red-600 text-white font-bold py-3 rounded-xl shadow-md">Apagar Definitivamente</button></div>
                     </div>
                 </div>
             </div>
@@ -253,10 +209,10 @@
 
         <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t flex justify-around items-center z-50 pb-2 shadow-inner no-print">
             <button onclick="mudarAba('aba-moradores', this)" class="w-full p-2 flex flex-col items-center text-blue-600"><i class="fa-solid fa-users text-lg"></i><span class="text-[9px]">Pessoas</span></button>
-            <button onclick="mudarAba('aba-leituras', this); window.carregarLoteFaturas();" class="w-full p-2 flex flex-col items-center text-gray-400"><i class="fa-solid fa-pen-to-square text-lg"></i><span class="text-[9px]">Água</span></button>
-            <button onclick="mudarAba('aba-abertas', this); window.carregarAbertas();" class="w-full p-2 flex flex-col items-center text-gray-400"><i class="fa-solid fa-hourglass-half text-lg"></i><span class="text-[9px]">Pendentes</span></button>
-            <button onclick="mudarAba('aba-recebimentos', this); window.carregarPagamentos();" class="w-full p-2 flex flex-col items-center text-gray-400"><i class="fa-solid fa-check-double text-lg"></i><span class="text-[9px]">Pagos</span></button>
-            <button onclick="mudarAba('aba-relatorios', this); window.carregarRelatorio();" class="w-full p-2 flex flex-col items-center text-gray-400"><i class="fa-solid fa-chart-pie text-lg"></i><span class="text-[9px]">Relatório</span></button>
+            <button onclick="mudarAba('aba-leituras', this)" class="w-full p-2 flex flex-col items-center text-gray-400"><i class="fa-solid fa-pen-to-square text-lg"></i><span class="text-[9px]">Água</span></button>
+            <button onclick="mudarAba('aba-abertas', this)" class="w-full p-2 flex flex-col items-center text-gray-400"><i class="fa-solid fa-hourglass-half text-lg"></i><span class="text-[9px]">Pendentes</span></button>
+            <button onclick="mudarAba('aba-recebimentos', this)" class="w-full p-2 flex flex-col items-center text-gray-400"><i class="fa-solid fa-check-double text-lg"></i><span class="text-[9px]">Pagos</span></button>
+            <button onclick="mudarAba('aba-avulso', this)" class="w-full p-2 flex flex-col items-center text-gray-400"><i class="fa-solid fa-wrench text-lg"></i><span class="text-[9px]">Taxas</span></button>
         </nav>
     </div>
 
@@ -271,26 +227,34 @@
                 <input type="tel" id="modTel" required placeholder="WhatsApp" class="w-full p-3 bg-gray-100 rounded-xl outline-none border focus:border-blue-500">
                 <input type="text" id="modLote" required placeholder="Lote / Endereço" class="w-full p-3 bg-gray-100 rounded-xl outline-none border focus:border-blue-500">
                 <div class="flex gap-2 pt-4">
-                    <button type="button" onclick="fecharModal()" class="flex-1 bg-gray-200 py-3 rounded-xl font-bold">Sair</button>
+                    <button type="button" onclick="fecharModal()" class="flex-1 bg-gray-200 py-3 rounded-xl font-bold">Cancelar</button>
                     <button type="submit" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold">Salvar</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- SCRIPT 1: INTERFACE E CONFIGURAÇÃO -->
+    <!-- SCRIPT 1: INTERFACE -->
     <script>
+        window.familiasGlobal = {}; // Cache para otimizar os nomes nas tabelas
+
         window.onload = () => {
             if(localStorage.getItem("admin_saoluiz_logado") === "sim") {
                 document.getElementById("loginAdmin").style.display = "none";
                 document.getElementById("painelAdmin").classList.remove('tela-oculta');
-                setTimeout(() => { if(window.carregarFamilias) window.carregarFamilias(); }, 800);
+                if(window.carregarFamilias) window.carregarFamilias();
             }
             const date = new Date();
             document.getElementById("relDataInicio").value = new Date(date.getFullYear(), date.getMonth(), 1).toISOString().split('T')[0];
             document.getElementById("relDataFim").value = date.toISOString().split('T')[0];
-            
             if(window.carregarConfigAgua) window.carregarConfigAgua();
+
+            // Esconde vencimento se for somar na próxima
+            document.getElementById("avulsoTipo").addEventListener('change', function() {
+                document.getElementById("divVencimentoAvulso").style.display = this.value === 'somar_proxima' ? 'none' : 'block';
+                if(this.value === 'pix_agora') document.getElementById("avulsoVencimento").required = true;
+                else document.getElementById("avulsoVencimento").required = false;
+            });
         };
 
         window.mostrarLoading = (msg) => { document.getElementById("loadingMsg").innerText = msg; document.getElementById("loading").style.display = "flex"; };
@@ -305,49 +269,54 @@
                 if(window.carregarFamilias) window.carregarFamilias();
             } else { document.getElementById("erroLogin").classList.remove('hidden'); }
         };
-
         window.sairAdmin = () => { localStorage.removeItem("admin_saoluiz_logado"); location.reload(); };
 
         window.mudarAba = (id, el) => {
             document.querySelectorAll('.conteudo-aba').forEach(a => a.classList.add('tela-oculta'));
             document.getElementById(id).classList.remove('tela-oculta');
             document.querySelectorAll('.menu-btn, nav button').forEach(b => { 
-                b.classList.remove('bg-blue-600', 'text-white'); 
-                b.classList.add('text-slate-400');
-                if(b.querySelector('span')) b.classList.remove('text-blue-600'); 
+                b.classList.remove('bg-blue-600', 'text-white'); b.classList.add('text-slate-400');
+                if(b.querySelector('i')) b.classList.remove('text-blue-600'); 
             });
             if(el) { 
                 if(el.classList.contains('menu-btn')) { el.classList.add('bg-blue-600', 'text-white'); el.classList.remove('text-slate-400'); }
                 else { el.classList.add('text-blue-600'); el.classList.remove('text-gray-400'); }
             }
+
+            if(id === 'aba-leituras') window.carregarLoteFaturas();
+            if(id === 'aba-avulso') window.carregarSelectAvulso();
+            if(id === 'aba-relatorios') window.carregarRelatorio();
+            
+            // As abas Abertas e Pagos agora carregam sozinhas via Listener
+            if(id === 'aba-abertas' && window.iniciarListenerAbertas) window.iniciarListenerAbertas();
+            if(id === 'aba-recebimentos' && window.iniciarListenerPagos) window.iniciarListenerPagos();
         };
 
         window.abrirModalCadastro = () => { document.getElementById("formMorador").reset(); document.getElementById("modId").value = ""; document.getElementById("modalMorador").style.display = "flex"; };
         window.abrirModalEdicao = (id, n, c, t, l) => { document.getElementById("modId").value=id; document.getElementById("modNome").value=n; document.getElementById("modCpf").value=c; document.getElementById("modTel").value=t; document.getElementById("modLote").value=l; document.getElementById("modalMorador").style.display="flex"; };
-        
         window.filtrarTabela = (inputId, tabelaId) => {
             const filtro = document.getElementById(inputId).value.toLowerCase();
             const linhas = document.getElementById(tabelaId).getElementsByTagName('tr');
             for (let i=0; i<linhas.length; i++) linhas[i].style.display = linhas[i].innerText.toLowerCase().includes(filtro) ? "" : "none";
         };
 
-        // --- VALORES DA ÁGUA CONFIGURÁVEIS ---
         window.carregarConfigAgua = () => {
             document.getElementById('cfgVal1').value = localStorage.getItem('agua_val1') || 25;
             document.getElementById('cfgVal2').value = localStorage.getItem('agua_val2') || 50;
             document.getElementById('cfgVal3').value = localStorage.getItem('agua_val3') || 100;
         };
-        
         window.salvarConfigAgua = () => {
             localStorage.setItem('agua_val1', document.getElementById('cfgVal1').value);
             localStorage.setItem('agua_val2', document.getElementById('cfgVal2').value);
             localStorage.setItem('agua_val3', document.getElementById('cfgVal3').value);
-            alert("✅ Valores da mensalidade atualizados!");
+            alert("Valores guardados!");
         };
         
         window.calcularLinha = (id, multa) => {
             const ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0;
             const atu = parseFloat(document.getElementById(`atu-${id}`).value) || 0;
+            const taxa = parseFloat(document.getElementById(`h-taxa-${id}`).value) || 0;
+
             let consumo = (atu >= ant && atu > 0) ? atu - ant : 0;
             document.getElementById(`cons-${id}`).innerText = consumo;
             
@@ -357,147 +326,134 @@
 
             let vAgua = 0;
             if (consumo > 0) { 
-                if (consumo <= 10) vAgua = v1; 
-                else if (consumo <= 30) vAgua = v2; 
-                else vAgua = v3; 
+                if (consumo <= 10) vAgua = v1; else if (consumo <= 30) vAgua = v2; else vAgua = v3; 
             }
             
-            const total = vAgua > 0 ? vAgua + multa : 0;
+            const total = vAgua + multa + taxa; 
             document.getElementById(`valTotal-${id}`).innerText = total.toFixed(2).replace('.', ',');
             document.getElementById(`h-agua-${id}`).value = vAgua;
             document.getElementById(`h-total-${id}`).value = total;
         };
 
-        // --- MICROFONE ATUALIZADO (IGNORA ACENTOS E MAIÚSCULAS) ---
         window.vozAtiva = false;
         let recognition;
         window.alternarVoz = () => {
             const btn = document.getElementById("btnVoz");
-            if (window.vozAtiva) {
-                if(recognition) recognition.stop();
-                btn.classList.remove('mic-ativo');
-                window.vozAtiva = false;
-                mostrarToastVoz("Voz Desativada");
-                return;
-            }
+            if (window.vozAtiva) { if(recognition) recognition.stop(); btn.classList.remove('mic-ativo'); window.vozAtiva = false; return; }
             window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!window.SpeechRecognition) return alert("Navegador não suporta voz.");
-            recognition = new SpeechRecognition();
-            recognition.lang = 'pt-BR';
-            recognition.continuous = true;
-            recognition.interimResults = false;
-            recognition.onstart = () => { window.vozAtiva = true; btn.classList.add('mic-ativo'); mostrarToastVoz("A escutar comando..."); };
-            recognition.onresult = (event) => { processarComandoVoz(event.results[event.results.length - 1][0].transcript); };
+            recognition = new SpeechRecognition(); recognition.lang = 'pt-BR'; recognition.continuous = true;
+            recognition.onstart = () => { window.vozAtiva = true; btn.classList.add('mic-ativo'); };
+            recognition.onresult = (event) => {
+                const textoLimpo = event.results[event.results.length - 1][0].transcript.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+                if (textoLimpo.includes("salvar tudo")) { if(window.gerarFaturasEmLote) window.gerarFaturasEmLote(); return; }
+                const linhas = document.querySelectorAll('input[id^="h-total-"]');
+                for (let input of linhas) {
+                    const id = input.id.replace('h-total-', '');
+                    const primeiroNome = input.dataset.nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(' ')[0];
+                    if (textoLimpo.includes(primeiroNome)) {
+                        const match = textoLimpo.match(/\d+/);
+                        if (match) {
+                            document.getElementById('atu-' + id).value = match[0];
+                            window.calcularLinha(id, parseFloat(input.dataset.multa));
+                            document.getElementById('linha-'+id).style.backgroundColor = "#fffbeb";
+                            setTimeout(()=> { document.getElementById('linha-'+id).style.backgroundColor = ""; }, 2000);
+                        }
+                        break;
+                    }
+                }
+            };
             recognition.start();
         };
-
-        function processarComandoVoz(textoOriginal) {
-            const textoLimpo = textoOriginal.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
-            
-            if (textoLimpo.includes("enviar para todos") || textoLimpo.includes("salvar tudo")) {
-                mostrarToastVoz("Iniciando geração em lote!");
-                if(window.gerarFaturasEmLote) window.gerarFaturasEmLote();
-                return;
-            }
-            const linhas = document.querySelectorAll('input[id^="h-total-"]');
-            let nomeEncontrado = false;
-            for (let input of linhas) {
-                const id = input.id.replace('h-total-', '');
-                const nomeNoBanco = input.dataset.nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-                const primeiroNome = nomeNoBanco.split(' ')[0];
-                
-                if (textoLimpo.includes(primeiroNome)) {
-                    nomeEncontrado = true;
-                    const match = textoLimpo.match(/\d+/);
-                    if (match) {
-                        document.getElementById('atu-' + id).value = match[0];
-                        window.calcularLinha(id, parseFloat(input.dataset.multa));
-                        mostrarToastVoz(`Marcado: ${input.dataset.nome} -> ${match[0]}`);
-                        document.getElementById('linha-'+id).style.backgroundColor = "#fffbeb";
-                        setTimeout(()=> { document.getElementById('linha-'+id).style.backgroundColor = ""; }, 2000);
-                    } else { mostrarToastVoz(`Nome: ${primeiroNome}. Faltou o número!`); }
-                    break;
-                }
-            }
-            if(!nomeEncontrado) mostrarToastVoz("Nome não reconhecido.");
-        }
-        function mostrarToastVoz(msg) {
-            const t = document.getElementById("toastVoz");
-            document.getElementById("txtToastVoz").innerText = msg;
-            t.classList.remove("opacity-0"); t.classList.add("opacity-100");
-            setTimeout(() => { t.classList.remove("opacity-100"); t.classList.add("opacity-0"); }, 3000);
-        }
     </script>
 
-    <!-- SCRIPT 2: FIREBASE E LÓGICA DE NEGÓCIO -->
+    <!-- SCRIPT 2: FIREBASE E NEGÓCIO -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ",
             authDomain: "sistema-agua-sao-luiz.firebaseapp.com",
-            projectId: "sistema-agua-sao-luiz",
-            storageBucket: "sistema-agua-sao-luiz.firebasestorage.app"
+            projectId: "sistema-agua-sao-luiz"
         };
         const db = getFirestore(initializeApp(firebaseConfig));
 
-        let todasFaturasCache = []; 
+        let unsubAbertas = null;
+        let unsubPagos = null;
+
+        window.atualizarCacheFamilias = async () => {
+            const snap = await getDocs(collection(db, "familias"));
+            window.familiasGlobal = {};
+            snap.forEach(d => { window.familiasGlobal[d.id] = d.data(); });
+        };
 
         window.submitMorador = async (e) => {
             e.preventDefault();
             const id = document.getElementById("modId").value;
             const d = { nome: document.getElementById("modNome").value, cpf: document.getElementById("modCpf").value.replace(/\D/g, ''), telefone: document.getElementById("modTel").value, lote_endereco: document.getElementById("modLote").value };
             window.mostrarLoading("Salvando...");
-            try {
-                if(id) await updateDoc(doc(db, "familias", id), d); else await addDoc(collection(db, "familias"), {...d, senha: "123456", status_ativo: true});
-                window.fecharModal(); window.carregarFamilias(); 
-            } catch(err) { alert("Erro de comunicação."); }
-            window.esconderLoading();
+            if(id) await updateDoc(doc(db, "familias", id), d); else await addDoc(collection(db, "familias"), {...d, senha: "123456", status_ativo: true, ultima_leitura: 0});
+            window.fecharModal(); window.carregarFamilias(); window.esconderLoading();
+        };
+
+        // EXCLUIR MORADOR (NOVO)
+        window.excluirMorador = async (id, nome) => {
+            if(confirm(`⚠️ ATENÇÃO: Deseja apagar definitivamente o morador ${nome} do sistema?\n\nAs faturas dele continuarão no histórico de relatórios, mas ele não poderá mais acessar o portal.`)) {
+                window.mostrarLoading("Excluindo...");
+                await deleteDoc(doc(db, "familias", id));
+                window.carregarFamilias();
+                window.esconderLoading();
+            }
         };
 
         window.carregarFamilias = async () => {
             const tbody = document.getElementById("tabelaMoradores");
-            try {
-                const snap = await getDocs(collection(db, "familias"));
-                let html = "";
-                snap.forEach(d => {
-                    const f = d.data();
-                    html += `<tr><td class="p-3 border-b"><strong>${f.nome}</strong><br><small>${f.lote_endereco}</small></td><td class="p-3 border-b text-slate-500 font-mono">${f.cpf}</td><td class="p-3 border-b"><button onclick="window.abrirModalEdicao('${d.id}','${f.nome}','${f.cpf}','${f.telefone}','${f.lote_endereco}')" class="text-blue-600 bg-blue-50 px-3 py-1 rounded">Editar</button></td></tr>`;
-                });
-                tbody.innerHTML = html;
-            } catch (e) { tbody.innerHTML = "<tr><td>Erro</td></tr>"; }
+            await window.atualizarCacheFamilias();
+            let html = "";
+            Object.entries(window.familiasGlobal).forEach(([id, f]) => {
+                html += `<tr class="border-b hover:bg-slate-50"><td class="p-3"><strong>${f.nome}</strong><br><small>${f.lote_endereco}</small></td><td class="p-3 text-slate-500 font-mono">${f.cpf}</td><td class="p-3"><button onclick="window.abrirModalEdicao('${id}','${f.nome}','${f.cpf}','${f.telefone}','${f.lote_endereco}')" class="text-blue-600 bg-blue-50 px-3 py-1 rounded font-bold mr-2">Editar</button><button onclick="window.excluirMorador('${id}','${f.nome}')" class="text-red-600 bg-red-50 px-3 py-1 rounded font-bold">🗑️</button></td></tr>`;
+            });
+            tbody.innerHTML = html;
         };
 
+        // HODÔMETRO (LEITURA ANTERIOR SALVA) + TAXAS SOMADAS
         window.carregarLoteFaturas = async () => {
             const corpo = document.getElementById("corpoTabelaLote");
             try {
-                const famSnap = await getDocs(collection(db, "familias"));
+                if(Object.keys(window.familiasGlobal).length === 0) await window.atualizarCacheFamilias();
+                
                 const fatSnap = await getDocs(collection(db, "faturas"));
                 const faturas = []; fatSnap.forEach(d => faturas.push(d.data()));
 
                 let html = "";
                 const hoje = new Date(); hoje.setHours(0,0,0,0);
 
-                famSnap.forEach(docFam => {
-                    const f = docFam.data();
-                    const famId = docFam.id;
+                Object.entries(window.familiasGlobal).forEach(([famId, f]) => {
                     const temAtraso = faturas.some(fat => fat.familia_id === famId && fat.status === 'pendente' && new Date(fat.vencimento + "T00:00:00") < hoje);
                     const multa = temAtraso ? 25.0 : 0.0;
+                    
+                    const ultimaLeitura = f.ultima_leitura || 0; // NOVO: Puxa o Hodômetro Anterior
+                    const taxaPendente = f.taxa_pendente_valor || 0; // NOVO: Puxa Taxa agendada
+                    const descTaxa = f.taxa_pendente_desc || "";
+                    
+                    const avisoTaxa = taxaPendente > 0 ? `<br><span class="text-blue-600 font-bold text-[10px]">+ R$${taxaPendente} (${descTaxa})</span>` : "";
 
                     html += `
                         <tr id="linha-${famId}" class="hover:bg-blue-50">
                             <td class="p-2 coluna-fixa leading-tight">
-                                <strong class="text-xs text-slate-800">${f.nome}</strong><br>
-                                <small class="text-gray-400 font-normal tracking-wider">${f.cpf}</small>
+                                <strong class="text-xs text-slate-800">${f.nome.split(' ')[0]}</strong><br>
+                                <small class="text-gray-400 font-normal">${f.cpf}</small>
+                                ${avisoTaxa}
                             </td>
-                            <td class="p-2 text-center"><input type="number" id="ant-${famId}" onkeyup="window.calcularLinha('${famId}', ${multa})" class="w-16 p-2 border rounded text-center outline-none"></td>
+                            <td class="p-2 text-center"><input type="number" id="ant-${famId}" value="${ultimaLeitura}" onkeyup="window.calcularLinha('${famId}', ${multa})" class="w-16 p-2 border bg-gray-100 rounded text-center outline-none text-gray-500 font-bold"></td>
                             <td class="p-2 text-center"><input type="number" id="atu-${famId}" onkeyup="window.calcularLinha('${famId}', ${multa})" class="w-16 p-2 border-2 border-blue-400 bg-blue-50 rounded text-center font-bold outline-none"></td>
                             <td class="p-2 text-center font-bold text-blue-600"><span id="cons-${famId}">0</span><span class="text-[10px]">m³</span></td>
                             <td class="p-2 text-right text-red-500 text-xs">R$ ${multa.toFixed(2)}</td>
                             <td class="p-2 text-right font-black text-green-700">R$ <span id="valTotal-${famId}">0,00</span>
                                 <input type="hidden" id="h-total-${famId}" value="0" data-multa="${multa}" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}">
                                 <input type="hidden" id="h-agua-${famId}" value="0">
+                                <input type="hidden" id="h-taxa-${famId}" value="${taxaPendente}" data-desc="${descTaxa}">
                             </td>
                             <td class="p-2 text-center" id="status-${famId}"><small class="bg-gray-200 px-2 rounded-full text-[10px] text-gray-500 font-bold uppercase">Espera</small></td>
                         </tr>
@@ -509,10 +465,10 @@
 
         window.gerarFaturasEmLote = async () => {
             const inputs = document.querySelectorAll('input[id^="h-total-"]');
-            const linhas = Array.from(inputs).filter(i => parseFloat(i.value) > 0);
+            const linhas = Array.from(inputs).filter(i => parseFloat(i.value) > 0); // Só processa quem teve consumo digitado ou taxa a pagar
             if(linhas.length === 0) return alert("Preencha a leitura atual!");
             
-            window.mostrarLoading(`Gerando ${linhas.length} faturas...`);
+            window.mostrarLoading(`Gerando e salvando...`);
             const mes = document.getElementById("mesReferencia").value;
             const venc = document.getElementById("dataVencimento").value;
 
@@ -521,19 +477,28 @@
                 const id = input.id.replace('h-total-', '');
                 const vAgua = parseFloat(document.getElementById(`h-agua-${id}`).value);
                 const vMulta = parseFloat(input.dataset.multa);
+                const taxaPendente = parseFloat(document.getElementById(`h-taxa-${id}`).value);
+                const descTaxa = document.getElementById(`h-taxa-${id}`).dataset.desc;
                 const nome = input.dataset.nome;
                 const cpf = input.dataset.cpf.replace(/\D/g, '');
                 const l_ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0;
                 const l_atu = parseFloat(document.getElementById(`atu-${id}`).value) || 0;
 
+                let descFinal = `Água ${mes}`;
+                if(taxaPendente > 0) descFinal += ` + ${descTaxa}`;
+
                 try {
-                    const res = await fetch("/api/gerar-pix", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ valor: total, descricao: `Água ${mes}`, nome, cpf }) });
+                    const res = await fetch("/api/gerar-pix", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ valor: total, descricao: descFinal, nome, cpf }) });
                     const pix = await res.json();
                     
                     if(pix.sucesso) {
                         await addDoc(collection(db, "faturas"), {
-                            familia_id: id, mes_referencia: mes, leitura_anterior: l_ant, leitura_atual: l_atu, consumo_m3: l_atu - l_ant, valor_agua: vAgua, valor_multa: vMulta, taxa_extra: 0, valor_total: total, vencimento: venc, status: "pendente", pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), data_lancamento: new Date().toISOString(), telefone: input.dataset.tel, nome_morador: nome 
+                            familia_id: id, mes_referencia: descFinal, leitura_anterior: l_ant, leitura_atual: l_atu, consumo_m3: (l_atu > l_ant ? l_atu - l_ant : 0), valor_agua: vAgua, valor_multa: vMulta, taxa_extra: taxaPendente, valor_total: total, vencimento: venc, status: "pendente", pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), data_lancamento: new Date().toISOString(), telefone: input.dataset.tel, nome_morador: nome 
                         });
+                        
+                        // ATUALIZA O HODÔMETRO (Leitura atual vira anterior) e ZERA TAXAS PENDENTES
+                        await updateDoc(doc(db, "familias", id), { ultima_leitura: l_atu, taxa_pendente_valor: 0, taxa_pendente_desc: "" });
+
                         document.getElementById(`status-${id}`).innerHTML = `<span class="bg-green-100 text-green-700 px-2 rounded text-xs font-bold">Salvo!</span>`;
                         document.getElementById(`atu-${id}`).disabled = true;
                     }
@@ -542,20 +507,21 @@
             window.esconderLoading(); alert("Lote Concluído!");
         };
 
-        // --- ABA TAXAS AVULSAS ---
+        // --- ABA TAXAS AVULSAS (NOVO FLUXO) ---
         window.carregarSelectAvulso = async () => {
             const select = document.getElementById("avulsoFamilia");
-            select.innerHTML = "<option value=''>Buscando moradores...</option>";
+            select.innerHTML = "<option value=''>Buscando...</option>";
             try {
-                const snap = await getDocs(collection(db, "familias"));
-                let html = "<option value='TODOS' class='font-bold text-blue-700 bg-blue-50'>🌟 RATEIO: COBRAR TODOS</option>";
-                snap.forEach(d => { const f = d.data(); html += `<option value="${d.id}" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}">${f.nome} (${f.lote_endereco})</option>`; });
+                if(Object.keys(window.familiasGlobal).length === 0) await window.atualizarCacheFamilias();
+                let html = "<option value='TODOS' class='font-bold text-blue-700 bg-blue-50'>🌟 COBRAR TODOS</option>";
+                Object.entries(window.familiasGlobal).forEach(([id, f]) => { html += `<option value="${id}" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}">${f.nome} (${f.lote_endereco})</option>`; });
                 select.innerHTML = html;
-            } catch(e) { select.innerHTML = "<option value=''>Erro ao buscar moradores.</option>"; }
+            } catch(e) { }
         };
 
         window.submitAvulso = async (e) => {
             e.preventDefault();
+            const tipo = document.getElementById("avulsoTipo").value;
             const select = document.getElementById("avulsoFamilia");
             const opt = select.options[select.selectedIndex];
             const familiaId = select.value;
@@ -563,101 +529,125 @@
             const valor = parseFloat(document.getElementById("avulsoValor").value);
             const vencimento = document.getElementById("avulsoVencimento").value;
 
+            window.mostrarLoading("Processando...");
+
+            // OPÇÃO 1: SOMAR NA PRÓXIMA FATURA (Não gera PIX agora, apenas agenda no cadastro do cliente)
+            if(tipo === 'somar_proxima') {
+                if(familiaId === 'TODOS') {
+                    if(!confirm(`Somar R$ ${valor} na conta de água de TODOS?`)) { window.esconderLoading(); return; }
+                    for(let id of Object.keys(window.familiasGlobal)) {
+                        await updateDoc(doc(db, "familias", id), { taxa_pendente_valor: valor, taxa_pendente_desc: descricao });
+                    }
+                } else {
+                    await updateDoc(doc(db, "familias", familiaId), { taxa_pendente_valor: valor, taxa_pendente_desc: descricao });
+                }
+                window.esconderLoading();
+                alert("✅ Serviço agendado! Ele aparecerá automaticamente quando for lançar a próxima conta de Água Mensal.");
+                document.getElementById("formAvulso").reset();
+                return;
+            }
+
+            // OPÇÃO 2: GERAR PIX SEPARADO AGORA (Comportamento Clássico)
             if(familiaId === 'TODOS') {
-                if(!confirm(`⚠️ RATEIO: Gerar cobrança de R$ ${valor.toFixed(2)} para TODOS?`)) return;
-                window.mostrarLoading("Gerando boletos para todos...");
-                const snap = await getDocs(collection(db, "familias"));
-                const families = []; snap.forEach(d => families.push({id: d.id, ...d.data()}));
-                
-                let count = 0;
-                for(let f of families) {
-                    count++; document.getElementById("loadingMsg").innerText = `Gerando ${count} de ${families.length}...`;
+                if(!confirm(`Gerar PIX SEPARADO de R$ ${valor} para TODOS?`)) { window.esconderLoading(); return; }
+                for(let [id, f] of Object.entries(window.familiasGlobal)) {
                     try {
-                        const res = await fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor: valor, descricao: descricao, nome: f.nome, cpf: f.cpf.replace(/\D/g, '')}) });
+                        const res = await fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: f.nome, cpf: f.cpf.replace(/\D/g, '')}) });
                         const pix = await res.json();
                         if(pix.sucesso) {
                             await addDoc(collection(db, "faturas"), {
-                                familia_id: f.id, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento: vencimento, status: "pendente", pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: f.telefone, nome_morador: f.nome, data_lancamento: new Date().toISOString()
+                                familia_id: id, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: f.telefone, nome_morador: f.nome, data_lancamento: new Date().toISOString()
                             });
                         }
                     } catch(err) { }
                 }
-                window.esconderLoading(); alert(`✅ Sucesso! ${count} faturas geradas.`); document.getElementById("formAvulso").reset();
+                window.esconderLoading(); alert(`✅ Faturas extras geradas para todos.`);
             } else {
-                window.mostrarLoading("Gerando fatura extra...");
+                const nome = opt.dataset.nome;
+                const cpf = opt.dataset.cpf.replace(/\D/g, '');
                 try {
-                    const res = await fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor: valor, descricao: descricao, nome: opt.dataset.nome, cpf: opt.dataset.cpf.replace(/\D/g, '')}) });
+                    const res = await fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome, cpf}) });
                     const pix = await res.json();
                     if(pix.sucesso) {
                         await addDoc(collection(db, "faturas"), {
-                            familia_id: familiaId, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento: vencimento, status: "pendente", pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: opt.dataset.tel, nome_morador: opt.dataset.nome, data_lancamento: new Date().toISOString()
+                            familia_id: familiaId, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: opt.dataset.tel, nome_morador: nome, data_lancamento: new Date().toISOString()
                         });
-                        window.esconderLoading(); alert("Taxa gerada com sucesso!"); document.getElementById("formAvulso").reset();
-                    }
-                } catch(e) { window.esconderLoading(); alert("Erro."); }
+                        window.esconderLoading(); alert("Fatura Pix avulsa gerada com sucesso!");
+                    } else { window.esconderLoading(); alert("Erro do Banco."); }
+                } catch(e) { window.esconderLoading(); alert("Erro de conexão."); }
             }
+            document.getElementById("formAvulso").reset();
         };
 
-        // --- MÉTODOS ABERTAS/PAGAS ---
-        window.carregarAbertas = async () => {
+        // --- TEMPO REAL: ABERTAS ---
+        window.iniciarListenerAbertas = async () => {
+            if(unsubAbertas) unsubAbertas();
             const tbody = document.getElementById("tabelaAbertas");
-            tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center'>Buscando...</td></tr>";
-            try {
-                const fatSnap = await getDocs(collection(db, "faturas"));
+            tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center'>Conectando...</td></tr>";
+            
+            if(Object.keys(window.familiasGlobal).length === 0) await window.atualizarCacheFamilias();
+
+            const q = query(collection(db, "faturas"), where("status", "==", "pendente"));
+            unsubAbertas = onSnapshot(q, (snap) => {
                 const hoje = new Date(); hoje.setHours(0,0,0,0);
                 let abertas = [];
-                fatSnap.forEach(d => { if(d.data().status === 'pendente') abertas.push({id: d.id, ...d.data()}); });
+                snap.forEach(d => abertas.push({id: d.id, ...d.data()}));
                 abertas.sort((a,b) => new Date(a.vencimento) - new Date(b.vencimento));
 
                 let html = "";
                 for(let f of abertas) {
                     const isOverdue = new Date(f.vencimento + "T00:00:00") < hoje;
                     const rowClass = isOverdue ? "bg-red-50" : "hover:bg-amber-50";
-                    const nomeReal = f.nome_morador || "Morador";
-                    const zap = `💧 *ÁGUA SÃO LUIZ*\nOlá *${nomeReal}*!\nSua fatura de ${f.mes_referencia} está disponível.\n\n💰 *Total:* R$ ${f.valor_total.toFixed(2)}\n📅 *Venc:* ${f.vencimento.split('-').reverse().join('/')}\n\n👉 Acesse para ver o PIX:\nhttps://agua-sao-luiz.vercel.app`;
-                    const btnZap = `<button onclick="window.open('https://wa.me/${f.telefone}?text=${encodeURIComponent(zap)}')" class="bg-green-500 text-white px-3 py-2 rounded-lg text-xs font-bold shadow mr-1"><i class="fa-brands fa-whatsapp"></i></button>`;
+                    const nomeReal = f.nome_morador || window.familiasGlobal[f.familia_id]?.nome || "Morador";
+                    const tel = f.telefone || window.familiasGlobal[f.familia_id]?.telefone;
+                    
+                    const zap = `💧 *ÁGUA SÃO LUIZ*\nOlá *${nomeReal}*!\nSua fatura de ${f.mes_referencia} está disponível.\n\n💰 *Total:* R$ ${f.valor_total.toFixed(2)}\n📅 *Venc:* ${f.vencimento.split('-').reverse().join('/')}\n\n👉 Acesse o site para ver e pagar o PIX:\nhttps://agua-sao-luiz.vercel.app`;
+                    const btnZap = `<button onclick="window.open('https://wa.me/${tel}?text=${encodeURIComponent(zap)}')" class="bg-green-500 text-white px-3 py-2 rounded-lg text-xs font-bold shadow mr-1"><i class="fa-brands fa-whatsapp"></i></button>`;
 
                     html += `<tr class="${rowClass} border-b">
                         <td class="p-4 font-mono text-sm">${isOverdue ? "🚨 " : "⏳ "}${f.vencimento.split('-').reverse().join('/')}</td>
-                        <td class="p-4"><strong>${nomeReal}</strong><br><small class="text-gray-500">Ref: ${f.mes_referencia}</small></td>
+                        <td class="p-4"><strong>${nomeReal}</strong><br><small class="text-gray-500">${f.mes_referencia}</small></td>
                         <td class="p-4 text-right font-bold text-amber-700">R$ ${f.valor_total.toFixed(2)}</td>
                         <td class="p-4 text-right whitespace-nowrap">${btnZap} <button onclick="window.marcarPago('${f.id}')" class="bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-bold mr-1">Baixa</button> <button onclick="window.excluirFatura('${f.id}')" class="bg-red-100 text-red-600 px-3 py-2 rounded-lg text-xs font-bold">🗑️</button></td>
                     </tr>`;
                 }
-                tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center text-green-600 font-bold'>Tudo Pago!</td></tr>";
-            } catch(e) { tbody.innerHTML = "Erro ao buscar"; }
+                tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center text-green-600 font-bold'>Tudo Pago! Nenhuma pendência.</td></tr>";
+            });
         };
 
-        window.carregarPagamentos = async () => {
+        // --- TEMPO REAL: PAGOS ---
+        window.iniciarListenerPagos = async () => {
+            if(unsubPagos) unsubPagos();
             const tbody = document.getElementById("tabelaPagos");
-            tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center'>Buscando...</td></tr>";
-            try {
-                const fatSnap = await getDocs(collection(db, "faturas"));
+            tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center'>Conectando...</td></tr>";
+
+            const q = query(collection(db, "faturas"), where("status", "==", "pago"));
+            unsubPagos = onSnapshot(q, (snap) => {
                 const pagas = [];
-                fatSnap.forEach(d => { if(d.data().status === 'pago') pagas.push({id: d.id, ...d.data()}); });
+                snap.forEach(d => pagas.push({id: d.id, ...d.data()}));
                 pagas.sort((a,b) => new Date(b.data_pagamento) - new Date(a.data_pagamento));
 
                 let html = "";
                 for(let p of pagas) {
                     const dataObj = new Date(p.data_pagamento);
                     const dtFormat = dataObj.toLocaleDateString('pt-BR');
-                    html += `<tr class="border-b"><td class="p-4 text-xs font-mono text-gray-500">${dtFormat}</td><td class="p-4 font-bold">${p.nome_morador || "Morador"}</td><td class="p-4 text-right font-black text-green-600">R$ ${p.valor_total.toFixed(2)}</td><td class="p-4 text-center"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold uppercase">Recebido</span></td></tr>`;
+                    html += `<tr class="border-b"><td class="p-4 text-xs font-mono text-gray-500">${dtFormat}</td><td class="p-4 font-bold">${p.nome_morador || "Morador"}</td><td class="p-4 text-right font-black text-green-600">R$ ${p.valor_total.toFixed(2)}</td><td class="p-4 text-center"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold uppercase">Recebido via Pix</span></td></tr>`;
                 }
                 tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center'>Nenhum pagamento.</td></tr>";
-            } catch(e) { tbody.innerHTML = "Erro ao buscar"; }
+            });
         };
 
-        window.excluirFatura = async (id) => { if(confirm("Apagar Fatura?")) { await deleteDoc(doc(db, "faturas", id)); window.carregarAbertas(); } };
-        window.marcarPago = async (id) => { if(confirm("Baixar Manualmente?")) { await updateDoc(doc(db, "faturas", id), {status: "pago", data_pagamento: new Date().toISOString()}); window.carregarAbertas(); } };
+        window.excluirFatura = async (id) => { if(confirm("Apagar Fatura?")) { await deleteDoc(doc(db, "faturas", id)); } };
+        window.marcarPago = async (id) => { if(confirm("Baixar Manualmente?")) { await updateDoc(doc(db, "faturas", id), {status: "pago", data_pagamento: new Date().toISOString()}); } };
 
         // --- RELATÓRIOS ---
+        let todasFaturasCache = [];
         window.carregarRelatorio = async () => {
-            window.mostrarLoading("Carregando Base de Dados...");
+            window.mostrarLoading("Carregando Base...");
             const snap = await getDocs(collection(db, "faturas"));
             todasFaturasCache = [];
             snap.forEach(d => todasFaturasCache.push({id: d.id, ...d.data()}));
-            window.esconderLoading();
-            window.gerarRelatorioFiltrado();
+            window.esconderLoading(); window.gerarRelatorioFiltrado();
         };
 
         window.gerarRelatorioFiltrado = () => {
@@ -676,39 +666,25 @@
                 let matchStatus = true;
                 if(statusFiltro !== "TODOS" && f.status !== statusFiltro) matchStatus = false;
                 let matchBusca = true;
-                if(termoBusca) {
-                    const nome = (f.nome_morador || "").toLowerCase();
-                    matchBusca = nome.includes(termoBusca);
-                }
+                if(termoBusca) matchBusca = (f.nome_morador || "").toLowerCase().includes(termoBusca);
                 return matchData && matchStatus && matchBusca;
             });
 
             filtradas.sort((a,b) => new Date(b.vencimento) - new Date(a.vencimento));
+            let tPago = 0, tPendente = 0, tM3 = 0, html = "";
 
-            let totalPago = 0, totalPendente = 0, totalM3 = 0;
-            let html = "";
             filtradas.forEach(f => {
-                if(f.status === "pago") totalPago += f.valor_total;
-                else totalPendente += f.valor_total;
-                totalM3 += (f.consumo_m3 || 0);
-
-                const badgeClass = f.status === 'pago' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
-                html += `
-                    <tr class="hover:bg-slate-50 border-b">
-                        <td class="p-4 font-bold text-slate-800">${f.nome_morador || "Cliente"}</td>
-                        <td class="p-4 text-xs text-slate-500">${f.mes_referencia}<br>Venc: ${f.vencimento.split('-').reverse().join('/')}</td>
-                        <td class="p-4 text-center font-bold">${f.consumo_m3 || 0} m³</td>
-                        <td class="p-4 text-center"><span class="px-2 py-1 rounded text-[10px] uppercase font-bold ${badgeClass}">${f.status}</span></td>
-                        <td class="p-4 text-right font-black text-slate-900">R$ ${f.valor_total.toFixed(2)}</td>
-                    </tr>
-                `;
+                if(f.status === "pago") tPago += f.valor_total; else tPendente += f.valor_total;
+                tM3 += (f.consumo_m3 || 0);
+                const badge = f.status === 'pago' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
+                html += `<tr class="border-b"><td class="p-4 font-bold text-slate-800">${f.nome_morador || "Cliente"}</td><td class="p-4 text-xs">${f.mes_referencia}<br>Venc: ${f.vencimento.split('-').reverse().join('/')}</td><td class="p-4 text-center font-bold">${f.consumo_m3 || 0} m³</td><td class="p-4 text-center"><span class="px-2 py-1 rounded text-[10px] uppercase font-bold ${badge}">${f.status}</span></td><td class="p-4 text-right font-black">R$ ${f.valor_total.toFixed(2)}</td></tr>`;
             });
 
-            document.getElementById("relCardM3").innerText = totalM3.toFixed(0);
+            document.getElementById("relCardM3").innerText = tM3.toFixed(0);
             document.getElementById("relCardQtd").innerText = filtradas.length;
-            document.getElementById("relCardPendente").innerText = "R$ " + totalPendente.toFixed(2).replace('.',',');
-            document.getElementById("relCardPago").innerText = "R$ " + totalPago.toFixed(2).replace('.',',');
-            document.getElementById("tabelaRelatorio").innerHTML = html || "<tr><td colspan='5' class='p-8 text-center'>Nenhum dado encontrado para este filtro.</td></tr>";
+            document.getElementById("relCardPendente").innerText = "R$ " + tPendente.toFixed(2).replace('.',',');
+            document.getElementById("relCardPago").innerText = "R$ " + tPago.toFixed(2).replace('.',',');
+            document.getElementById("tabelaRelatorio").innerHTML = html || "<tr><td colspan='5' class='p-8 text-center'>Vazio.</td></tr>";
         };
     </script>
 </body>
