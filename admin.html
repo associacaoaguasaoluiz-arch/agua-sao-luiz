@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>App Gestão 12.0 - Água São Luiz</title>
+    <title>App Gestão 15.0 - Água São Luiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -13,12 +13,16 @@
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        .coluna-fixa { position: sticky; left: 0; z-index: 20; background-color: white; border-right: 2px solid #e5e7eb; max-width: 150px; min-width: 150px; white-space: normal; font-size: 0.8rem; line-height: 1.2; }
+        .coluna-fixa { position: sticky; left: 0; z-index: 20; background-color: white; border-right: 2px solid #e5e7eb; max-width: 160px; min-width: 160px; white-space: normal; font-size: 0.8rem; line-height: 1.2; }
         th.coluna-fixa { background-color: #f8fafc; }
         .scroll-suave::-webkit-scrollbar { height: 8px; }
         .scroll-suave::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         .conteudo-principal { padding-bottom: 90px; }
-        .input-leitura:focus { background-color: #fffbeb; border-color: #f59e0b; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2); }
+        
+        /* Ajuste do foco para os Inputs expandidos */
+        .input-leitura { width: 120px; font-size: 1.125rem; transition: all 0.2s; }
+        .input-leitura:focus { background-color: #fffbeb; border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2); }
+        
         .modal-fundo { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; justify-content: center; align-items: center; padding: 1rem; }
         
         .mic-ativo { animation: pulse-red 1.5s infinite; background-color: #ef4444 !important; color: white !important; }
@@ -33,34 +37,37 @@
 </head>
 <body class="text-gray-800 h-screen flex overflow-hidden">
 
-    <div id="loading" class="loading-overlay"><div class="spinner"></div><p id="loadingMsg" class="mt-4 font-bold text-gray-700 font-mono text-center px-4">Processando...</p></div>
+    <!-- OVERLAY DE CARREGAMENTO -->
+    <div id="loading" class="loading-overlay"><div class="spinner"></div><p id="loadingMsg" class="mt-4 font-bold text-gray-700 font-mono text-center px-4">A processar...</p></div>
 
+    <!-- TOAST DE VOZ -->
     <div id="toastVoz" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full font-bold shadow-2xl transition-opacity duration-300 opacity-0 z-[110] flex items-center gap-2 pointer-events-none">
         <i class="fa-solid fa-microphone"></i> <span id="txtToastVoz">Comando</span>
     </div>
 
-    <!-- LOGIN -->
+    <!-- LOGIN ADMIN -->
     <div id="loginAdmin" class="fixed inset-0 bg-slate-900 flex justify-center items-center z-50 p-4">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center">
             <span class="text-5xl">💧</span>
             <h2 class="text-2xl font-bold mt-2 mb-6 text-slate-800">São Luiz Admin</h2>
             <input type="password" id="senhaAdmin" onkeypress="if(event.key === 'Enter') entrarAdmin()" placeholder="Senha de Acesso" class="w-full p-4 border border-gray-300 rounded-xl mb-4 text-center text-lg outline-none focus:ring-2 focus:ring-blue-500">
-            <button onclick="entrarAdmin()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition">Entrar</button>
+            <button onclick="entrarAdmin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition">Entrar</button>
             <p id="erroLogin" class="text-red-500 text-sm font-bold mt-4 hidden">❌ Senha Incorreta!</p>
         </div>
     </div>
 
     <div id="painelAdmin" class="flex w-full h-full tela-oculta relative">
+        <!-- SIDEBAR -->
         <aside class="w-64 bg-slate-900 text-white flex-col hidden md:flex shadow-xl z-30">
             <div class="p-6 text-center border-b border-slate-700"><h1 class="text-xl font-bold">💧 São Luiz</h1></div>
-            <nav class="flex-1 p-4 space-y-2 overflow-y-auto scroll-suave text-sm">
+            <nav class="flex-1 p-4 space-y-2 overflow-y-auto scroll-suave text-sm text-gray-400">
                 <button onclick="mudarAba('aba-moradores', this)" class="menu-btn w-full flex items-center p-3 rounded-xl bg-blue-600 text-white font-bold transition"><i class="fa-solid fa-users w-6"></i> Moradores</button>
-                <button onclick="mudarAba('aba-leituras', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition"><i class="fa-solid fa-pen-to-square w-6"></i> Água (Mensal)</button>
-                <button onclick="mudarAba('aba-avulso', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition"><i class="fa-solid fa-wrench w-6"></i> Serviços Avulsos</button>
-                <button onclick="mudarAba('aba-abertas', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition"><i class="fa-solid fa-hourglass-half w-6"></i> Pendentes</button>
-                <button onclick="mudarAba('aba-recebimentos', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition"><i class="fa-solid fa-check-double w-6"></i> Pagos</button>
-                <button onclick="mudarAba('aba-relatorios', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition"><i class="fa-solid fa-chart-pie w-6"></i> Relatórios</button>
-                <button onclick="mudarAba('aba-config', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-400 font-bold transition"><i class="fa-solid fa-gear w-6"></i> Configuração</button>
+                <button onclick="mudarAba('aba-leituras', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-pen-to-square w-6"></i> Água (Mensal)</button>
+                <button onclick="mudarAba('aba-avulso', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-wrench w-6"></i> Serviços Avulsos</button>
+                <button onclick="mudarAba('aba-abertas', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-hourglass-half w-6"></i> Pendentes</button>
+                <button onclick="mudarAba('aba-recebimentos', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-check-double w-6"></i> Pagos</button>
+                <button onclick="mudarAba('aba-relatorios', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-chart-pie w-6"></i> Relatórios</button>
+                <button onclick="mudarAba('aba-config', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-gear w-6"></i> Configuração</button>
                 
                 <div class="pt-6 mt-6 border-t border-slate-700">
                     <button onclick="sairAdmin()" class="w-full flex items-center justify-center p-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold transition">Sair</button>
@@ -68,6 +75,7 @@
             </nav>
         </aside>
 
+        <!-- CONTEÚDO PRINCIPAL -->
         <main class="flex-1 overflow-y-auto bg-gray-100 conteudo-principal w-full">
             <div class="md:hidden bg-slate-900 text-white p-4 text-center sticky top-0 z-40 shadow-md font-bold flex justify-between px-6 items-center">
                 <span>💧 São Luiz</span>
@@ -80,7 +88,7 @@
                 <div id="aba-moradores" class="conteudo-aba">
                     <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
                         <h2 class="text-2xl font-bold">👥 Moradores</h2>
-                        <button onclick="abrirModalCadastro()" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg">➕ Novo</button>
+                        <button onclick="abrirModalCadastro()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition">➕ Novo</button>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
                         <input type="text" id="buscaMorador" onkeyup="filtrarTabela('buscaMorador', 'tabelaMoradores')" placeholder="🔍 Buscar morador ou lote..." class="w-full p-4 bg-gray-50 border-b outline-none">
@@ -95,22 +103,22 @@
                             <h2 class="text-2xl font-bold flex items-center gap-2">📝 Consumo Mensal <button id="btnVoz" onclick="alternarVoz()" class="bg-slate-200 text-slate-600 w-10 h-10 rounded-full flex justify-center items-center shadow-sm"><i class="fa-solid fa-microphone"></i></button></h2>
                         </div>
                         <div class="flex gap-2 text-xs">
-                            <input type="text" id="mesReferencia" value="04/2026" class="w-20 p-2 border rounded font-bold text-center">
-                            <input type="date" id="dataVencimento" value="2026-04-20" class="p-2 border rounded font-bold text-center">
+                            <input type="text" id="mesReferencia" value="04/2026" class="w-24 p-2 border rounded-lg font-bold text-center">
+                            <input type="date" id="dataVencimento" value="2026-04-20" class="p-2 border rounded-lg font-bold text-center">
                         </div>
                     </div>
-                    <button onclick="if(window.gerarFaturasEmLote) window.gerarFaturasEmLote()" class="w-full bg-green-500 text-white py-4 rounded-2xl font-black text-xl shadow-xl hover:bg-green-600 active:scale-95 transition mb-6">🚀 GERAR FATURAS E SALVAR HODÔMETROS</button>
+                    <button onclick="if(window.gerarFaturasEmLote) window.gerarFaturasEmLote()" class="w-full bg-green-500 hover:bg-green-600 text-white py-4 rounded-2xl font-black text-xl shadow-xl active:scale-95 transition mb-6">🚀 GERAR FATURAS E SALVAR HODÓMETROS</button>
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden relative">
-                        <div class="overflow-x-auto scroll-suave">
+                        <div class="overflow-x-auto scroll-suave pb-10">
                             <table class="w-full text-left border-collapse whitespace-nowrap">
                                 <thead>
                                     <tr class="bg-slate-100 text-[10px] uppercase font-bold text-slate-500 border-b">
                                         <th class="p-3 coluna-fixa">Morador / CPF</th>
-                                        <th class="p-3 text-center">Hodômetro Ant.</th>
-                                        <th class="p-3 text-center">Hodômetro Atual</th>
+                                        <th class="p-3 text-center">Hodómetro Ant.</th>
+                                        <th class="p-3 text-center">Hodómetro Atual</th>
                                         <th class="p-3 text-center">Gasto m³</th>
-                                        <th class="p-3 text-right text-red-600">Multa</th>
-                                        <th class="p-3 text-right text-green-700">Total R$</th>
+                                        <th class="p-3 text-center text-red-600">Multa (R$)</th>
+                                        <th class="p-3 text-right text-green-700 font-black">Total R$</th>
                                         <th class="p-3 text-center">Status</th>
                                     </tr>
                                 </thead>
@@ -120,10 +128,10 @@
                     </div>
                 </div>
 
-                <!-- TAXAS AVULSAS COM NAVEGAÇÃO POR ENTER E AUTO-SELECT -->
+                <!-- TAXAS AVULSAS -->
                 <div id="aba-avulso" class="conteudo-aba tela-oculta">
                     <h2 class="text-2xl font-bold text-blue-800 mb-6">🔧 Lançar Serviço Avulso</h2>
-                    <div class="bg-white rounded-2xl shadow-sm border p-6 max-w-2xl">
+                    <div class="bg-white rounded-2xl shadow-sm border p-6 max-w-2xl mx-auto md:mx-0">
                         <form id="formAvulso" class="space-y-4" onsubmit="if(window.submitAvulso) window.submitAvulso(event)">
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Como deseja cobrar?</label>
@@ -140,7 +148,6 @@
                                 <div id="avulsoClienteNomeExibicao" class="text-sm font-bold text-green-700 bg-green-50 p-2 rounded hidden">Nenhum selecionado</div>
 
                                 <select id="avulsoFamilia" required class="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none font-bold text-gray-700 shadow-sm mt-2 hidden">
-                                    <!-- Options rendered via JS -->
                                 </select>
                             </div>
 
@@ -163,20 +170,20 @@
                     </div>
                 </div>
 
-                <!-- ABERTAS (REAL-TIME) -->
+                <!-- ABERTAS -->
                 <div id="aba-abertas" class="conteudo-aba tela-oculta">
                     <div class="flex justify-between items-end mb-6">
                         <h2 class="text-2xl font-bold text-amber-600 flex items-center gap-2">⏳ Pendentes <span class="flex h-3 w-3 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span></span></h2>
-                        <span class="text-xs font-bold text-slate-400 uppercase bg-slate-100 px-3 py-1 rounded-full">Atualização em Tempo Real</span>
+                        <span class="text-xs font-bold text-slate-400 uppercase bg-slate-100 px-3 py-1 rounded-full">Atualização Tempo Real</span>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left whitespace-nowrap"><tbody id="tabelaAbertas" class="divide-y text-sm"></tbody></table></div></div>
                 </div>
 
-                <!-- PAGAS (REAL-TIME) -->
+                <!-- PAGAS -->
                 <div id="aba-recebimentos" class="conteudo-aba tela-oculta">
                     <div class="flex justify-between items-end mb-6">
                         <h2 class="text-2xl font-bold text-green-700 flex items-center gap-2">✅ Recebidos <span class="flex h-3 w-3 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span></span></h2>
-                        <span class="text-xs font-bold text-slate-400 uppercase bg-slate-100 px-3 py-1 rounded-full">Atualização em Tempo Real</span>
+                        <span class="text-xs font-bold text-slate-400 uppercase bg-slate-100 px-3 py-1 rounded-full">Atualização Tempo Real</span>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden"><table class="w-full text-left whitespace-nowrap"><tbody id="tabelaPagos" class="divide-y text-sm"></tbody></table></div>
                 </div>
@@ -185,56 +192,58 @@
                 <div id="aba-relatorios" class="conteudo-aba tela-oculta">
                     <div class="flex justify-between items-center mb-6 no-print">
                         <h2 class="text-2xl font-bold text-slate-800">📊 Relatórios Financeiros</h2>
-                        <button onclick="window.print()" class="bg-slate-800 text-white px-4 py-2 rounded-lg font-bold shadow-md"><i class="fa-solid fa-print"></i> Imprimir</button>
+                        <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-900 transition text-white px-4 py-2 rounded-lg font-bold shadow-md"><i class="fa-solid fa-print"></i> Imprimir</button>
                     </div>
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border mb-6 no-print flex flex-wrap gap-4 items-end">
-                        <div class="flex-1 min-w-[150px]"><label class="block text-xs font-bold text-gray-500 mb-1">De (Lançamento)</label><input type="date" id="relDataInicio" class="w-full p-2 border rounded-lg text-sm outline-none"></div>
-                        <div class="flex-1 min-w-[150px]"><label class="block text-xs font-bold text-gray-500 mb-1">Até</label><input type="date" id="relDataFim" class="w-full p-2 border rounded-lg text-sm outline-none"></div>
-                        <div class="flex-1 min-w-[150px]"><label class="block text-xs font-bold text-gray-500 mb-1">Status</label><select id="relStatus" class="w-full p-2 border rounded-lg text-sm outline-none bg-white"><option value="TODOS">Geral</option><option value="pago">Apenas Pagos</option><option value="pendente">Apenas Pendentes</option></select></div>
-                        <div class="flex-[2] min-w-[200px]"><label class="block text-xs font-bold text-gray-500 mb-1">Buscar Nome</label><input type="text" id="relBusca" class="w-full p-2 border rounded-lg text-sm outline-none"></div>
-                        <button onclick="window.gerarRelatorioFiltrado()" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold shadow h-[38px]">Filtrar</button>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border mb-6 no-print flex flex-wrap gap-4 items-end text-xs">
+                        <div class="flex-1 min-w-[150px]"><label class="block font-bold text-gray-500 mb-1 uppercase">De</label><input type="date" id="relDataInicio" class="w-full p-2 border rounded-lg outline-none"></div>
+                        <div class="flex-1 min-w-[150px]"><label class="block font-bold text-gray-500 mb-1 uppercase">Até</label><input type="date" id="relDataFim" class="w-full p-2 border rounded-lg outline-none"></div>
+                        <div class="flex-1 min-w-[150px]"><label class="block font-bold text-gray-500 mb-1 uppercase">Status</label><select id="relStatus" class="w-full p-2 border rounded-lg outline-none bg-white"><option value="TODOS">Geral</option><option value="pago">Apenas Pagos</option><option value="pendente">Apenas Pendentes</option></select></div>
+                        <div class="flex-[2] min-w-[200px]"><label class="block font-bold text-gray-500 mb-1 uppercase">Buscar Cliente</label><input type="text" id="relBusca" class="w-full p-2 border rounded-lg outline-none"></div>
+                        <button onclick="window.gerarRelatorioFiltrado()" class="bg-blue-600 hover:bg-blue-700 transition text-white px-6 py-2 rounded-lg font-bold shadow h-[36px]">Filtrar</button>
                     </div>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                        <div class="bg-white p-4 rounded-xl border shadow-sm text-center"><p class="text-xs text-gray-500 font-bold">Vol (m³)</p><p class="text-xl font-black text-blue-600" id="relCardM3">0</p></div>
-                        <div class="bg-white p-4 rounded-xl border shadow-sm text-center"><p class="text-xs text-gray-500 font-bold">Faturas</p><p class="text-xl font-black" id="relCardQtd">0</p></div>
-                        <div class="bg-white p-4 rounded-xl border shadow-sm text-center"><p class="text-xs text-red-500 font-bold">Pendente</p><p class="text-xl font-black text-red-600" id="relCardPendente">R$ 0,00</p></div>
-                        <div class="bg-white p-4 rounded-xl border shadow-sm text-center"><p class="text-xs text-green-600 font-bold">Recebido</p><p class="text-xl font-black text-green-600" id="relCardPago">R$ 0,00</p></div>
+                        <div class="bg-white p-4 rounded-xl border shadow-sm text-center"><p class="text-[10px] text-gray-500 font-bold uppercase">Volume (m³)</p><p class="text-xl font-black text-blue-600" id="relCardM3">0</p></div>
+                        <div class="bg-white p-4 rounded-xl border shadow-sm text-center"><p class="text-[10px] text-gray-500 font-bold uppercase">Contas</p><p class="text-xl font-black" id="relCardQtd">0</p></div>
+                        <div class="bg-white p-4 rounded-xl border shadow-sm text-center border-red-100"><p class="text-[10px] text-red-500 font-bold uppercase">Inadimplência</p><p class="text-xl font-black text-red-600" id="relCardPendente">R$ 0,00</p></div>
+                        <div class="bg-white p-4 rounded-xl border shadow-sm text-center border-green-100"><p class="text-[10px] text-green-600 font-bold uppercase">Recebido</p><p class="text-xl font-black text-green-600" id="relCardPago">R$ 0,00</p></div>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left whitespace-nowrap text-sm"><thead><tr class="bg-slate-50 text-slate-500 uppercase text-[10px] font-bold border-b"><th class="p-4">Cliente</th><th class="p-4">Ref</th><th class="p-4 text-center">M³</th><th class="p-4 text-center">Status</th><th class="p-4 text-right">Total</th></tr></thead><tbody id="tabelaRelatorio" class="divide-y"><tr><td colspan="5" class="p-8 text-center">Filtrar...</td></tr></tbody></table></div></div>
+                    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left whitespace-nowrap text-sm"><thead><tr class="bg-slate-50 text-slate-500 uppercase text-[10px] font-bold border-b"><th class="p-4">Cliente</th><th class="p-4">Ref</th><th class="p-4 text-center">M³</th><th class="p-4 text-center">Status</th><th class="p-4 text-right">Total</th></tr></thead><tbody id="tabelaRelatorio" class="divide-y"><tr><td colspan="5" class="p-8 text-center text-gray-400">Filtre para carregar...</td></tr></tbody></table></div></div>
                 </div>
 
                 <!-- CONFIGURAÇÕES -->
                 <div id="aba-config" class="conteudo-aba tela-oculta">
-                    <h2 class="text-2xl font-bold text-slate-700 mb-6">⚙️ Configurações e Banco de Dados</h2>
+                    <h2 class="text-2xl font-bold text-slate-700 mb-6">⚙️ Banco de Dados e Configurações</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-amber-100 md:col-span-2">
-                            <h3 class="font-bold text-lg text-amber-700 mb-4">💰 Valores da Mensalidade (Água)</h3>
+                        
+                        <!-- Configuração Valores de Água -->
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-blue-100 md:col-span-2">
+                            <h3 class="font-bold text-lg text-blue-700 mb-4">💰 Valores da Mensalidade (Água)</h3>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div><label class="block text-xs font-bold text-gray-500 mb-1">Até 10m³ (R$)</label><input type="number" step="0.01" id="cfgVal1" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none"></div>
                                 <div><label class="block text-xs font-bold text-gray-500 mb-1">De 11m³ a 30m³ (R$)</label><input type="number" step="0.01" id="cfgVal2" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none"></div>
                                 <div><label class="block text-xs font-bold text-gray-500 mb-1">Acima de 30m³ (R$)</label><input type="number" step="0.01" id="cfgVal3" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none"></div>
                             </div>
-                            <button onclick="salvarConfigAgua()" class="mt-4 bg-amber-500 text-white font-bold py-3 px-6 rounded-xl shadow">💾 Guardar Valores</button>
+                            <button onclick="window.salvarConfigAgua()" class="mt-4 bg-blue-500 hover:bg-blue-600 transition text-white font-bold py-3 px-6 rounded-xl shadow">💾 Guardar Valores de Água</button>
                         </div>
-                        
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-blue-100">
-                            <h3 class="font-bold text-lg text-blue-700 mb-2">💾 Salvar Backup</h3>
-                            <p class="text-xs text-gray-500 mb-4">Baixe todas as famílias e faturas para o seu computador em formato JSON.</p>
-                            <button onclick="if(window.exportarBase) window.exportarBase()" class="w-full bg-blue-100 text-blue-700 hover:bg-blue-200 transition font-bold py-3 rounded-xl mt-2">Baixar Arquivo JSON</button>
-                        </div>
-                        
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-100">
-                            <h3 class="font-bold text-lg text-emerald-700 mb-2">📂 Importar Backup</h3>
-                            <p class="text-xs text-gray-500 mb-4">Selecione o arquivo JSON baixado anteriormente para restaurar o sistema.</p>
-                            <input type="file" id="fileImport" accept=".json" class="mb-3 w-full text-sm">
-                            <button onclick="if(window.importarBase) window.importarBase()" class="w-full bg-emerald-100 hover:bg-emerald-200 transition text-emerald-700 font-bold py-3 rounded-xl">Importar Dados</button>
-                        </div>
-                        
+
+                        <!-- Configuração Multa Automática -->
                         <div class="bg-white p-6 rounded-2xl shadow-sm border border-red-100 md:col-span-2">
-                            <h3 class="font-bold text-lg text-red-600 mb-2">🗑️ Limpar Todas as Faturas</h3>
-                            <p class="text-xs text-gray-500 mb-4">Use com cuidado. Isso apagará todas as faturas e relatórios. O cadastro dos moradores será mantido.</p>
-                            <button onclick="if(window.limparFaturas) window.limparFaturas()" class="w-full bg-red-600 hover:bg-red-700 transition text-white font-bold py-3 rounded-xl shadow-md">Apagar Definitivamente</button>
+                            <h3 class="font-bold text-lg text-red-700 mb-4">🚨 Multa Padrão (Contas em Atraso)</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 mb-1">Valor Padrão da Multa (R$)</label>
+                                    <input type="number" step="0.01" id="cfgMulta" class="w-full p-3 border rounded-xl font-bold text-red-600 outline-none">
+                                </div>
+                                <div class="flex items-center text-xs text-gray-500">
+                                    Este valor será preenchido automaticamente ao gerar o lote se o morador estiver inadimplente. Pode ser alterado manualmente na grelha.
+                                </div>
+                            </div>
+                            <button onclick="window.salvarConfigMulta()" class="mt-4 bg-red-500 hover:bg-red-600 transition text-white font-bold py-3 px-6 rounded-xl shadow">💾 Guardar Valor da Multa</button>
                         </div>
+                        
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-blue-100"><h3 class="font-bold text-lg text-blue-700 mb-2">💾 Backup</h3><button onclick="if(window.exportarBase) window.exportarBase()" class="w-full bg-blue-100 hover:bg-blue-200 transition text-blue-700 font-bold py-3 rounded-xl mt-2">Exportar JSON</button></div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-100"><h3 class="font-bold text-lg text-emerald-700 mb-2">📂 Importar</h3><input type="file" id="fileImport" accept=".json" class="mb-3 w-full text-sm"><button onclick="if(window.importarBase) window.importarBase()" class="w-full bg-emerald-100 hover:bg-emerald-200 transition text-emerald-700 font-bold py-3 rounded-xl">Importar JSON</button></div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-red-100 md:col-span-2"><h3 class="font-bold text-lg text-red-600 mb-2">🗑️ Limpeza Absoluta</h3><button onclick="if(window.limparFaturas) window.limparFaturas()" class="w-full bg-red-600 hover:bg-red-700 transition text-white font-bold py-3 rounded-xl shadow-md">Apagar TODAS as Faturas</button></div>
                     </div>
                 </div>
             </div>
@@ -245,31 +254,31 @@
             <button onclick="mudarAba('aba-leituras', this)" class="w-full p-2 flex flex-col items-center text-gray-400"><i class="fa-solid fa-pen-to-square text-lg"></i><span class="text-[9px]">Água</span></button>
             <button onclick="mudarAba('aba-abertas', this)" class="w-full p-2 flex flex-col items-center text-gray-400"><i class="fa-solid fa-hourglass-half text-lg"></i><span class="text-[9px]">Pendentes</span></button>
             <button onclick="mudarAba('aba-recebimentos', this)" class="w-full p-2 flex flex-col items-center text-gray-400"><i class="fa-solid fa-check-double text-lg"></i><span class="text-[9px]">Pagos</span></button>
-            <button onclick="mudarAba('aba-avulso', this)" class="w-full p-2 flex flex-col items-center text-gray-400"><i class="fa-solid fa-wrench text-lg"></i><span class="text-[9px]">Taxas</span></button>
+            <button onclick="mudarAba('aba-relatorios', this)" class="w-full p-2 flex flex-col items-center text-gray-400"><i class="fa-solid fa-chart-pie text-lg"></i><span class="text-[9px]">Gráfico</span></button>
         </nav>
     </div>
 
     <!-- MODAL CADASTRO -->
     <div id="modalMorador" class="modal-fundo no-print">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm mx-auto overflow-hidden">
-            <div class="bg-slate-900 p-5 flex justify-between items-center text-white"><h3 id="tituloModal" class="font-bold">Morador</h3><button onclick="fecharModal()" class="text-2xl">×</button></div>
+            <div class="bg-slate-900 p-5 flex justify-between items-center text-white"><h3 id="tituloModal" class="font-bold">Morador</h3><button onclick="fecharModal()" class="text-2xl hover:text-red-400 transition">×</button></div>
             <form id="formMorador" class="p-6 space-y-4" onsubmit="if(window.submitMorador) window.submitMorador(event)">
                 <input type="hidden" id="modId">
                 <input type="text" id="modNome" required placeholder="Nome Completo" class="w-full p-3 bg-gray-100 rounded-xl outline-none border focus:border-blue-500">
-                <input type="tel" id="modCpf" required placeholder="CPF (Só números)" class="w-full p-3 bg-gray-100 rounded-xl outline-none border focus:border-blue-500">
-                <input type="tel" id="modTel" required placeholder="WhatsApp" class="w-full p-3 bg-gray-100 rounded-xl outline-none border focus:border-blue-500">
-                <input type="text" id="modLote" required placeholder="Lote / Endereço" class="w-full p-3 bg-gray-100 rounded-xl outline-none border focus:border-blue-500">
+                <input type="tel" id="modCpf" required placeholder="CPF (Apenas números)" class="w-full p-3 bg-gray-100 rounded-xl outline-none border focus:border-blue-500">
+                <input type="tel" id="modTel" required placeholder="WhatsApp (DDD+Número)" class="w-full p-3 bg-gray-100 rounded-xl outline-none border focus:border-blue-500">
+                <input type="text" id="modLote" required placeholder="Lote / Morada" class="w-full p-3 bg-gray-100 rounded-xl outline-none border focus:border-blue-500">
                 <div class="flex gap-2 pt-4">
-                    <button type="button" onclick="fecharModal()" class="flex-1 bg-gray-200 py-3 rounded-xl font-bold">Cancelar</button>
-                    <button type="submit" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold">Salvar</button>
+                    <button type="button" onclick="fecharModal()" class="flex-1 bg-gray-200 py-3 rounded-xl font-bold hover:bg-gray-300 transition">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 transition text-white py-3 rounded-xl font-bold">Salvar</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- SCRIPT 1: INTERFACE -->
+    <!-- SCRIPTS DE INTERFACE -->
     <script>
-        window.familiasGlobal = {}; // Cache para otimizar os nomes nas tabelas
+        window.familiasGlobal = {}; 
 
         window.onload = () => {
             if(localStorage.getItem("admin_saoluiz_logado") === "sim") {
@@ -280,9 +289,10 @@
             const date = new Date();
             document.getElementById("relDataInicio").value = new Date(date.getFullYear(), date.getMonth(), 1).toISOString().split('T')[0];
             document.getElementById("relDataFim").value = date.toISOString().split('T')[0];
+            
             if(window.carregarConfigAgua) window.carregarConfigAgua();
+            if(window.carregarConfigMulta) window.carregarConfigMulta();
 
-            // Esconde vencimento se for somar na próxima
             document.getElementById("avulsoTipo").addEventListener('change', function() {
                 document.getElementById("divVencimentoAvulso").style.display = this.value === 'somar_proxima' ? 'none' : 'block';
                 if(this.value === 'pix_agora') document.getElementById("avulsoVencimento").required = true;
@@ -294,15 +304,25 @@
         window.esconderLoading = () => { document.getElementById("loading").style.display = "none"; };
         window.fecharModal = () => document.getElementById("modalMorador").style.display = "none";
 
-        // --- SISTEMA DE NAVEGAÇÃO POR ENTER NOS FORMULÁRIOS ---
         window.focarProximo = (event, nextId) => {
             if (event.key === "Enter") {
-                event.preventDefault(); // Impede o formulário de enviar antes da hora
+                event.preventDefault(); 
                 const nextEl = document.getElementById(nextId);
                 if(nextEl) {
                      nextEl.focus();
-                     // Se for input de texto/numero, seleciona o conteúdo para facilitar digitação por cima
                      if(nextEl.tagName === 'INPUT') nextEl.select();
+                }
+            }
+        };
+
+        // Pular linha rápida na Grelha
+        window.pularLinhaGrelha = (event, atualInput) => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                const nextRow = atualInput.closest('tr').nextElementSibling;
+                if(nextRow) {
+                    const nextInput = nextRow.querySelector('input[id^="atu-"]');
+                    if(nextInput) { nextInput.focus(); nextInput.select(); }
                 }
             }
         };
@@ -332,7 +352,6 @@
             if(id === 'aba-leituras') window.carregarLoteFaturas();
             if(id === 'aba-avulso') window.carregarSelectAvulso();
             if(id === 'aba-relatorios') window.carregarRelatorio();
-            
             if(id === 'aba-abertas' && window.iniciarListenerAbertas) window.iniciarListenerAbertas();
             if(id === 'aba-recebimentos' && window.iniciarListenerPagos) window.iniciarListenerPagos();
         };
@@ -354,12 +373,23 @@
             localStorage.setItem('agua_val1', document.getElementById('cfgVal1').value);
             localStorage.setItem('agua_val2', document.getElementById('cfgVal2').value);
             localStorage.setItem('agua_val3', document.getElementById('cfgVal3').value);
-            alert("Valores guardados!");
+            alert("✅ Valores da água guardados!");
+        };
+
+        window.carregarConfigMulta = () => {
+            document.getElementById('cfgMulta').value = localStorage.getItem('config_multa_padrao') || 25;
+        };
+        window.salvarConfigMulta = () => {
+            localStorage.setItem('config_multa_padrao', document.getElementById('cfgMulta').value);
+            alert("✅ Valor padrão da multa guardado!");
         };
         
-        window.calcularLinha = (id, multa) => {
+        window.calcularLinha = (id) => {
             const ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0;
-            const atu = parseFloat(document.getElementById(`atu-${id}`).value) || 0;
+            const atu_str = document.getElementById(`atu-${id}`).value;
+            const atu = atu_str === "" ? ant : parseFloat(atu_str); // Se vazio, assume a leitura anterior
+            
+            const multa = parseFloat(document.getElementById(`multa-${id}`).value) || 0;
             const taxa = parseFloat(document.getElementById(`h-taxa-${id}`).value) || 0;
 
             let consumo = (atu >= ant && atu > 0) ? atu - ant : 0;
@@ -386,7 +416,7 @@
             const btn = document.getElementById("btnVoz");
             if (window.vozAtiva) { if(recognition) recognition.stop(); btn.classList.remove('mic-ativo'); window.vozAtiva = false; return; }
             window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!window.SpeechRecognition) return alert("Navegador não suporta voz.");
+            if (!window.SpeechRecognition) return alert("O seu navegador não suporta voz.");
             recognition = new SpeechRecognition(); recognition.lang = 'pt-BR'; recognition.continuous = true;
             recognition.onstart = () => { window.vozAtiva = true; btn.classList.add('mic-ativo'); };
             recognition.onresult = (event) => {
@@ -400,7 +430,7 @@
                         const match = textoLimpo.match(/\d+/);
                         if (match) {
                             document.getElementById('atu-' + id).value = match[0];
-                            window.calcularLinha(id, parseFloat(input.dataset.multa));
+                            window.calcularLinha(id);
                             document.getElementById('linha-'+id).style.backgroundColor = "#fffbeb";
                             setTimeout(()=> { document.getElementById('linha-'+id).style.backgroundColor = ""; }, 2000);
                         }
@@ -411,7 +441,6 @@
             recognition.start();
         };
 
-        // --- MÓDULO INTELIGENTE DO SELECT AVULSO (AUTO-SELEÇÃO) ---
         window.renderizarSelectAvulso = (filtro = "") => {
             const select = document.getElementById("avulsoFamilia");
             const displayNome = document.getElementById("avulsoClienteNomeExibicao");
@@ -427,23 +456,19 @@
                 const texto = `${f.nome} ${f.cpf} ${f.lote_endereco}`.toLowerCase();
                 if(texto.includes(termoBuscado)) {
                     html += `<option value="${id}" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}">${f.nome} (${f.lote_endereco})</option>`;
-                    if(matchCount === 0) {
-                        firstMatchId = id; 
-                        firstMatchName = f.nome;
-                    }
+                    if(matchCount === 0) { firstMatchId = id; firstMatchName = f.nome; }
                     matchCount++;
                 }
             });
             select.innerHTML = html;
 
-            // Auto-Seleção visual
             if (termoBuscado === "") {
                 select.value = 'TODOS';
                 displayNome.innerText = "🌟 RATEIO: COBRAR TODOS";
                 displayNome.classList.remove('hidden');
                 displayNome.className = "text-sm font-bold text-blue-700 bg-blue-50 p-2 rounded mt-2";
             } else if (firstMatchId) {
-                select.value = firstMatchId; // Já deixa marcado no select invisível
+                select.value = firstMatchId;
                 displayNome.innerText = `✅ Selecionado: ${firstMatchName}`;
                 displayNome.classList.remove('hidden');
                 displayNome.className = "text-sm font-bold text-green-700 bg-green-50 p-2 rounded mt-2 border border-green-200";
@@ -461,7 +486,7 @@
         };
     </script>
 
-    <!-- SCRIPT 2: FIREBASE E NEGÓCIO -->
+    <!-- BANCO DE DADOS FIREBASE E REGRAS DE NEGÓCIO -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -486,14 +511,14 @@
             e.preventDefault();
             const id = document.getElementById("modId").value;
             const d = { nome: document.getElementById("modNome").value, cpf: document.getElementById("modCpf").value.replace(/\D/g, ''), telefone: document.getElementById("modTel").value, lote_endereco: document.getElementById("modLote").value };
-            window.mostrarLoading("Salvando...");
+            window.mostrarLoading("A guardar...");
             if(id) await updateDoc(doc(db, "familias", id), d); else await addDoc(collection(db, "familias"), {...d, senha: "123456", status_ativo: true, ultima_leitura: 0});
             window.fecharModal(); window.carregarFamilias(); window.esconderLoading();
         };
 
         window.excluirMorador = async (id, nome) => {
-            if(confirm(`⚠️ ATENÇÃO: Deseja apagar definitivamente o morador ${nome} do sistema?\n\nAs faturas dele continuarão no histórico de relatórios, mas ele não poderá mais acessar o portal.`)) {
-                window.mostrarLoading("Excluindo...");
+            if(confirm(`Apagar ${nome} definitivamente?`)) {
+                window.mostrarLoading("A apagar...");
                 await deleteDoc(doc(db, "familias", id));
                 window.carregarFamilias();
                 window.esconderLoading();
@@ -505,76 +530,98 @@
             await window.atualizarCacheFamilias();
             let html = "";
             Object.entries(window.familiasGlobal).forEach(([id, f]) => {
-                html += `<tr class="border-b hover:bg-slate-50"><td class="p-3"><strong>${f.nome}</strong><br><small>${f.lote_endereco}</small></td><td class="p-3 text-slate-500 font-mono">${f.cpf}</td><td class="p-3"><button onclick="window.abrirModalEdicao('${id}','${f.nome}','${f.cpf}','${f.telefone}','${f.lote_endereco}')" class="text-blue-600 bg-blue-50 px-3 py-1 rounded font-bold mr-2">Editar</button><button onclick="window.excluirMorador('${id}','${f.nome}')" class="text-red-600 bg-red-50 px-3 py-1 rounded font-bold">🗑️</button></td></tr>`;
+                html += `<tr class="border-b hover:bg-slate-50"><td class="p-3"><strong>${f.nome}</strong><br><small>${f.lote_endereco}</small></td><td class="p-3 text-slate-500 font-mono">${f.cpf}</td><td class="p-3"><button onclick="window.abrirModalEdicao('${id}','${f.nome}','${f.cpf}','${f.telefone}','${f.lote_endereco}')" class="text-blue-600 bg-blue-50 px-3 py-1 rounded font-bold mr-2 transition hover:bg-blue-100">Editar</button><button onclick="window.excluirMorador('${id}','${f.nome}')" class="text-red-600 bg-red-50 px-3 py-1 rounded font-bold transition hover:bg-red-100">🗑️</button></td></tr>`;
             });
             tbody.innerHTML = html;
         };
 
         window.carregarLoteFaturas = async () => {
             const corpo = document.getElementById("corpoTabelaLote");
+            corpo.innerHTML = "<tr><td colspan='7' class='p-8 text-center text-blue-600 font-bold'>A sincronizar dados recentes do servidor...</td></tr>";
             try {
-                if(Object.keys(window.familiasGlobal).length === 0) await window.atualizarCacheFamilias();
+                // ATUALIZAÇÃO FORÇADA: Sempre atualiza o cache para garantir que apanha as taxas marcadas recentemente
+                await window.atualizarCacheFamilias();
                 
                 const fatSnap = await getDocs(collection(db, "faturas"));
                 const faturas = []; fatSnap.forEach(d => faturas.push(d.data()));
 
                 let html = "";
                 const hoje = new Date(); hoje.setHours(0,0,0,0);
+                const multaPadrao = parseFloat(localStorage.getItem('config_multa_padrao')) || 25.00;
 
                 Object.entries(window.familiasGlobal).forEach(([famId, f]) => {
                     const temAtraso = faturas.some(fat => fat.familia_id === famId && fat.status === 'pendente' && new Date(fat.vencimento + "T00:00:00") < hoje);
-                    const multa = temAtraso ? 25.0 : 0.0;
+                    const multa = temAtraso ? multaPadrao : 0.0;
                     
                     const ultimaLeitura = f.ultima_leitura || 0;
                     const taxaPendente = f.taxa_pendente_valor || 0;
                     const descTaxa = f.taxa_pendente_desc || "";
                     
-                    const avisoTaxa = taxaPendente > 0 ? `<br><span class="text-blue-600 font-bold text-[10px]">+ R$${taxaPendente} (${descTaxa})</span>` : "";
+                    const avisoTaxa = taxaPendente > 0 ? `<br><span class="text-blue-600 font-black text-[10px] uppercase bg-blue-50 px-1 rounded inline-block mt-1">+ R$ ${taxaPendente} (${descTaxa})</span>` : "";
 
                     html += `
-                        <tr id="linha-${famId}" class="hover:bg-blue-50">
-                            <td class="p-2 coluna-fixa leading-tight">
+                        <tr id="linha-${famId}" class="hover:bg-blue-50 border-b">
+                            <td class="p-3 coluna-fixa leading-tight">
                                 <strong class="text-xs text-slate-800">${f.nome}</strong><br>
                                 <small class="text-gray-400 font-normal">${f.cpf}</small>
                                 ${avisoTaxa}
                             </td>
-                            <td class="p-2 text-center"><input type="number" id="ant-${famId}" value="${ultimaLeitura}" onkeyup="window.calcularLinha('${famId}', ${multa})" class="w-16 p-2 border bg-gray-100 rounded text-center outline-none text-gray-500 font-bold"></td>
-                            <td class="p-2 text-center"><input type="number" id="atu-${famId}" onkeyup="window.calcularLinha('${famId}', ${multa})" class="w-16 p-2 border-2 border-blue-400 bg-blue-50 rounded text-center font-bold outline-none"></td>
-                            <td class="p-2 text-center font-bold text-blue-600"><span id="cons-${famId}">0</span><span class="text-[10px]">m³</span></td>
-                            <td class="p-2 text-right text-red-500 text-xs">R$ ${multa.toFixed(2)}</td>
-                            <td class="p-2 text-right font-black text-green-700">R$ <span id="valTotal-${famId}">0,00</span>
-                                <input type="hidden" id="h-total-${famId}" value="0" data-multa="${multa}" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}">
+                            <td class="p-3 text-center"><input type="number" id="ant-${famId}" value="${ultimaLeitura}" onkeyup="window.calcularLinha('${famId}')" class="input-leitura w-32 p-3 border bg-gray-100 rounded-xl text-center outline-none text-gray-600 font-bold"></td>
+                            <td class="p-3 text-center"><input type="number" id="atu-${famId}" onkeyup="window.calcularLinha('${famId}')" onkeydown="window.pularLinhaGrelha(event, this)" class="input-leitura w-32 p-3 border-2 border-blue-400 bg-blue-50 rounded-xl text-center font-black outline-none text-blue-800"></td>
+                            <td class="p-3 text-center font-bold text-blue-600"><span id="cons-${famId}">0</span><span class="text-xs ml-1">m³</span></td>
+                            <td class="p-3 text-center"><input type="number" step="0.01" id="multa-${famId}" value="${multa}" onkeyup="window.calcularLinha('${famId}')" class="w-24 p-3 border border-red-200 rounded-xl text-center outline-none text-red-600 font-bold"></td>
+                            <td class="p-3 text-right font-black text-green-700 text-lg">R$ <span id="valTotal-${famId}">0,00</span>
+                                <input type="hidden" id="h-total-${famId}" value="0" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}">
                                 <input type="hidden" id="h-agua-${famId}" value="0">
                                 <input type="hidden" id="h-taxa-${famId}" value="${taxaPendente}" data-desc="${descTaxa}">
                             </td>
-                            <td class="p-2 text-center" id="status-${famId}"><small class="bg-gray-200 px-2 rounded-full text-[10px] text-gray-500 font-bold uppercase">Espera</small></td>
+                            <td class="p-3 text-center" id="status-${famId}"><span class="bg-gray-200 px-3 py-1 rounded-full text-[10px] text-gray-500 font-bold uppercase">Espera</span></td>
                         </tr>
                     `;
                 });
                 corpo.innerHTML = html;
-            } catch (e) { corpo.innerHTML = "Erro"; }
+
+                // Força o cálculo inicial de todas as linhas (Faz com que as taxas e multas apareçam logo no total R$)
+                Object.keys(window.familiasGlobal).forEach(famId => {
+                    if(document.getElementById(`atu-${famId}`)) window.calcularLinha(famId);
+                });
+
+            } catch (e) { corpo.innerHTML = "<tr><td colspan='7'>Erro ao carregar dados.</td></tr>"; }
         };
 
         window.gerarFaturasEmLote = async () => {
             const inputs = document.querySelectorAll('input[id^="h-total-"]');
-            const linhas = Array.from(inputs).filter(i => parseFloat(i.value) > 0);
-            if(linhas.length === 0) return alert("Preencha a leitura atual!");
             
-            window.mostrarLoading(`Gerando e salvando...`);
+            const linhas = Array.from(inputs).filter(i => {
+                const id = i.id.replace('h-total-', '');
+                const atuVal = document.getElementById(`atu-${id}`).value;
+                const taxa = parseFloat(document.getElementById(`h-taxa-${id}`).value) || 0;
+                const multa = parseFloat(document.getElementById(`multa-${id}`).value) || 0;
+                const total = parseFloat(i.value) || 0;
+                // Exige que algo tenha sido faturado (Água nova, Multa avulsa ou Taxa pendente)
+                return total > 0 && (atuVal !== "" || taxa > 0 || multa > 0);
+            });
+
+            if(linhas.length === 0) return alert("Preencha as leituras, multas ou agende taxas para faturar!");
+            window.mostrarLoading(`A gerar e processar ${linhas.length} faturas...`);
+            
             const mes = document.getElementById("mesReferencia").value;
             const venc = document.getElementById("dataVencimento").value;
-
+            
             for(let input of linhas) {
                 const total = parseFloat(input.value);
                 const id = input.id.replace('h-total-', '');
                 const vAgua = parseFloat(document.getElementById(`h-agua-${id}`).value);
-                const vMulta = parseFloat(input.dataset.multa);
+                const vMulta = parseFloat(document.getElementById(`multa-${id}`).value) || 0;
                 const taxaPendente = parseFloat(document.getElementById(`h-taxa-${id}`).value);
                 const descTaxa = document.getElementById(`h-taxa-${id}`).dataset.desc;
                 const nome = input.dataset.nome;
                 const cpf = input.dataset.cpf.replace(/\D/g, '');
+                
                 const l_ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0;
-                const l_atu = parseFloat(document.getElementById(`atu-${id}`).value) || 0;
+                const atu_str = document.getElementById(`atu-${id}`).value;
+                const l_atu = atu_str === "" ? l_ant : parseFloat(atu_str); 
+                const consumoFinal = (l_atu > l_ant) ? l_atu - l_ant : 0;
 
                 let descFinal = `Água ${mes}`;
                 if(taxaPendente > 0) descFinal += ` + ${descTaxa}`;
@@ -584,28 +631,17 @@
                     const pix = await res.json();
                     
                     if(pix.sucesso) {
-                        await addDoc(collection(db, "faturas"), {
-                            familia_id: id, mes_referencia: descFinal, leitura_anterior: l_ant, leitura_atual: l_atu, consumo_m3: (l_atu > l_ant ? l_atu - l_ant : 0), valor_agua: vAgua, valor_multa: vMulta, taxa_extra: taxaPendente, valor_total: total, vencimento: venc, status: "pendente", pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), data_lancamento: new Date().toISOString(), telefone: input.dataset.tel, nome_morador: nome 
-                        });
+                        await addDoc(collection(db, "faturas"), { familia_id: id, mes_referencia: descFinal, leitura_anterior: l_ant, leitura_atual: l_atu, consumo_m3: consumoFinal, valor_agua: vAgua, valor_multa: vMulta, taxa_extra: taxaPendente, valor_total: total, vencimento: venc, status: "pendente", pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), data_lancamento: new Date().toISOString(), telefone: input.dataset.tel, nome_morador: nome });
                         
                         await updateDoc(doc(db, "familias", id), { ultima_leitura: l_atu, taxa_pendente_valor: 0, taxa_pendente_desc: "" });
-
-                        document.getElementById(`status-${id}`).innerHTML = `<span class="bg-green-100 text-green-700 px-2 rounded text-xs font-bold">Salvo!</span>`;
+                        
+                        document.getElementById(`status-${id}`).innerHTML = `<span class="bg-green-100 text-green-700 px-3 py-1.5 rounded-xl text-xs font-bold shadow-sm">Salvo!</span>`;
                         document.getElementById(`atu-${id}`).disabled = true;
+                        document.getElementById(`multa-${id}`).disabled = true;
                     }
-                } catch(e) { }
+                } catch(e) {}
             }
-            window.esconderLoading(); alert("Lote Concluído!");
-        };
-
-        // --- ABA TAXAS AVULSAS ---
-        window.carregarSelectAvulso = async () => {
-            const select = document.getElementById("avulsoFamilia");
-            select.innerHTML = "<option value=''>Buscando...</option>";
-            try {
-                if(Object.keys(window.familiasGlobal).length === 0) await window.atualizarCacheFamilias();
-                window.renderizarSelectAvulso();
-            } catch(e) { }
+            window.esconderLoading(); alert("✅ Lote de Faturas Concluído com Sucesso!");
         };
 
         window.submitAvulso = async (e) => {
@@ -617,255 +653,159 @@
             const descricao = document.getElementById("avulsoDescricao").value;
             const valor = parseFloat(document.getElementById("avulsoValor").value);
             const vencimento = document.getElementById("avulsoVencimento").value;
-
-            window.mostrarLoading("Processando...");
-
+            window.mostrarLoading("A processar...");
+            
             if(tipo === 'somar_proxima') {
                 if(familiaId === 'TODOS') {
                     if(!confirm(`Somar R$ ${valor} na conta de água de TODOS?`)) { window.esconderLoading(); return; }
-                    for(let id of Object.keys(window.familiasGlobal)) {
-                        await updateDoc(doc(db, "familias", id), { taxa_pendente_valor: valor, taxa_pendente_desc: descricao });
-                    }
-                } else {
-                    await updateDoc(doc(db, "familias", familiaId), { taxa_pendente_valor: valor, taxa_pendente_desc: descricao });
-                }
-                window.esconderLoading();
-                alert("✅ Serviço agendado! Ele aparecerá automaticamente quando for lançar a próxima conta de Água Mensal.");
-                document.getElementById("formAvulso").reset();
-                document.getElementById("buscaClienteAvulso").value = "";
-                window.filtrarAvulsoESelecionar(); 
+                    for(let id of Object.keys(window.familiasGlobal)) { await updateDoc(doc(db, "familias", id), { taxa_pendente_valor: valor, taxa_pendente_desc: descricao }); }
+                } else { await updateDoc(doc(db, "familias", familiaId), { taxa_pendente_valor: valor, taxa_pendente_desc: descricao }); }
+                window.esconderLoading(); alert("✅ Serviço agendado para a próxima fatura de água!"); 
+                document.getElementById("formAvulso").reset(); document.getElementById("buscaClienteAvulso").value = ""; window.filtrarAvulsoESelecionar();
                 return;
             }
-
+            
             if(familiaId === 'TODOS') {
                 if(!confirm(`Gerar PIX SEPARADO de R$ ${valor} para TODOS?`)) { window.esconderLoading(); return; }
                 for(let [id, f] of Object.entries(window.familiasGlobal)) {
                     try {
                         const res = await fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: f.nome, cpf: f.cpf.replace(/\D/g, '')}) });
                         const pix = await res.json();
-                        if(pix.sucesso) {
-                            await addDoc(collection(db, "faturas"), {
-                                familia_id: id, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: f.telefone, nome_morador: f.nome, data_lancamento: new Date().toISOString()
-                            });
-                        }
-                    } catch(err) { }
+                        if(pix.sucesso) { await addDoc(collection(db, "faturas"), { familia_id: id, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: f.telefone, nome_morador: f.nome, data_lancamento: new Date().toISOString() }); }
+                    } catch(err) {}
                 }
-                window.esconderLoading(); alert(`✅ Faturas extras geradas para todos.`);
+                window.esconderLoading(); alert(`✅ Faturas avulsas geradas.`);
             } else {
-                const nome = opt.dataset.nome;
-                const cpf = opt.dataset.cpf.replace(/\D/g, '');
                 try {
-                    const res = await fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome, cpf}) });
+                    const res = await fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: opt.dataset.nome, cpf: opt.dataset.cpf.replace(/\D/g, '')}) });
                     const pix = await res.json();
-                    if(pix.sucesso) {
-                        await addDoc(collection(db, "faturas"), {
-                            familia_id: familiaId, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: opt.dataset.tel, nome_morador: nome, data_lancamento: new Date().toISOString()
-                        });
-                        window.esconderLoading(); alert("Fatura Pix avulsa gerada com sucesso! Você pode enviá-la através da aba Pendentes.");
-                    } else { window.esconderLoading(); alert("Erro do Banco."); }
-                } catch(e) { window.esconderLoading(); alert("Erro de conexão."); }
+                    if(pix.sucesso) { await addDoc(collection(db, "faturas"), { familia_id: familiaId, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: opt.dataset.tel, nome_morador: opt.dataset.nome, data_lancamento: new Date().toISOString() });
+                    window.esconderLoading(); alert("Fatura Pix gerada com sucesso!"); }
+                } catch(e) { window.esconderLoading(); alert("Erro na geração da fatura."); }
             }
-            document.getElementById("formAvulso").reset();
-            document.getElementById("buscaClienteAvulso").value = "";
-            window.filtrarAvulsoESelecionar();
+            document.getElementById("formAvulso").reset(); document.getElementById("buscaClienteAvulso").value = ""; window.filtrarAvulsoESelecionar();
         };
 
-        // --- TEMPO REAL: ABERTAS ---
         window.iniciarListenerAbertas = async () => {
             if(unsubAbertas) unsubAbertas();
             const tbody = document.getElementById("tabelaAbertas");
-            tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center'>Conectando...</td></tr>";
-            
-            if(Object.keys(window.familiasGlobal).length === 0) await window.atualizarCacheFamilias();
-
+            tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center'>A carregar...</td></tr>";
             const q = query(collection(db, "faturas"), where("status", "==", "pendente"));
             unsubAbertas = onSnapshot(q, (snap) => {
                 const hoje = new Date(); hoje.setHours(0,0,0,0);
                 let abertas = [];
                 snap.forEach(d => abertas.push({id: d.id, ...d.data()}));
                 abertas.sort((a,b) => new Date(a.vencimento) - new Date(b.vencimento));
-
                 let html = "";
                 for(let f of abertas) {
                     const isOverdue = new Date(f.vencimento + "T00:00:00") < hoje;
                     const rowClass = isOverdue ? "bg-red-50" : "hover:bg-amber-50";
-                    const nomeReal = f.nome_morador || window.familiasGlobal[f.familia_id]?.nome || "Morador";
                     const tel = f.telefone || window.familiasGlobal[f.familia_id]?.telefone;
-                    
-                    const nomeLimpo = nomeReal.trim();
-                    const zap = `💧 *ÁGUA SÃO LUIZ*\nOlá *${nomeLimpo}*! 👋\n\nA sua fatura de ${f.mes_referencia} já está disponível. 🏠✨\n\n💰 *Total:* R$ ${f.valor_total.toFixed(2)}\n📅 *Venc:* ${f.vencimento.split('-').reverse().join('/')}\n\n👉 *Acesse o site para ver e pagar o PIX:*\nhttps://agua-sao-luiz.vercel.app\n\n🔐 *Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456 (caso não tenha alterado).*`;
-                    
-                    const btnZap = `<button onclick="window.open('https://wa.me/${tel}?text=${encodeURIComponent(zap)}')" class="bg-green-500 text-white px-3 py-2 rounded-lg text-xs font-bold shadow mr-1"><i class="fa-brands fa-whatsapp"></i></button>`;
-
-                    html += `<tr class="${rowClass} border-b">
-                        <td class="p-4 font-mono text-sm">${isOverdue ? "🚨 " : "⏳ "}${f.vencimento.split('-').reverse().join('/')}</td>
-                        <td class="p-4"><strong>${nomeLimpo}</strong><br><small class="text-gray-500">${f.mes_referencia}</small></td>
-                        <td class="p-4 text-right font-bold text-amber-700">R$ ${f.valor_total.toFixed(2)}</td>
-                        <td class="p-4 text-right whitespace-nowrap">${btnZap} <button onclick="window.marcarPago('${f.id}')" class="bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-bold mr-1">Baixa</button> <button onclick="window.excluirFatura('${f.id}')" class="bg-red-100 text-red-600 px-3 py-2 rounded-lg text-xs font-bold">🗑️</button></td>
-                    </tr>`;
+                    const zap = `💧 *ÁGUA SÃO LUIZ*\nOlá *${f.nome_morador}*! 👋\n\nA sua fatura de ${f.mes_referencia} está disponível. 🏠✨\n\n💰 *Total:* R$ ${f.valor_total.toFixed(2)}\n📅 *Venc:* ${f.vencimento.split('-').reverse().join('/')}\n\n👉 *Acesse o site para ver e pagar o PIX:*\nhttps://agua-sao-luiz.vercel.app\n\n🔐 *Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456 (caso não tenha alterado).*`;
+                    const btnZap = `<button onclick="window.open('https://wa.me/${tel}?text=${encodeURIComponent(zap)}')" class="bg-green-500 text-white px-3 py-2 rounded-lg text-xs font-bold shadow mr-1 transition hover:bg-green-600"><i class="fa-brands fa-whatsapp"></i></button>`;
+                    html += `<tr class="${rowClass} border-b"><td class="p-4 font-mono text-sm">${isOverdue ? "🚨 " : "⏳ "}${f.vencimento.split('-').reverse().join('/')}</td><td class="p-4"><strong>${f.nome_morador}</strong><br><small class="text-gray-500">${f.mes_referencia}</small></td><td class="p-4 text-right font-bold text-amber-700">R$ ${f.valor_total.toFixed(2)}</td><td class="p-4 text-right whitespace-nowrap">${btnZap} <button onclick="window.marcarPago('${f.id}')" class="bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-bold mr-1 transition hover:bg-blue-700">Baixa</button> <button onclick="window.excluirFatura('${f.id}')" class="bg-red-100 text-red-600 px-3 py-2 rounded-lg text-xs font-bold transition hover:bg-red-200">🗑️</button></td></tr>`;
                 }
-                tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center text-green-600 font-bold'>Tudo Pago! Nenhuma pendência.</td></tr>";
+                tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center text-green-600 font-bold'>Tudo Pago!</td></tr>";
             });
         };
 
-        // --- TEMPO REAL: PAGOS ---
         window.iniciarListenerPagos = async () => {
             if(unsubPagos) unsubPagos();
             const tbody = document.getElementById("tabelaPagos");
-            tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center'>Conectando...</td></tr>";
-
             const q = query(collection(db, "faturas"), where("status", "==", "pago"));
             unsubPagos = onSnapshot(q, (snap) => {
                 const pagas = [];
                 snap.forEach(d => pagas.push({id: d.id, ...d.data()}));
                 pagas.sort((a,b) => new Date(b.data_pagamento) - new Date(a.data_pagamento));
-
                 let html = "";
                 for(let p of pagas) {
-                    const dataObj = new Date(p.data_pagamento);
-                    const dtFormat = dataObj.toLocaleDateString('pt-BR') + ' ' + dataObj.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+                    const dt = new Date(p.data_pagamento);
+                    const dtF = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
                     const nsu = p.pix_txid ? `NSU: ${p.pix_txid.slice(-6)}` : '';
-                    html += `<tr class="border-b"><td class="p-4 text-xs font-mono text-gray-500">${dtFormat} <br><span class="text-[9px] text-green-600 font-bold">${nsu}</span></td><td class="p-4 font-bold">${p.nome_morador || "Morador"}</td><td class="p-4 text-right font-black text-green-600">R$ ${p.valor_total.toFixed(2)}</td><td class="p-4 text-center"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold uppercase">Recebido via Pix</span></td></tr>`;
+                    html += `<tr class="border-b"><td class="p-4 text-xs font-mono text-gray-500">${dtF} <br><span class="text-[9px] text-green-600 font-bold uppercase">${nsu}</span></td><td class="p-4 font-bold">${p.nome_morador}</td><td class="p-4 text-right font-black text-green-600">R$ ${p.valor_total.toFixed(2)}</td><td class="p-4 text-center"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[10px] font-bold uppercase shadow-sm">Confirmado</span></td></tr>`;
                 }
-                tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center'>Nenhum pagamento.</td></tr>";
+                tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center text-gray-400'>Nenhum recebimento.</td></tr>";
             });
         };
 
-        window.excluirFatura = async (id) => { if(confirm("Apagar Fatura?")) { await deleteDoc(doc(db, "faturas", id)); } };
-        window.marcarPago = async (id) => { if(confirm("Baixar Manualmente?")) { await updateDoc(doc(db, "faturas", id), {status: "pago", data_pagamento: new Date().toISOString()}); } };
+        window.excluirFatura = async (id) => { if(confirm("Tem certeza que deseja apagar?")) { await deleteDoc(doc(db, "faturas", id)); } };
+        window.marcarPago = async (id) => { if(confirm("Confirmar baixa de pagamento manual?")) { await updateDoc(doc(db, "faturas", id), {status: "pago", data_pagamento: new Date().toISOString()}); } };
 
-        // --- RELATÓRIOS ---
-        let todasFaturasCache = [];
         window.carregarRelatorio = async () => {
-            window.mostrarLoading("Carregando Base...");
+            window.mostrarLoading("A consultar...");
             const snap = await getDocs(collection(db, "faturas"));
-            todasFaturasCache = [];
-            snap.forEach(d => todasFaturasCache.push({id: d.id, ...d.data()}));
-            window.esconderLoading(); window.gerarRelatorioFiltrado();
+            const faturas = []; snap.forEach(d => faturas.push(d.data()));
+            window.esconderLoading();
+            window.gerarRelatorioFiltrado(faturas);
         };
 
-        window.gerarRelatorioFiltrado = () => {
+        window.gerarRelatorioFiltrado = (faturasRaw) => {
+            const faturas = faturasRaw || [];
             const dtIni = document.getElementById("relDataInicio").value;
             const dtFim = document.getElementById("relDataFim").value;
-            const statusFiltro = document.getElementById("relStatus").value;
-            const termoBusca = document.getElementById("relBusca").value.toLowerCase();
-
-            let filtradas = todasFaturasCache.filter(f => {
-                let matchData = true;
+            const statusF = document.getElementById("relStatus").value;
+            const termo = document.getElementById("relBusca").value.toLowerCase();
+            let filtradas = faturas.filter(f => {
+                let matchD = true;
                 if(dtIni || dtFim) {
-                    const dtBase = f.data_lancamento ? f.data_lancamento.split('T')[0] : f.vencimento;
-                    if(dtIni && dtBase < dtIni) matchData = false;
-                    if(dtFim && dtBase > dtFim) matchData = false;
+                    const dtB = f.data_lancamento ? f.data_lancamento.split('T')[0] : f.vencimento;
+                    if(dtIni && dtB < dtIni) matchD = false;
+                    if(dtFim && dtB > dtFim) matchD = false;
                 }
-                let matchStatus = true;
-                if(statusFiltro !== "TODOS" && f.status !== statusFiltro) matchStatus = false;
-                let matchBusca = true;
-                if(termoBusca) matchBusca = (f.nome_morador || "").toLowerCase().includes(termoBusca);
-                return matchData && matchStatus && matchBusca;
+                let matchS = statusF === "TODOS" || f.status === statusF;
+                let matchB = !termo || (f.nome_morador || "").toLowerCase().includes(termo);
+                return matchD && matchS && matchB;
             });
-
             filtradas.sort((a,b) => new Date(b.vencimento) - new Date(a.vencimento));
-            let tPago = 0, tPendente = 0, tM3 = 0, html = "";
-
+            let tPago = 0, tPend = 0, tM3 = 0, html = "";
             filtradas.forEach(f => {
-                if(f.status === "pago") tPago += f.valor_total; else tPendente += f.valor_total;
+                if(f.status === "pago") tPago += f.valor_total; else tPend += f.valor_total;
                 tM3 += (f.consumo_m3 || 0);
                 const badge = f.status === 'pago' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
-                html += `<tr class="border-b"><td class="p-4 font-bold text-slate-800">${f.nome_morador || "Cliente"}</td><td class="p-4 text-xs">${f.mes_referencia}<br>Venc: ${f.vencimento.split('-').reverse().join('/')}</td><td class="p-4 text-center font-bold">${f.consumo_m3 || 0} m³</td><td class="p-4 text-center"><span class="px-2 py-1 rounded text-[10px] uppercase font-bold ${badge}">${f.status}</span></td><td class="p-4 text-right font-black">R$ ${f.valor_total.toFixed(2)}</td></tr>`;
+                html += `<tr class="border-b hover:bg-slate-50"><td class="p-4 font-bold text-slate-800">${f.nome_morador}</td><td class="p-4 text-xs">${f.mes_referencia}<br>Venc: ${f.vencimento.split('-').reverse().join('/')}</td><td class="p-4 text-center font-bold">${f.consumo_m3 || 0} m³</td><td class="p-4 text-center"><span class="px-2 py-1 rounded text-[10px] uppercase font-bold ${badge}">${f.status}</span></td><td class="p-4 text-right font-black">R$ ${f.valor_total.toFixed(2)}</td></tr>`;
             });
-
             document.getElementById("relCardM3").innerText = tM3.toFixed(0);
             document.getElementById("relCardQtd").innerText = filtradas.length;
-            document.getElementById("relCardPendente").innerText = "R$ " + tPendente.toFixed(2).replace('.',',');
+            document.getElementById("relCardPendente").innerText = "R$ " + tPend.toFixed(2).replace('.',',');
             document.getElementById("relCardPago").innerText = "R$ " + tPago.toFixed(2).replace('.',',');
-            document.getElementById("tabelaRelatorio").innerHTML = html || "<tr><td colspan='5' class='p-8 text-center'>Vazio.</td></tr>";
+            document.getElementById("tabelaRelatorio").innerHTML = html || "<tr><td colspan='5' class='p-8 text-center'>Sem resultados.</td></tr>";
         };
 
-        // --- BACKUP, IMPORTAÇÃO E LIMPEZA DE DADOS ---
         window.exportarBase = async () => {
-            window.mostrarLoading("Criando backup...");
-            try {
-                const famSnap = await getDocs(collection(db, "familias"));
-                const fatSnap = await getDocs(collection(db, "faturas"));
-                const data = { familias: [], faturas: [] };
-                famSnap.forEach(d => data.familias.push({id: d.id, ...d.data()}));
-                fatSnap.forEach(d => data.faturas.push({id: d.id, ...d.data()}));
-                
-                const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
-                const a = document.createElement("a");
-                a.href = URL.createObjectURL(blob); 
-                a.download = `backup_agua_saoluiz_${new Date().toISOString().split('T')[0]}.json`;
-                a.click();
-            } catch(e) {
-                alert("Erro ao exportar base de dados.");
-            }
-            window.esconderLoading();
+            window.mostrarLoading("A iniciar Backup...");
+            const famSnap = await getDocs(collection(db, "familias"));
+            const fatSnap = await getDocs(collection(db, "faturas"));
+            const data = { familias: [], faturas: [] };
+            famSnap.forEach(d => data.familias.push({id: d.id, ...d.data()}));
+            fatSnap.forEach(d => data.faturas.push({id: d.id, ...d.data()}));
+            const blob = new Blob([JSON.stringify(data)], {type: "application/json"});
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob); a.download = `backup_saoluiz_${new Date().toISOString().split('T')[0]}.json`;
+            a.click(); window.esconderLoading();
         };
 
         window.importarBase = async () => {
-            const fileInput = document.getElementById("fileImport");
-            if (!fileInput.files.length) return alert("Por favor, selecione um arquivo JSON primeiro.");
-            
-            if(!confirm("⚠️ ATENÇÃO: Os dados do arquivo serão ADICIONADOS ao banco atual. Tem certeza que deseja continuar?")) return;
-            
-            window.mostrarLoading("Importando dados...");
+            const file = document.getElementById("fileImport").files[0];
+            if(!file || !confirm("Adicionar dados ao sistema?")) return;
+            window.mostrarLoading("A importar base de dados...");
             const reader = new FileReader();
-            
             reader.onload = async (e) => {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    
-                    if(data.familias) {
-                        for(let f of data.familias) { 
-                            const {id, ...rest} = f; 
-                            await setDoc(doc(db, "familias", id), rest); 
-                        }
-                    }
-                    
-                    if(data.faturas) {
-                        for(let f of data.faturas) { 
-                            const {id, ...rest} = f; 
-                            await setDoc(doc(db, "faturas", id), rest); 
-                        }
-                    }
-                    
-                    alert("✅ Importação concluída com sucesso!"); 
-                    window.carregarFamilias();
-                } catch(err) { 
-                    alert("❌ Erro ao ler o arquivo. Certifique-se de que é um JSON de backup válido."); 
-                }
-                window.esconderLoading();
+                const data = JSON.parse(e.target.result);
+                if(data.familias) for(let f of data.familias) { const {id, ...rest} = f; await setDoc(doc(db, "familias", id), rest); }
+                if(data.faturas) for(let f of data.faturas) { const {id, ...rest} = f; await setDoc(doc(db, "faturas", id), rest); }
+                alert("Importação Sucesso!"); window.carregarFamilias(); window.esconderLoading();
             };
-            
-            reader.readAsText(fileInput.files[0]);
+            reader.readAsText(file);
         };
 
         window.limparFaturas = async () => {
-            if(!confirm("🚨 PERIGO: Deseja apagar TODAS as faturas do sistema? Isso não pode ser desfeito. (O cadastro dos moradores será mantido)")) return;
-            
-            // Confirmação dupla de segurança
-            const confirmacao = prompt("Para continuar, digite a palavra: CONFIRMO");
-            if(confirmacao !== "CONFIRMO") {
-                alert("Limpeza cancelada.");
-                return;
-            }
-
-            window.mostrarLoading("Limpando Banco de Dados...");
-            try {
-                const snap = await getDocs(collection(db, "faturas"));
-                const deletePromises = [];
-                snap.forEach(d => deletePromises.push(deleteDoc(doc(db, "faturas", d.id))));
-                
-                await Promise.all(deletePromises);
-                
-                alert("✅ Banco de faturas limpo com sucesso!"); 
-                window.carregarRelatorio();
-            } catch(e) {
-                alert("Erro ao limpar base de dados.");
-            }
-            window.esconderLoading();
+            if(!confirm("🚨 PERIGO EXTREMO: Apagar TODO o historial de faturas?")) return;
+            if(prompt("Digite CONFIRMO para prosseguir") !== "CONFIRMO") return;
+            window.mostrarLoading("A formatar base de dados...");
+            const snap = await getDocs(collection(db, "faturas"));
+            snap.forEach(async (d) => { await deleteDoc(doc(db, "faturas", d.id)); });
+            alert("Base formatada!"); window.carregarLoteFaturas(); window.esconderLoading();
         };
-
     </script>
 </body>
 </html>
