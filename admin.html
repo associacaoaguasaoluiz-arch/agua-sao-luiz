@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>App Gestão 17.0 - Água São Luiz</title>
+    <title>App Gestão 19.0 - Água São Luiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Bloqueia scroll horizontal na página inteira (usado apenas nas tabelas) */
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; -webkit-tap-highlight-color: transparent; max-width: 100vw; overflow-x: hidden; }
         .tela-oculta { display: none !important; }
         .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
@@ -17,14 +16,12 @@
         .coluna-fixa { position: sticky; left: 0; z-index: 20; background-color: white; border-right: 2px solid #e5e7eb; max-width: 130px; min-width: 130px; white-space: normal; font-size: 0.75rem; line-height: 1.2; }
         th.coluna-fixa { background-color: #f8fafc; }
         
-        /* Rolagem Suave Mobile */
         .overflow-x-auto { -webkit-overflow-scrolling: touch; }
         .scroll-suave::-webkit-scrollbar { height: 6px; }
         .scroll-suave::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .conteudo-principal { padding-bottom: 100px; } /* Espaço para o menu mobile */
+        .conteudo-principal { padding-bottom: 100px; } 
         
-        /* Inputs adaptáveis */
-        .input-leitura { width: 100%; min-width: 80px; max-width: 120px; font-size: 1rem; transition: all 0.2s; }
+        .input-leitura { width: 100%; min-width: 90px; max-width: 130px; font-size: 1.1rem; transition: all 0.2s; }
         .input-leitura:focus { background-color: #fffbeb; border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2); }
         
         .modal-fundo { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; justify-content: center; align-items: center; padding: 1rem; }
@@ -247,6 +244,21 @@
                     <h2 class="text-xl md:text-2xl font-bold text-slate-700 mb-4 md:mb-6 mt-4 md:mt-0">⚙️ Banco de Dados e Configurações</h2>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                         
+                        <!-- NOVA CONFIGURAÇÃO DA SENHA DO ADMIN -->
+                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200 lg:col-span-2">
+                            <h3 class="font-bold text-base md:text-lg text-slate-700 mb-3 md:mb-4">🔐 Alterar Senha do Administrador</h3>
+                            <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                                <div class="w-full sm:w-1/2">
+                                    <label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1 uppercase">Nova Senha de Acesso</label>
+                                    <input type="password" id="cfgSenhaAdmin" placeholder="Digite a nova senha..." class="w-full p-3 border rounded-xl font-bold text-slate-700 outline-none text-sm md:text-base">
+                                </div>
+                                <div class="w-full sm:w-1/2 text-[10px] md:text-xs text-gray-500 leading-relaxed">
+                                    A senha padrão inicial é <strong>admin123</strong>. Você pode alterar essa senha quantas vezes quiser para aumentar a segurança do seu painel.
+                                </div>
+                            </div>
+                            <button onclick="window.salvarSenhaAdmin()" class="mt-4 w-full sm:w-auto bg-slate-800 hover:bg-slate-900 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">💾 Guardar Nova Senha</button>
+                        </div>
+
                         <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-blue-100 lg:col-span-2">
                             <h3 class="font-bold text-base md:text-lg text-blue-700 mb-3 md:mb-4">💰 Valores da Mensalidade (Água)</h3>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
@@ -353,12 +365,22 @@
 
         window.entrarAdmin = (e) => {
             e.preventDefault();
-            if(document.getElementById("senhaAdmin").value === "admin123") {
+            // Puxa a senha guardada (ou a padrão)
+            const senhaCorreta = localStorage.getItem("admin_senha_config") || "admin123";
+            if(document.getElementById("senhaAdmin").value === senhaCorreta) {
                 localStorage.setItem("admin_saoluiz_logado", "sim");
                 document.getElementById("loginAdmin").style.display = "none";
                 document.getElementById("painelAdmin").classList.remove('tela-oculta');
                 if(window.carregarFamilias) window.carregarFamilias();
             } else { document.getElementById("erroLogin").classList.remove('hidden'); }
+        };
+
+        window.salvarSenhaAdmin = () => {
+            const novaSenha = document.getElementById("cfgSenhaAdmin").value;
+            if(novaSenha.length < 4) return alert("A senha deve ter no mínimo 4 caracteres.");
+            localStorage.setItem("admin_senha_config", novaSenha);
+            alert("✅ Senha do administrador alterada com sucesso!");
+            document.getElementById("cfgSenhaAdmin").value = "";
         };
 
         window.sairAdmin = () => { localStorage.removeItem("admin_saoluiz_logado"); location.reload(); };
@@ -510,8 +532,38 @@
             const termo = document.getElementById("buscaClienteAvulso").value;
             window.renderizarSelectAvulso(termo);
         };
+        
+        // MÓDULO BLINDADO DE MENSAGENS WHATSAPP
+        // Usa códigos Unicode para não depender do Editor de Texto salvar em UTF-8
+        window.gerarMsgZap = (tipo, nome, ref, valor, venc) => {
+            const e_gota = String.fromCodePoint(0x1F4A7);
+            const e_tchau = String.fromCodePoint(0x1F44B);
+            const e_casa = String.fromCodePoint(0x1F3E0) + String.fromCodePoint(0x2728);
+            const e_din = String.fromCodePoint(0x1F4B0);
+            const e_cal = String.fromCodePoint(0x1F4C5);
+            const e_seta = String.fromCodePoint(0x1F449);
+            const e_globo = String.fromCodePoint(0x1F310);
+            const e_alerta = String.fromCodePoint(0x26A0) + String.fromCodePoint(0xFE0F);
+            const e_ferramenta = String.fromCodePoint(0x1F6E0) + String.fromCodePoint(0xFE0F);
+            const e_pin = String.fromCodePoint(0x1F4CC);
+            
+            // Regex agressiva para sugar os espaços vazios e fantasmas colados no nome
+            const nLimpo = String(nome).replace(/[\s\u200B-\u200D\uFEFF\xA0]+$/g, '').trim();
+            const sAgua = "\u00C1GUA S\u00C3O LUIZ";
+            const sOla = "Ol\u00E1";
+            const sLembrete = "Lembrando que o seu usu\u00E1rio \u00E9 o seu CPF e a senha padr\u00E3o \u00E9 123456 (caso n\u00E3o tenha alterado).";
+            
+            let text = "";
+            if(tipo === 'avulso'){
+                text = `${e_gota} *${sAgua}*\n\n${sOla}, *${nLimpo}*! ${e_tchau}\nUma nova cobran\u00E7a foi gerada. ${e_ferramenta}\n\n${e_pin} *Ref:* ${ref}\n${e_din} *Valor:* R$ ${valor}\n${e_cal} *Vencimento:* ${venc}\n\n${e_seta} Acesse o portal para ver e copiar o PIX:\n${e_globo} https://agua-sao-luiz.vercel.app\n\n${e_alerta} *${sLembrete}*`;
+            } else {
+                text = `${e_gota} *${sAgua}*\n\n${sOla}, *${nLimpo}*! ${e_tchau}\nA sua fatura de ${ref} est\u00E1 dispon\u00EDvel. ${e_casa}\n\n${e_din} *Total:* R$ ${valor}\n${e_cal} *Vencimento:* ${venc}\n\n${e_seta} Acesse o portal para ver e copiar o PIX:\n${e_globo} https://agua-sao-luiz.vercel.app\n\n${e_alerta} *${sLembrete}*`;
+            }
+            return encodeURIComponent(text);
+        };
     </script>
 
+    <!-- BANCO DE DADOS FIREBASE E REGRAS DE NEGÓCIO -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -657,12 +709,9 @@
                         
                         await updateDoc(doc(db, "familias", id), { ultima_leitura: l_atu, taxa_pendente_valor: 0, taxa_pendente_desc: "" });
                         
-                        // ZAP PERFEITO - Remove espaço em branco do final do nome e usa formato Unicode Seguro para emojis
-                        const nomeLimpo = String(nome).replace(/[\s\u200B-\u200D\uFEFF\xA0]+$/g, '').trim();
-                        const zap = `\uD83D\uDCA7 *ÁGUA SÃO LUIZ*\n\nOlá, *${nomeLimpo}*! \uD83D\uDC4B\nA sua fatura de ${mes} já está no sistema. \uD83C\uDFE0\u2728\n\n\uD83D\uDCB0 *Total:* R$ ${total.toFixed(2)}\n\uD83D\uDCC5 *Venc:* ${venc.split('-').reverse().join('/')}\n\n\uD83D\uDC49 Acesse o link para ver o QR Code e copiar o PIX:\n\uD83C\uDF10 https://agua-sao-luiz.vercel.app\n\n\u26A0\uFE0F *Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456 (caso não tenha alterado).*`;
+                        const linkZap = `https://wa.me/${input.dataset.tel}?text=${window.gerarMsgZap('normal', nome, mes, total.toFixed(2), venc.split('-').reverse().join('/'))}`;
                         
-                        const statusElement = document.getElementById(`status-${id}`);
-                        if(statusElement) statusElement.innerHTML = `<button onclick="window.open('https://wa.me/${input.dataset.tel}?text=${encodeURIComponent(zap)}')" class="bg-green-500 text-white font-bold px-3 py-1.5 rounded-xl text-[10px] md:text-xs shadow-sm"><i class="fa-brands fa-whatsapp"></i> Zap</button>`;
+                        document.getElementById(`status-${id}`).innerHTML = `<button onclick="window.open('${linkZap}')" class="bg-green-500 text-white px-3 py-1.5 rounded-xl text-[10px] md:text-xs font-bold shadow-sm transition hover:bg-green-600"><i class="fa-brands fa-whatsapp"></i> ZAP</button>`;
                         
                         document.getElementById(`atu-${id}`).disabled = true;
                         document.getElementById(`multa-${id}`).disabled = true;
@@ -705,14 +754,14 @@
                 window.esconderLoading(); alert(`✅ Faturas avulsas geradas.`);
             } else {
                 try {
-                    const res = await fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: opt.dataset.nome, cpf: opt.dataset.cpf.replace(/\D/g, '')}) });
+                    const nome = opt.dataset.nome;
+                    const res = await fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: nome, cpf: opt.dataset.cpf.replace(/\D/g, '')}) });
                     const pix = await res.json();
                     if(pix.sucesso) { await addDoc(collection(db, "faturas"), { familia_id: familiaId, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: opt.dataset.tel, nome_morador: opt.dataset.nome, data_lancamento: new Date().toISOString() });
                     window.esconderLoading(); 
                     
-                    const nomeLimpo = String(opt.dataset.nome).replace(/[\s\u200B-\u200D\uFEFF\xA0]+$/g, '').trim();
-                    const zap = `\uD83D\uDCA7 *ÁGUA SÃO LUIZ*\n\nOlá, *${nomeLimpo}*! \uD83D\uDC4B\nUma nova cobrança foi gerada em seu nome. \uD83D\uDEE0\uFE0F\n\n\uD83D\uDCCC *Ref:* ${descricao}\n\uD83D\uDCB0 *Valor:* R$ ${valor.toFixed(2)}\n\uD83D\uDCC5 *Vencimento:* ${vencimento.split('-').reverse().join('/')}\n\n\uD83D\uDC49 Acesse o link para copiar o PIX:\n\uD83C\uDF10 https://agua-sao-luiz.vercel.app\n\n\u26A0\uFE0F *Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456 (caso não tenha alterado).*`;
-                    window.open(`https://wa.me/${opt.dataset.tel}?text=${encodeURIComponent(zap)}`);
+                    const linkZap = `https://wa.me/${opt.dataset.tel}?text=${window.gerarMsgZap('avulso', nome, descricao, valor.toFixed(2), vencimento.split('-').reverse().join('/'))}`;
+                    window.open(linkZap);
                     }
                 } catch(e) { window.esconderLoading(); alert("Erro na geração da fatura."); }
             }
@@ -735,10 +784,11 @@
                     const rowClass = isOverdue ? "bg-red-50" : "hover:bg-amber-50";
                     const tel = f.telefone || window.familiasGlobal[f.familia_id]?.telefone;
                     
-                    const nomeLimpo = String(f.nome_morador || "Morador").replace(/[\s\u200B-\u200D\uFEFF\xA0]+$/g, '').trim();
-                    const zap = `\uD83D\uDCA7 *ÁGUA SÃO LUIZ*\n\nOlá, *${nomeLimpo}*! \uD83D\uDC4B\n\nA sua fatura de ${f.mes_referencia} está disponível. \uD83C\uDFE0\u2728\n\n\uD83D\uDCB0 *Total:* R$ ${f.valor_total.toFixed(2)}\n\uD83D\uDCC5 *Venc:* ${f.vencimento.split('-').reverse().join('/')}\n\n\uD83D\uDC49 Acesse o site para ver e pagar o PIX:\n\uD83C\uDF10 https://agua-sao-luiz.vercel.app\n\n\u26A0\uFE0F *Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456 (caso não tenha alterado).*`;
-                    const btnZap = `<button onclick="window.open('https://wa.me/${tel}?text=${encodeURIComponent(zap)}')" class="bg-green-500 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg text-[10px] md:text-xs font-bold shadow mr-1 transition hover:bg-green-600"><i class="fa-brands fa-whatsapp"></i> ZAP</button>`;
-                    html += `<tr class="${rowClass} border-b"><td class="p-3 md:p-4 font-mono text-[10px] md:text-sm">${isOverdue ? "🚨 " : "⏳ "}${f.vencimento.split('-').reverse().join('/')}</td><td class="p-3 md:p-4"><strong>${nomeLimpo}</strong><br><small class="text-gray-500 text-[10px] md:text-xs">${f.mes_referencia}</small></td><td class="p-3 md:p-4 text-right font-bold text-amber-700 text-sm md:text-base">R$ ${f.valor_total.toFixed(2)}</td><td class="p-3 md:p-4 text-right whitespace-nowrap">${btnZap} <button onclick="window.marcarPago('${f.id}')" class="bg-blue-600 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg text-[10px] md:text-xs font-bold mr-1 transition hover:bg-blue-700">Baixa</button> <button onclick="window.excluirFatura('${f.id}')" class="bg-red-100 text-red-600 px-3 py-2 md:px-4 md:py-2 rounded-lg text-[10px] md:text-xs font-bold transition hover:bg-red-200">🗑️</button></td></tr>`;
+                    const linkZap = `https://wa.me/${tel}?text=${window.gerarMsgZap('normal', f.nome_morador || "Morador", f.mes_referencia, f.valor_total.toFixed(2), f.vencimento.split('-').reverse().join('/'))}`;
+                    
+                    const btnZap = `<button onclick="window.open('${linkZap}')" class="bg-green-500 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg text-[10px] md:text-xs font-bold shadow mr-1 transition hover:bg-green-600"><i class="fa-brands fa-whatsapp"></i> ZAP</button>`;
+                    
+                    html += `<tr class="${rowClass} border-b"><td class="p-3 md:p-4 font-mono text-[10px] md:text-sm">${isOverdue ? "🚨 " : "⏳ "}${f.vencimento.split('-').reverse().join('/')}</td><td class="p-3 md:p-4"><strong>${f.nome_morador}</strong><br><small class="text-gray-500 text-[10px] md:text-xs">${f.mes_referencia}</small></td><td class="p-3 md:p-4 text-right font-bold text-amber-700 text-sm md:text-base">R$ ${f.valor_total.toFixed(2)}</td><td class="p-3 md:p-4 text-right whitespace-nowrap">${btnZap} <button onclick="window.marcarPago('${f.id}')" class="bg-blue-600 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg text-[10px] md:text-xs font-bold mr-1 transition hover:bg-blue-700">Baixa</button> <button onclick="window.excluirFatura('${f.id}')" class="bg-red-100 text-red-600 px-3 py-2 md:px-4 md:py-2 rounded-lg text-[10px] md:text-xs font-bold transition hover:bg-red-200">🗑️</button></td></tr>`;
                 }
                 tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center text-green-600 font-bold'>Tudo Pago!</td></tr>";
             });
@@ -766,18 +816,17 @@
         window.excluirFatura = async (id) => { if(confirm("Tem certeza que deseja apagar?")) { await deleteDoc(doc(db, "faturas", id)); } };
         window.marcarPago = async (id) => { if(confirm("Confirmar baixa de pagamento manual?")) { await updateDoc(doc(db, "faturas", id), {status: "pago", data_pagamento: new Date().toISOString()}); } };
 
-        // --- RELATÓRIOS COM MEMÓRIA CACHE (FILTRO CORRIGIDO E ORDENAÇÃO) ---
         let todasFaturasCache = [];
         
         window.carregarRelatorio = async () => {
             window.mostrarLoading("A consultar...");
             const snap = await getDocs(collection(db, "faturas"));
             
-            todasFaturasCache = []; // Limpa e carrega a memória global
+            todasFaturasCache = [];
             snap.forEach(d => todasFaturasCache.push(d.data()));
             
             window.esconderLoading();
-            window.gerarRelatorioFiltrado(); // Executa o filtro com a memória preenchida
+            window.gerarRelatorioFiltrado();
         };
 
         window.gerarRelatorioFiltrado = () => {
@@ -786,7 +835,6 @@
             const statusF = document.getElementById("relStatus").value;
             const termo = document.getElementById("relBusca").value.toLowerCase();
             
-            // Usa a memória cache para filtrar de forma instantânea
             let filtradas = todasFaturasCache.filter(f => {
                 let matchD = true;
                 if(dtIni || dtFim) {
@@ -799,13 +847,8 @@
                 return matchD && matchS && matchB;
             });
 
-            // NOVO SISTEMA DE ORDENAÇÃO
             filtradas.sort((a,b) => {
-                // 1. Força as faturas PENDENTES para o topo da lista
-                if (a.status !== b.status) {
-                    return a.status === 'pendente' ? -1 : 1;
-                }
-                // 2. Desempata ordenando pela data de vencimento (mais recentes primeiro)
+                if (a.status !== b.status) return a.status === 'pendente' ? -1 : 1;
                 return new Date(b.vencimento) - new Date(a.vencimento);
             });
 
