@@ -502,9 +502,9 @@
             
             let msg = "";
             if (tipo === 'avulso') {
-                msg = `*FATURA DE ÁGUA DISTRITO SÃO LUIZ*\n\nOlá, *${nomeLimpo}*!\nUma nova cobrança foi gerada em seu nome.\n\n- *Ref:* ${ref}\n- *Valor:* R$ ${valor}\n- *Vencimento:* ${venc}\n\n> Acesse o link para copiar o PIXe efetuar pagamento:\nhttps://agua-sao-luiz.vercel.app\n\n*Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456 (caso não tenha alterado).*`;
+                msg = `*FATURA DE ÁGUA DISTRITO SÃO LUIZ*\n\nOlá, *${nomeLimpo}*!\nUma nova cobrança foi gerada em seu nome.\n\n- *Ref:* ${ref}\n- *Valor:* R$ ${valor}\n- *Vencimento:* ${venc}\n\n> Acesse o link para copiar o PIX e efetuar o pagamento:\nhttps://agua-sao-luiz.vercel.app\n\n*Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456 (caso não tenha alterado).*`;
             } else {
-                msg = `*FATURA DE ÁGUA DISTRITO SÃO LUIZ*\n\nOlá, *${nomeLimpo}*!\nA sua fatura de ${ref} está disponível no sistema.\n\n- *Total:* R$ ${valor}\n- *Vencimento:* ${venc}\n\n> Acesse o portal para ver e copiar o PIX e efetuar pagamento:\nhttps://agua-sao-luiz.vercel.app\n\n*Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456 (caso não tenha alterado).*`;
+                msg = `*FATURA DE ÁGUA DISTRITO SÃO LUIZ*\n\nOlá, *${nomeLimpo}*!\nA sua fatura de ${ref} está disponível no sistema.\n\n- *Total:* R$ ${valor}\n- *Vencimento:* ${venc}\n\n> Acesse o link para copiar o PIX e efetuar o pagamento:\nhttps://agua-sao-luiz.vercel.app\n\n*Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456 (caso não tenha alterado).*`;
             }
 
             window.open(`https://wa.me/${telLimpo}?text=${encodeURIComponent(msg)}`, '_blank');
