@@ -44,7 +44,7 @@
     <div id="loading" class="loading-overlay"><div class="spinner"></div><p id="loadingMsg" class="mt-4 font-bold text-gray-700 font-mono text-center px-4">A processar...</p></div>
     <div id="toastVoz" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full font-bold shadow-2xl transition-opacity duration-300 opacity-0 z-[110] flex items-center gap-2 pointer-events-none"><i class="fa-solid fa-microphone"></i> <span id="txtToastVoz">Comando</span></div>
 
-    <!-- LOGIN ADMIN: Agora funciona com a tecla Enter -->
+    <!-- LOGIN ADMIN -->
     <div id="loginAdmin" class="fixed inset-0 bg-slate-900 flex justify-center items-center z-50 p-4">
         <form onsubmit="entrarAdmin(event)" class="bg-white p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center">
             <span class="text-5xl mb-2 block">💧</span>
@@ -92,7 +92,6 @@
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
                         <input type="text" id="buscaMorador" onkeyup="filtrarTabela('buscaMorador', 'tabelaMoradores')" placeholder="🔍 Buscar morador ou lote..." class="w-full p-4 bg-gray-50 border-b outline-none text-sm md:text-base">
                         <div class="overflow-x-auto scroll-suave w-full">
-                            <!-- Min-width garante que as colunas não amassem no telemóvel -->
                             <table class="w-full text-left whitespace-nowrap min-w-[550px]">
                                 <tbody id="tabelaMoradores" class="divide-y text-sm"></tbody>
                             </table>
@@ -135,8 +134,8 @@
 
                 <!-- TAXAS AVULSAS -->
                 <div id="aba-avulso" class="conteudo-aba tela-oculta">
-                    <h2 class="text-xl md:text-2xl font-bold text-blue-800 mb-4 md:mb-6">🔧 Lançar Serviço Avulso</h2>
-                    <div class="bg-white rounded-2xl shadow-sm border p-4 md:p-6 w-full max-w-2xl">
+                    <h2 class="text-xl md:text-2xl font-bold text-blue-800 mb-4 md:mb-6 mt-4 md:mt-0">🔧 Lançar Serviço Avulso</h2>
+                    <div class="bg-white rounded-2xl shadow-sm border p-4 md:p-6 w-full max-w-2xl mx-auto md:mx-0">
                         <form id="formAvulso" class="space-y-4" onsubmit="if(window.submitAvulso) window.submitAvulso(event)">
                             <div>
                                 <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Como deseja cobrar?</label>
@@ -174,7 +173,7 @@
 
                 <!-- ABERTAS -->
                 <div id="aba-abertas" class="conteudo-aba tela-oculta">
-                    <div class="flex flex-col sm:flex-row justify-between sm:items-end mb-4 md:mb-6 gap-2">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-end mb-4 md:mb-6 gap-2 mt-4 md:mt-0">
                         <h2 class="text-xl md:text-2xl font-bold text-amber-600 flex items-center gap-2">⏳ Pendentes</h2>
                         <span class="text-[9px] md:text-xs font-bold text-slate-400 uppercase bg-slate-100 px-3 py-1 rounded-full w-fit"><span class="flex h-2 w-2 relative inline-block mr-1"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span></span> Atualização em Tempo Real</span>
                     </div>
@@ -185,7 +184,7 @@
 
                 <!-- PAGAS -->
                 <div id="aba-recebimentos" class="conteudo-aba tela-oculta">
-                    <div class="flex flex-col sm:flex-row justify-between sm:items-end mb-4 md:mb-6 gap-2">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-end mb-4 md:mb-6 gap-2 mt-4 md:mt-0">
                         <h2 class="text-xl md:text-2xl font-bold text-green-700 flex items-center gap-2">✅ Recebidos</h2>
                         <span class="text-[9px] md:text-xs font-bold text-slate-400 uppercase bg-slate-100 px-3 py-1 rounded-full w-fit"><span class="flex h-2 w-2 relative inline-block mr-1"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span> Atualização em Tempo Real</span>
                     </div>
@@ -197,9 +196,8 @@
                 <!-- RELATÓRIOS -->
                 <div id="aba-relatorios" class="conteudo-aba tela-oculta">
                     
-                    <!-- Cabeçalho Oficial do Relatório -->
                     <div class="text-center mb-6 md:mb-8 pb-4 md:pb-6 border-b border-slate-300">
-                        <img src="capanema.jpg" alt="Capanema" class="mx-auto h-24 md:h-40 object-cover rounded-xl shadow-md mb-4 w-full max-w-[280px] md:max-w-md" onerror="this.style.display='none'">
+                        <img src="capanema.jpg" alt="Capanema" class="mx-auto w-full max-w-[280px] md:max-w-md h-auto object-contain rounded-xl shadow-md mb-4" onerror="this.style.display='none'">
                         <h1 class="text-lg md:text-3xl font-black text-blue-900 tracking-tight">ASSOCIAÇÃO DE ÁGUA DO SÃO LUIZ</h1>
                         <p class="text-slate-500 font-bold uppercase text-[9px] md:text-xs tracking-widest mt-1 md:mt-2">Relatório Oficial de Gestão Financeira</p>
                     </div>
@@ -209,7 +207,6 @@
                         <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-900 transition text-white px-4 py-2 rounded-lg font-bold shadow-md text-xs md:text-sm"><i class="fa-solid fa-print"></i> Imprimir PDF</button>
                     </div>
                     
-                    <!-- Filtros Adaptados para Mobile -->
                     <div class="bg-white p-3 md:p-4 rounded-2xl shadow-sm border mb-4 md:mb-6 no-print flex flex-col md:flex-row flex-wrap gap-3 items-end text-xs md:text-sm">
                         <div class="w-full md:flex-1"><label class="block font-bold text-gray-500 mb-1 uppercase text-[10px] md:text-xs">De</label><input type="date" id="relDataInicio" class="w-full p-2 border rounded-lg outline-none"></div>
                         <div class="w-full md:flex-1"><label class="block font-bold text-gray-500 mb-1 uppercase text-[10px] md:text-xs">Até</label><input type="date" id="relDataFim" class="w-full p-2 border rounded-lg outline-none"></div>
@@ -218,7 +215,6 @@
                         <button onclick="window.gerarRelatorioFiltrado()" class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 transition text-white px-6 py-2 rounded-lg font-bold shadow h-[36px] md:h-[40px]">Filtrar</button>
                     </div>
                     
-                    <!-- Cards -->
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
                         <div class="bg-white p-3 md:p-4 rounded-xl border shadow-sm text-center"><p class="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase">Volume (m³)</p><p class="text-lg md:text-xl font-black text-blue-600" id="relCardM3">0</p></div>
                         <div class="bg-white p-3 md:p-4 rounded-xl border shadow-sm text-center"><p class="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase">Contas</p><p class="text-lg md:text-xl font-black" id="relCardQtd">0</p></div>
@@ -226,21 +222,20 @@
                         <div class="bg-white p-3 md:p-4 rounded-xl border shadow-sm text-center border-green-100"><p class="text-[9px] md:text-[10px] text-green-600 font-bold uppercase">Recebido</p><p class="text-lg md:text-xl font-black text-green-600" id="relCardPago">R$ 0,00</p></div>
                     </div>
                     
-                    <!-- Tabela Relatório -->
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
                         <div class="overflow-x-auto w-full">
                             <table class="w-full text-left whitespace-nowrap min-w-[650px] text-sm">
                                 <thead>
-                                    <tr class="bg-slate-50 text-slate-500 uppercase text-[10px] font-bold border-b">
-                                        <th class="p-3 pl-4">Cliente</th>
-                                        <th class="p-3">Ref</th>
-                                        <th class="p-3 text-center">M³</th>
-                                        <th class="p-3 text-center">Status</th>
-                                        <th class="p-3 text-right pr-4">Total</th>
+                                    <tr class="bg-slate-50 text-slate-500 uppercase text-[10px] font-bold border-b border-slate-200">
+                                        <th class="p-4 pl-6">Cliente</th>
+                                        <th class="p-4">Referência</th>
+                                        <th class="p-4 text-center">Consumo M³</th>
+                                        <th class="p-4 text-center">Status</th>
+                                        <th class="p-4 text-right pr-6">Valor Total</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tabelaRelatorio" class="divide-y divide-gray-100">
-                                    <tr><td colspan="5" class="p-6 text-center text-gray-400">Filtre para carregar...</td></tr>
+                                <tbody id="tabelaRelatorio" class="divide-y divide-slate-100">
+                                    <tr><td colspan="5" class="p-8 text-center text-gray-400">Filtre para carregar...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -249,10 +244,9 @@
 
                 <!-- CONFIGURAÇÕES -->
                 <div id="aba-config" class="conteudo-aba tela-oculta">
-                    <h2 class="text-xl md:text-2xl font-bold text-slate-700 mb-4 md:mb-6">⚙️ Banco de Dados e Configurações</h2>
+                    <h2 class="text-xl md:text-2xl font-bold text-slate-700 mb-4 md:mb-6 mt-4 md:mt-0">⚙️ Banco de Dados e Configurações</h2>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                         
-                        <!-- Config Água -->
                         <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-blue-100 lg:col-span-2">
                             <h3 class="font-bold text-base md:text-lg text-blue-700 mb-3 md:mb-4">💰 Valores da Mensalidade (Água)</h3>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
@@ -263,12 +257,11 @@
                             <button onclick="window.salvarConfigAgua()" class="mt-4 w-full sm:w-auto bg-blue-500 hover:bg-blue-600 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">💾 Guardar Valores</button>
                         </div>
 
-                        <!-- Config Multa -->
                         <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-red-100 lg:col-span-2">
                             <h3 class="font-bold text-base md:text-lg text-red-700 mb-3 md:mb-4">🚨 Multa Padrão (Atraso)</h3>
                             <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
                                 <div class="w-full sm:w-1/3"><label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1">Valor da Multa (R$)</label><input type="number" step="0.01" id="cfgMulta" class="w-full p-3 border rounded-xl font-bold text-red-600 outline-none text-sm md:text-base"></div>
-                                <div class="w-full sm:w-2/3 text-[10px] md:text-xs text-gray-500 leading-relaxed">Valor preenchido automaticamente ao gerar lote se houver pendências. Pode ser alterado na grelha.</div>
+                                <div class="w-full sm:w-2/3 text-[10px] md:text-xs text-gray-500 leading-relaxed">Valor preenchido automaticamente ao gerar lote se houver pendências. Pode ser alterado na grelha manualmente.</div>
                             </div>
                             <button onclick="window.salvarConfigMulta()" class="mt-4 w-full sm:w-auto bg-red-500 hover:bg-red-600 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">💾 Guardar Multa</button>
                         </div>
@@ -281,7 +274,6 @@
             </div>
         </main>
 
-        <!-- MENU MOBILE (BOTTOM NAV) -->
         <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t flex justify-around items-center z-50 pb-2 pt-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] no-print">
             <button onclick="mudarAba('aba-moradores', this)" class="w-full p-2 flex flex-col items-center text-blue-600"><i class="fa-solid fa-users text-lg mb-1"></i><span class="text-[9px] font-bold">Pessoas</span></button>
             <button onclick="mudarAba('aba-leituras', this)" class="w-full p-2 flex flex-col items-center text-gray-400"><i class="fa-solid fa-pen-to-square text-lg mb-1"></i><span class="text-[9px] font-bold">Água</span></button>
@@ -359,7 +351,6 @@
             }
         };
 
-        // NOVO LOGIN VIA ENTER (Submissão de Form)
         window.entrarAdmin = (e) => {
             e.preventDefault();
             if(document.getElementById("senhaAdmin").value === "admin123") {
@@ -369,6 +360,7 @@
                 if(window.carregarFamilias) window.carregarFamilias();
             } else { document.getElementById("erroLogin").classList.remove('hidden'); }
         };
+
         window.sairAdmin = () => { localStorage.removeItem("admin_saoluiz_logado"); location.reload(); };
 
         window.mudarAba = (id, el) => {
@@ -520,7 +512,6 @@
         };
     </script>
 
-    <!-- BANCO DE DADOS FIREBASE E REGRAS DE NEGÓCIO -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -666,7 +657,13 @@
                         
                         await updateDoc(doc(db, "familias", id), { ultima_leitura: l_atu, taxa_pendente_valor: 0, taxa_pendente_desc: "" });
                         
-                        document.getElementById(`status-${id}`).innerHTML = `<span class="bg-green-100 text-green-700 px-3 py-1.5 rounded-xl text-[10px] md:text-xs font-bold shadow-sm">Salvo!</span>`;
+                        // ZAP PERFEITO - Remove espaço em branco do final do nome e usa formato Unicode Seguro para emojis
+                        const nomeLimpo = String(nome).replace(/[\s\u200B-\u200D\uFEFF\xA0]+$/g, '').trim();
+                        const zap = `\uD83D\uDCA7 *ÁGUA SÃO LUIZ*\n\nOlá, *${nomeLimpo}*! \uD83D\uDC4B\nA sua fatura de ${mes} já está no sistema. \uD83C\uDFE0\u2728\n\n\uD83D\uDCB0 *Total:* R$ ${total.toFixed(2)}\n\uD83D\uDCC5 *Venc:* ${venc.split('-').reverse().join('/')}\n\n\uD83D\uDC49 Acesse o link para ver o QR Code e copiar o PIX:\n\uD83C\uDF10 https://agua-sao-luiz.vercel.app\n\n\u26A0\uFE0F *Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456 (caso não tenha alterado).*`;
+                        
+                        const statusElement = document.getElementById(`status-${id}`);
+                        if(statusElement) statusElement.innerHTML = `<button onclick="window.open('https://wa.me/${input.dataset.tel}?text=${encodeURIComponent(zap)}')" class="bg-green-500 text-white font-bold px-3 py-1.5 rounded-xl text-[10px] md:text-xs shadow-sm"><i class="fa-brands fa-whatsapp"></i> Zap</button>`;
+                        
                         document.getElementById(`atu-${id}`).disabled = true;
                         document.getElementById(`multa-${id}`).disabled = true;
                     }
@@ -711,7 +708,12 @@
                     const res = await fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: opt.dataset.nome, cpf: opt.dataset.cpf.replace(/\D/g, '')}) });
                     const pix = await res.json();
                     if(pix.sucesso) { await addDoc(collection(db, "faturas"), { familia_id: familiaId, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: opt.dataset.tel, nome_morador: opt.dataset.nome, data_lancamento: new Date().toISOString() });
-                    window.esconderLoading(); alert("Fatura Pix gerada com sucesso!"); }
+                    window.esconderLoading(); 
+                    
+                    const nomeLimpo = String(opt.dataset.nome).replace(/[\s\u200B-\u200D\uFEFF\xA0]+$/g, '').trim();
+                    const zap = `\uD83D\uDCA7 *ÁGUA SÃO LUIZ*\n\nOlá, *${nomeLimpo}*! \uD83D\uDC4B\nUma nova cobrança foi gerada em seu nome. \uD83D\uDEE0\uFE0F\n\n\uD83D\uDCCC *Ref:* ${descricao}\n\uD83D\uDCB0 *Valor:* R$ ${valor.toFixed(2)}\n\uD83D\uDCC5 *Vencimento:* ${vencimento.split('-').reverse().join('/')}\n\n\uD83D\uDC49 Acesse o link para copiar o PIX:\n\uD83C\uDF10 https://agua-sao-luiz.vercel.app\n\n\u26A0\uFE0F *Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456 (caso não tenha alterado).*`;
+                    window.open(`https://wa.me/${opt.dataset.tel}?text=${encodeURIComponent(zap)}`);
+                    }
                 } catch(e) { window.esconderLoading(); alert("Erro na geração da fatura."); }
             }
             document.getElementById("formAvulso").reset(); document.getElementById("buscaClienteAvulso").value = ""; window.filtrarAvulsoESelecionar();
@@ -732,9 +734,11 @@
                     const isOverdue = new Date(f.vencimento + "T00:00:00") < hoje;
                     const rowClass = isOverdue ? "bg-red-50" : "hover:bg-amber-50";
                     const tel = f.telefone || window.familiasGlobal[f.familia_id]?.telefone;
-                    const zap = `💧 *ÁGUA SÃO LUIZ*\nOlá *${f.nome_morador}*! 👋\n\nA sua fatura de ${f.mes_referencia} está disponível. 🏠✨\n\n💰 *Total:* R$ ${f.valor_total.toFixed(2)}\n📅 *Venc:* ${f.vencimento.split('-').reverse().join('/')}\n\n👉 *Aceda ao site para ver e pagar o PIX:*\nhttps://agua-sao-luiz.vercel.app\n\n🔐 *Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456 (caso não tenha alterado).*`;
-                    const btnZap = `<button onclick="window.open('https://wa.me/${tel}?text=${encodeURIComponent(zap)}')" class="bg-green-500 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg text-[10px] md:text-xs font-bold shadow mr-1 transition hover:bg-green-600"><i class="fa-brands fa-whatsapp"></i></button>`;
-                    html += `<tr class="${rowClass} border-b"><td class="p-3 md:p-4 font-mono text-[10px] md:text-sm">${isOverdue ? "🚨 " : "⏳ "}${f.vencimento.split('-').reverse().join('/')}</td><td class="p-3 md:p-4"><strong>${f.nome_morador}</strong><br><small class="text-gray-500 text-[10px] md:text-xs">${f.mes_referencia}</small></td><td class="p-3 md:p-4 text-right font-bold text-amber-700 text-sm md:text-base">R$ ${f.valor_total.toFixed(2)}</td><td class="p-3 md:p-4 text-right whitespace-nowrap">${btnZap} <button onclick="window.marcarPago('${f.id}')" class="bg-blue-600 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg text-[10px] md:text-xs font-bold mr-1 transition hover:bg-blue-700">Baixa</button> <button onclick="window.excluirFatura('${f.id}')" class="bg-red-100 text-red-600 px-3 py-2 md:px-4 md:py-2 rounded-lg text-[10px] md:text-xs font-bold transition hover:bg-red-200">🗑️</button></td></tr>`;
+                    
+                    const nomeLimpo = String(f.nome_morador || "Morador").replace(/[\s\u200B-\u200D\uFEFF\xA0]+$/g, '').trim();
+                    const zap = `\uD83D\uDCA7 *ÁGUA SÃO LUIZ*\n\nOlá, *${nomeLimpo}*! \uD83D\uDC4B\n\nA sua fatura de ${f.mes_referencia} está disponível. \uD83C\uDFE0\u2728\n\n\uD83D\uDCB0 *Total:* R$ ${f.valor_total.toFixed(2)}\n\uD83D\uDCC5 *Venc:* ${f.vencimento.split('-').reverse().join('/')}\n\n\uD83D\uDC49 Acesse o site para ver e pagar o PIX:\n\uD83C\uDF10 https://agua-sao-luiz.vercel.app\n\n\u26A0\uFE0F *Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456 (caso não tenha alterado).*`;
+                    const btnZap = `<button onclick="window.open('https://wa.me/${tel}?text=${encodeURIComponent(zap)}')" class="bg-green-500 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg text-[10px] md:text-xs font-bold shadow mr-1 transition hover:bg-green-600"><i class="fa-brands fa-whatsapp"></i> ZAP</button>`;
+                    html += `<tr class="${rowClass} border-b"><td class="p-3 md:p-4 font-mono text-[10px] md:text-sm">${isOverdue ? "🚨 " : "⏳ "}${f.vencimento.split('-').reverse().join('/')}</td><td class="p-3 md:p-4"><strong>${nomeLimpo}</strong><br><small class="text-gray-500 text-[10px] md:text-xs">${f.mes_referencia}</small></td><td class="p-3 md:p-4 text-right font-bold text-amber-700 text-sm md:text-base">R$ ${f.valor_total.toFixed(2)}</td><td class="p-3 md:p-4 text-right whitespace-nowrap">${btnZap} <button onclick="window.marcarPago('${f.id}')" class="bg-blue-600 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg text-[10px] md:text-xs font-bold mr-1 transition hover:bg-blue-700">Baixa</button> <button onclick="window.excluirFatura('${f.id}')" class="bg-red-100 text-red-600 px-3 py-2 md:px-4 md:py-2 rounded-lg text-[10px] md:text-xs font-bold transition hover:bg-red-200">🗑️</button></td></tr>`;
                 }
                 tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center text-green-600 font-bold'>Tudo Pago!</td></tr>";
             });
@@ -762,7 +766,7 @@
         window.excluirFatura = async (id) => { if(confirm("Tem certeza que deseja apagar?")) { await deleteDoc(doc(db, "faturas", id)); } };
         window.marcarPago = async (id) => { if(confirm("Confirmar baixa de pagamento manual?")) { await updateDoc(doc(db, "faturas", id), {status: "pago", data_pagamento: new Date().toISOString()}); } };
 
-        // --- RELATÓRIOS COM ORDENAÇÃO INTELIGENTE E FILTRO CORRIGIDO ---
+        // --- RELATÓRIOS COM MEMÓRIA CACHE (FILTRO CORRIGIDO E ORDENAÇÃO) ---
         let todasFaturasCache = [];
         
         window.carregarRelatorio = async () => {
@@ -773,7 +777,7 @@
             snap.forEach(d => todasFaturasCache.push(d.data()));
             
             window.esconderLoading();
-            window.gerarRelatorioFiltrado(); // Executa o filtro inicial
+            window.gerarRelatorioFiltrado(); // Executa o filtro com a memória preenchida
         };
 
         window.gerarRelatorioFiltrado = () => {
@@ -782,7 +786,7 @@
             const statusF = document.getElementById("relStatus").value;
             const termo = document.getElementById("relBusca").value.toLowerCase();
             
-            // Usa a memória cache para filtrar
+            // Usa a memória cache para filtrar de forma instantânea
             let filtradas = todasFaturasCache.filter(f => {
                 let matchD = true;
                 if(dtIni || dtFim) {
@@ -797,11 +801,11 @@
 
             // NOVO SISTEMA DE ORDENAÇÃO
             filtradas.sort((a,b) => {
-                // 1. Força as pendentes para o topo
+                // 1. Força as faturas PENDENTES para o topo da lista
                 if (a.status !== b.status) {
                     return a.status === 'pendente' ? -1 : 1;
                 }
-                // 2. Ordena por data (as mais recentes primeiro)
+                // 2. Desempata ordenando pela data de vencimento (mais recentes primeiro)
                 return new Date(b.vencimento) - new Date(a.vencimento);
             });
 
