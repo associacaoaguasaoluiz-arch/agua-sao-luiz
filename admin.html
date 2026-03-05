@@ -41,7 +41,6 @@
     <div id="loading" class="loading-overlay"><div class="spinner"></div><p id="loadingMsg" class="mt-4 font-bold text-gray-700 font-mono text-center px-4">A processar...</p></div>
     <div id="toastVoz" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full font-bold shadow-2xl transition-opacity duration-300 opacity-0 z-[110] flex items-center gap-2 pointer-events-none"><i class="fa-solid fa-microphone"></i> <span id="txtToastVoz">Comando</span></div>
 
-    <!-- LOGIN ADMIN -->
     <div id="loginAdmin" class="fixed inset-0 bg-slate-900 flex justify-center items-center z-50 p-4">
         <form onsubmit="entrarAdmin(event)" class="bg-white p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center">
             <span class="text-5xl mb-2 block">💧</span>
@@ -53,7 +52,6 @@
     </div>
 
     <div id="painelAdmin" class="flex w-full h-full tela-oculta relative">
-        <!-- SIDEBAR DESKTOP -->
         <aside class="w-64 bg-slate-900 text-white flex-col hidden md:flex shadow-xl z-30">
             <div class="p-6 text-center border-b border-slate-700"><h1 class="text-xl font-bold">💧 São Luiz</h1></div>
             <nav class="flex-1 p-4 space-y-2 overflow-y-auto scroll-suave text-sm text-gray-400">
@@ -70,9 +68,7 @@
             </nav>
         </aside>
 
-        <!-- MAIN AREA -->
         <main class="flex-1 overflow-y-auto bg-gray-100 conteudo-principal w-full">
-            <!-- TOPO MOBILE -->
             <div class="md:hidden bg-slate-900 text-white p-4 text-center sticky top-0 z-40 shadow-md font-bold flex justify-between px-4 items-center">
                 <span>💧 São Luiz</span>
                 <button onclick="sairAdmin()" class="text-red-400 bg-slate-800 px-3 py-1 rounded-lg text-xs"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
@@ -80,7 +76,6 @@
             
             <div class="p-3 md:p-8 max-w-7xl mx-auto w-full print-area">
                 
-                <!-- MORADORES -->
                 <div id="aba-moradores" class="conteudo-aba">
                     <div class="flex flex-col sm:flex-row justify-between items-center mb-4 md:mb-6 gap-3">
                         <h2 class="text-xl md:text-2xl font-bold text-slate-800">👥 Moradores</h2>
@@ -96,7 +91,6 @@
                     </div>
                 </div>
 
-                <!-- LEITURAS MENSAL -->
                 <div id="aba-leituras" class="conteudo-aba tela-oculta">
                     <div class="mb-4 flex flex-col md:flex-row justify-between items-start md:items-end gap-3">
                         <div>
@@ -129,7 +123,6 @@
                     </div>
                 </div>
 
-                <!-- TAXAS AVULSAS -->
                 <div id="aba-avulso" class="conteudo-aba tela-oculta">
                     <h2 class="text-xl md:text-2xl font-bold text-blue-800 mb-4 md:mb-6 mt-4 md:mt-0">🔧 Lançar Serviço Avulso</h2>
                     <div class="bg-white rounded-2xl shadow-sm border p-4 md:p-6 w-full max-w-2xl mx-auto md:mx-0">
@@ -168,7 +161,6 @@
                     </div>
                 </div>
 
-                <!-- ABERTAS -->
                 <div id="aba-abertas" class="conteudo-aba tela-oculta">
                     <div class="flex flex-col sm:flex-row justify-between sm:items-end mb-4 md:mb-6 gap-2 mt-4 md:mt-0">
                         <h2 class="text-xl md:text-2xl font-bold text-amber-600 flex items-center gap-2">⏳ Pendentes</h2>
@@ -179,7 +171,6 @@
                     </div>
                 </div>
 
-                <!-- PAGAS -->
                 <div id="aba-recebimentos" class="conteudo-aba tela-oculta">
                     <div class="flex flex-col sm:flex-row justify-between sm:items-end mb-4 md:mb-6 gap-2 mt-4 md:mt-0">
                         <h2 class="text-xl md:text-2xl font-bold text-green-700 flex items-center gap-2">✅ Recebidos</h2>
@@ -190,7 +181,6 @@
                     </div>
                 </div>
 
-                <!-- RELATÓRIOS -->
                 <div id="aba-relatorios" class="conteudo-aba tela-oculta">
                     
                     <div class="text-center mb-6 md:mb-8 pb-4 md:pb-6 border-b border-slate-300">
@@ -207,116 +197,8 @@
                     <div class="bg-white p-3 md:p-4 rounded-2xl shadow-sm border mb-4 md:mb-6 no-print flex flex-col md:flex-row flex-wrap gap-3 items-end text-xs md:text-sm">
                         <div class="w-full md:flex-1"><label class="block font-bold text-gray-500 mb-1 uppercase text-[10px] md:text-xs">De</label><input type="date" id="relDataInicio" class="w-full p-2 border rounded-lg outline-none"></div>
                         <div class="w-full md:flex-1"><label class="block font-bold text-gray-500 mb-1 uppercase text-[10px] md:text-xs">Até</label><input type="date" id="relDataFim" class="w-full p-2 border rounded-lg outline-none"></div>
-                        <div class="w-full md:flex-1"><label class="block font-bold text-gray-500 mb-1 uppercase text-[10px] md:text-xs">Status</label><select id="relStatus" class="w-full p-2 border rounded-lg outline-none bg-white"><option value="TODOS">Geral</option><option value="pago">Apenas Pagos</option><option value="pendente">Apenas Pendentes</option></select></div>
-                        <div class="w-full md:flex-[2]"><label class="block font-bold text-gray-500 mb-1 uppercase text-[10px] md:text-xs">Buscar Cliente</label><input type="text" id="relBusca" class="w-full p-2 border rounded-lg outline-none" placeholder="Ex: João..."></div>
-                        <button onclick="window.gerarRelatorioFiltrado()" class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 transition text-white px-6 py-2 rounded-lg font-bold shadow h-[36px] md:h-[40px]">Filtrar</button>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
-                        <div class="bg-white p-3 md:p-4 rounded-xl border shadow-sm text-center"><p class="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase">Volume (m³)</p><p class="text-lg md:text-xl font-black text-blue-600" id="relCardM3">0</p></div>
-                        <div class="bg-white p-3 md:p-4 rounded-xl border shadow-sm text-center"><p class="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase">Contas</p><p class="text-lg md:text-xl font-black" id="relCardQtd">0</p></div>
-                        <div class="bg-white p-3 md:p-4 rounded-xl border shadow-sm text-center border-red-100"><p class="text-[9px] md:text-[10px] text-red-500 font-bold uppercase">Inadimplência</p><p class="text-lg md:text-xl font-black text-red-600" id="relCardPendente">R$ 0,00</p></div>
-                        <div class="bg-white p-3 md:p-4 rounded-xl border shadow-sm text-center border-green-100"><p class="text-[9px] md:text-[10px] text-green-600 font-bold uppercase">Recebido</p><p class="text-lg md:text-xl font-black text-green-600" id="relCardPago">R$ 0,00</p></div>
-                    </div>
-                    
-                    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
-                        <div class="overflow-x-auto w-full">
-                            <table class="w-full text-left whitespace-nowrap min-w-[650px] text-sm">
-                                <thead>
-                                    <tr class="bg-slate-50 text-slate-500 uppercase text-[10px] font-bold border-b border-slate-200">
-                                        <th class="p-4 pl-6">Cliente</th>
-                                        <th class="p-4">Referência</th>
-                                        <th class="p-4 text-center">Consumo M³</th>
-                                        <th class="p-4 text-center">Status</th>
-                                        <th class="p-4 text-right pr-6">Valor Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tabelaRelatorio" class="divide-y divide-slate-100">
-                                    <tr><td colspan="5" class="p-8 text-center text-gray-400">Filtre para carregar...</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- CONFIGURAÇÕES -->
-                <div id="aba-config" class="conteudo-aba tela-oculta">
-                    <h2 class="text-xl md:text-2xl font-bold text-slate-700 mb-4 md:mb-6 mt-4 md:mt-0">⚙️ Banco de Dados e Configurações</h2>
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-                        
-                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200 lg:col-span-2">
-                            <h3 class="font-bold text-base md:text-lg text-slate-700 mb-3 md:mb-4">🔐 Alterar Senha do Administrador</h3>
-                            <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                                <div class="w-full sm:w-1/2">
-                                    <label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1 uppercase">Nova Senha de Acesso</label>
-                                    <input type="password" id="cfgSenhaAdmin" placeholder="Digite a nova senha..." class="w-full p-3 border rounded-xl font-bold text-slate-700 outline-none text-sm md:text-base">
-                                </div>
-                                <div class="w-full sm:w-1/2 text-[10px] md:text-xs text-gray-500 leading-relaxed">
-                                    A senha padrão inicial é <strong>admin123</strong>. Você pode alterar essa senha quantas vezes quiser para aumentar a segurança do seu painel.
-                                </div>
-                            </div>
-                            <button onclick="window.salvarSenhaAdmin()" class="mt-4 w-full sm:w-auto bg-slate-800 hover:bg-slate-900 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">💾 Guardar Nova Senha</button>
-                        </div>
-
-                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-blue-100 lg:col-span-2">
-                            <h3 class="font-bold text-base md:text-lg text-blue-700 mb-3 md:mb-4">💰 Valores da Mensalidade (Água)</h3>
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
-                                <div><label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1">Até 10m³ (R$)</label><input type="number" step="0.01" id="cfgVal1" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none text-sm md:text-base"></div>
-                                <div><label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1">De 11m³ a 30m³ (R$)</label><input type="number" step="0.01" id="cfgVal2" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none text-sm md:text-base"></div>
-                                <div><label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1">Acima de 30m³ (R$)</label><input type="number" step="0.01" id="cfgVal3" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none text-sm md:text-base"></div>
-                            </div>
-                            <button onclick="window.salvarConfigAgua()" class="mt-4 w-full sm:w-auto bg-blue-500 hover:bg-blue-600 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">💾 Guardar Valores</button>
-                        </div>
-
-                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-red-100 lg:col-span-2">
-                            <h3 class="font-bold text-base md:text-lg text-red-700 mb-3 md:mb-4">🚨 Multa Padrão (Atraso)</h3>
-                            <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                                <div class="w-full sm:w-1/3"><label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1">Valor da Multa (R$)</label><input type="number" step="0.01" id="cfgMulta" class="w-full p-3 border rounded-xl font-bold text-red-600 outline-none text-sm md:text-base"></div>
-                                <div class="w-full sm:w-2/3 text-[10px] md:text-xs text-gray-500 leading-relaxed">Valor preenchido automaticamente ao gerar lote se houver pendências. Pode ser alterado na grelha manualmente.</div>
-                            </div>
-                            <button onclick="window.salvarConfigMulta()" class="mt-4 w-full sm:w-auto bg-red-500 hover:bg-red-600 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">💾 Guardar Multa</button>
-                        </div>
-                        
-                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-blue-100"><h3 class="font-bold text-base md:text-lg text-blue-700 mb-2">💾 Backup</h3><button onclick="if(window.exportarBase) window.exportarBase()" class="w-full bg-blue-100 hover:bg-blue-200 transition text-blue-700 font-bold py-3 rounded-xl mt-2 text-sm md:text-base">Exportar JSON</button></div>
-                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-emerald-100"><h3 class="font-bold text-base md:text-lg text-emerald-700 mb-2">📂 Importar</h3><input type="file" id="fileImport" accept=".json" class="mb-3 w-full text-xs md:text-sm"><button onclick="if(window.importarBase) window.importarBase()" class="w-full bg-emerald-100 hover:bg-emerald-200 transition text-emerald-700 font-bold py-3 rounded-xl text-sm md:text-base">Importar JSON</button></div>
-                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-red-100 lg:col-span-2"><h3 class="font-bold text-base md:text-lg text-red-600 mb-2">🗑️ Limpeza Absoluta</h3><button onclick="if(window.limparFaturas) window.limparFaturas()" class="w-full bg-red-600 hover:bg-red-700 transition text-white font-bold py-3 rounded-xl shadow-md text-sm md:text-base">Apagar TODAS as Faturas</button></div>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t flex justify-around items-center z-50 pb-2 pt-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] no-print">
-            <button onclick="mudarAba('aba-moradores', this)" class="w-full p-2 flex flex-col items-center text-blue-600"><i class="fa-solid fa-users text-lg mb-1"></i><span class="text-[9px] font-bold">Pessoas</span></button>
-            <button onclick="mudarAba('aba-leituras', this)" class="w-full p-2 flex flex-col items-center text-gray-400"><i class="fa-solid fa-pen-to-square text-lg mb-1"></i><span class="text-[9px] font-bold">Água</span></button>
-            <button onclick="mudarAba('aba-abertas', this)" class="w-full p-2 flex flex-col items-center text-gray-400"><i class="fa-solid fa-hourglass-half text-lg mb-1"></i><span class="text-[9px] font-bold">Abertas</span></button>
-            <button onclick="mudarAba('aba-recebimentos', this)" class="w-full p-2 flex flex-col items-center text-gray-400"><i class="fa-solid fa-check-double text-lg mb-1"></i><span class="text-[9px] font-bold">Pagos</span></button>
-            <button onclick="mudarAba('aba-relatorios', this)" class="w-full p-2 flex flex-col items-center text-gray-400"><i class="fa-solid fa-chart-pie text-lg mb-1"></i><span class="text-[9px] font-bold">Gráfico</span></button>
-        </nav>
-    </div>
-
-    <!-- MODAL CADASTRO -->
-    <div id="modalMorador" class="modal-fundo no-print">
-        <div class="bg-white rounded-3xl shadow-2xl w-[95%] md:w-full max-w-sm mx-auto overflow-hidden">
-            <div class="bg-slate-900 p-4 md:p-5 flex justify-between items-center text-white"><h3 id="tituloModal" class="font-bold">Morador</h3><button onclick="fecharModal()" class="text-2xl hover:text-red-400 transition">&times;</button></div>
-            <form id="formMorador" class="p-4 md:p-6 space-y-3 md:space-y-4" onsubmit="if(window.submitMorador) window.submitMorador(event)">
-                <input type="hidden" id="modId">
-                
-                <!-- O input de nome agora aplica a formatação Capitalizada ao vivo, respeitando a posição do cursor e acentos -->
-                <input type="text" id="modNome" oninput="const p=this.selectionStart; this.value=window.formatarNomeParaBanco(this.value); this.setSelectionRange(p,p);" required placeholder="Nome Completo" class="w-full p-3 md:p-4 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 text-sm md:text-base">
-                
-                <input type="tel" id="modCpf" required placeholder="CPF (Apenas números)" class="w-full p-3 md:p-4 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 text-sm md:text-base">
-                <input type="tel" id="modTel" required placeholder="WhatsApp (DDD+Número)" class="w-full p-3 md:p-4 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 text-sm md:text-base">
-                <input type="text" id="modLote" required placeholder="Lote / Morada" class="w-full p-3 md:p-4 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 text-sm md:text-base">
-                <div class="flex gap-2 pt-2 md:pt-4">
-                    <button type="button" onclick="fecharModal()" class="flex-1 bg-gray-200 py-3 md:py-4 rounded-xl font-bold hover:bg-gray-300 transition text-sm md:text-base">Cancelar</button>
-                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 transition text-white py-3 md:py-4 rounded-xl font-bold text-sm md:text-base">Salvar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- SCRIPTS DE INTERFACE E FORMATAÇÃO -->
-    <script>
+                        <div class="w-full md:flex-1"><label class="block font-bold text-gray-500 mb-1 uppercase text-[10px] md:text-xs">
+                                <script>
         window.familiasGlobal = {}; 
 
         window.onload = () => {
@@ -388,15 +270,32 @@
         window.sairAdmin = () => { localStorage.removeItem("admin_saoluiz_logado"); location.reload(); };
 
         window.mudarAba = (id, el) => {
+            // 1. Oculta todas as abas
             document.querySelectorAll('.conteudo-aba').forEach(a => a.classList.add('tela-oculta'));
+            // 2. Mostra a aba selecionada
             document.getElementById(id).classList.remove('tela-oculta');
-            document.querySelectorAll('.menu-btn, nav button').forEach(b => { 
-                b.classList.remove('bg-blue-600', 'text-white'); b.classList.add('text-slate-400');
-                if(b.querySelector('i')) b.classList.remove('text-blue-600'); 
+
+            // 3. Reseta estilos do menu Desktop
+            document.querySelectorAll('.menu-btn').forEach(b => { 
+                b.classList.remove('bg-blue-600', 'text-white'); 
+                b.classList.add('text-slate-400');
             });
+
+            // 4. Reseta estilos do menu Mobile
+            document.querySelectorAll('nav button').forEach(b => {
+                b.classList.remove('text-blue-600', 'bg-blue-50', 'border-blue-200');
+                b.classList.add('text-slate-400', 'border-transparent');
+            });
+
+            // 5. Aplica os destaques corretos na aba ativa
             if(el) { 
-                if(el.classList.contains('menu-btn')) { el.classList.add('bg-blue-600', 'text-white'); el.classList.remove('text-slate-400'); }
-                else { el.classList.add('text-blue-600'); el.classList.remove('text-gray-400'); }
+                if(el.classList.contains('menu-btn')) { 
+                    el.classList.add('bg-blue-600', 'text-white'); 
+                    el.classList.remove('text-slate-400'); 
+                } else { 
+                    el.classList.add('text-blue-600', 'bg-blue-50', 'border-blue-200'); 
+                    el.classList.remove('text-slate-400', 'border-transparent'); 
+                }
             }
 
             if(id === 'aba-leituras' && window.carregarLoteFaturas) window.carregarLoteFaturas();
@@ -460,7 +359,6 @@
             document.getElementById(`h-total-${id}`).value = total;
         };
 
-        // NOVA FUNÇÃO: Capitaliza perfeitamente a 1ª letra e mantém conectivos e lida com Acentos
         window.formatarNomeParaBanco = (texto) => {
             if (!texto) return "";
             const preposicoes = ["de", "da", "do", "das", "dos", "e"];
@@ -469,23 +367,19 @@
             
             const formatado = partes.map((palavra, index) => {
                 if (palavra.length === 0) return ""; 
-                // Se não for a 1ª palavra e for preposição, mantém minúscula
                 if (index > 0 && preposicoes.includes(palavra)) return palavra;
-                // Capitaliza a primeira letra e junta o resto
                 return palavra.charAt(0).toUpperCase() + palavra.substring(1);
             });
             
-            return formatado.join(" ").trimStart(); // Usar trimStart em vez de trim para não comer os espaços que o usuário ainda está a digitar no final
+            return formatado.join(" ").trimStart(); 
         };
 
-        // Função para gerar WhatsApp sem Emojis - Totalmente compatível com ANSI / Bloco de Notas
         window.enviarWhatsAppSemEmoji = (tipo, telefone, nome, ref, valor, venc) => {
             if(!telefone || String(telefone).trim().length < 8) {
                 alert("Este morador não tem um número de WhatsApp válido cadastrado.");
                 return;
             }
             
-            // Regex agressiva para destruir espaços em branco invisíveis do nome (garante o negrito)
             const nomeLimpo = String(nome).replace(/[\s\u200B-\u200D\uFEFF\xA0]+$/g, '').trim();
             const telLimpo = String(telefone).replace(/\D/g, '');
             
@@ -541,7 +435,6 @@
 
             const termoBuscado = filtro.toLowerCase().trim();
 
-            // ORDENAÇÃO ALFABÉTICA NO AVULSO
             const moradoresAvulso = Object.entries(window.familiasGlobal).map(([id, f]) => ({id, ...f}));
             moradoresAvulso.sort((a,b) => (a.nome || "").localeCompare(b.nome || "", 'pt-BR'));
 
@@ -579,7 +472,6 @@
         };
     </script>
 
-    <!-- BANCO DE DADOS FIREBASE E REGRAS DE NEGÓCIO -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -603,7 +495,6 @@
         window.submitMorador = async (e) => {
             e.preventDefault();
             const id = document.getElementById("modId").value;
-            // Trata espaços em branco que o usuário possa ter deixado no fim, mas preservando o formato
             let nomeFinal = window.formatarNomeParaBanco(document.getElementById("modNome").value).trim();
             
             const d = { 
@@ -631,7 +522,6 @@
             const tbody = document.getElementById("tabelaMoradores");
             await window.atualizarCacheFamilias();
             
-            // ORDENAÇÃO ALFABÉTICA ABSOLUTA
             const moradores = Object.entries(window.familiasGlobal).map(([id, f]) => ({id, ...f}));
             moradores.sort((a,b) => (a.nome || "").localeCompare(b.nome || "", 'pt-BR'));
             
@@ -655,7 +545,6 @@
                 const hoje = new Date(); hoje.setHours(0,0,0,0);
                 const multaPadrao = parseFloat(localStorage.getItem('config_multa_padrao')) || 25.00;
 
-                // ORDENAÇÃO ALFABÉTICA PARA LOTE DE ÁGUA
                 const moradoresLote = Object.entries(window.familiasGlobal).map(([id, f]) => ({id, ...f}));
                 moradoresLote.sort((a,b) => (a.nome || "").localeCompare(b.nome || "", 'pt-BR'));
 
@@ -943,3 +832,8 @@
     </script>
 </body>
 </html>
+
+
+
+
+                            
