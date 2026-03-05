@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>App Gestão 21.0 - Água São Luiz</title>
+    <title>App Gestão 22.0 - Água São Luiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -243,8 +243,7 @@
                 <div id="aba-config" class="conteudo-aba tela-oculta">
                     <h2 class="text-xl md:text-2xl font-bold text-slate-700 mb-4 md:mb-6 mt-4 md:mt-0">⚙️ Banco de Dados e Configurações</h2>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-
-                        <!-- ALTERAR SENHA DO ADMIN -->
+                        
                         <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200 lg:col-span-2">
                             <h3 class="font-bold text-base md:text-lg text-slate-700 mb-3 md:mb-4">🔐 Alterar Senha do Administrador</h3>
                             <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
@@ -253,12 +252,12 @@
                                     <input type="password" id="cfgSenhaAdmin" placeholder="Digite a nova senha..." class="w-full p-3 border rounded-xl font-bold text-slate-700 outline-none text-sm md:text-base">
                                 </div>
                                 <div class="w-full sm:w-1/2 text-[10px] md:text-xs text-gray-500 leading-relaxed">
-                                    A senha padrão inicial é <strong>admin123</strong>. Pode alterar esta senha as vezes que precisar para garantir a segurança.
+                                    A senha padrão inicial é <strong>admin123</strong>. Você pode alterar essa senha quantas vezes quiser para aumentar a segurança do seu painel.
                                 </div>
                             </div>
                             <button onclick="window.salvarSenhaAdmin()" class="mt-4 w-full sm:w-auto bg-slate-800 hover:bg-slate-900 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">💾 Guardar Nova Senha</button>
                         </div>
-                        
+
                         <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-blue-100 lg:col-span-2">
                             <h3 class="font-bold text-base md:text-lg text-blue-700 mb-3 md:mb-4">💰 Valores da Mensalidade (Água)</h3>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
@@ -301,7 +300,10 @@
             <div class="bg-slate-900 p-4 md:p-5 flex justify-between items-center text-white"><h3 id="tituloModal" class="font-bold">Morador</h3><button onclick="fecharModal()" class="text-2xl hover:text-red-400 transition">&times;</button></div>
             <form id="formMorador" class="p-4 md:p-6 space-y-3 md:space-y-4" onsubmit="if(window.submitMorador) window.submitMorador(event)">
                 <input type="hidden" id="modId">
-                <input type="text" id="modNome" required placeholder="Nome Completo" class="w-full p-3 md:p-4 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 text-sm md:text-base">
+                
+                <!-- O input de nome agora aplica a formatação Capitalizada ao vivo, respeitando a posição do cursor e acentos -->
+                <input type="text" id="modNome" oninput="const p=this.selectionStart; this.value=window.formatarNomeParaBanco(this.value); this.setSelectionRange(p,p);" required placeholder="Nome Completo" class="w-full p-3 md:p-4 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 text-sm md:text-base">
+                
                 <input type="tel" id="modCpf" required placeholder="CPF (Apenas números)" class="w-full p-3 md:p-4 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 text-sm md:text-base">
                 <input type="tel" id="modTel" required placeholder="WhatsApp (DDD+Número)" class="w-full p-3 md:p-4 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 text-sm md:text-base">
                 <input type="text" id="modLote" required placeholder="Lote / Morada" class="w-full p-3 md:p-4 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 text-sm md:text-base">
@@ -458,12 +460,22 @@
             document.getElementById(`h-total-${id}`).value = total;
         };
 
-        // Função utilitária para colocar a Primeira Letra de cada nome em Maiúscula
+        // NOVA FUNÇÃO: Capitaliza perfeitamente a 1ª letra e mantém conectivos e lida com Acentos
         window.formatarNomeParaBanco = (texto) => {
             if (!texto) return "";
-            return texto.toLowerCase().replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); })
-                        .replace(/\s+(de|da|do|das|dos|e)\s+/ig, function(match) { return match.toLowerCase(); })
-                        .trim();
+            const preposicoes = ["de", "da", "do", "das", "dos", "e"];
+            
+            const partes = texto.toLowerCase().split(" ");
+            
+            const formatado = partes.map((palavra, index) => {
+                if (palavra.length === 0) return ""; 
+                // Se não for a 1ª palavra e for preposição, mantém minúscula
+                if (index > 0 && preposicoes.includes(palavra)) return palavra;
+                // Capitaliza a primeira letra e junta o resto
+                return palavra.charAt(0).toUpperCase() + palavra.substring(1);
+            });
+            
+            return formatado.join(" ").trimStart(); // Usar trimStart em vez de trim para não comer os espaços que o usuário ainda está a digitar no final
         };
 
         // Função para gerar WhatsApp sem Emojis - Totalmente compatível com ANSI / Bloco de Notas
@@ -485,6 +497,85 @@
             }
 
             window.open(`https://wa.me/${telLimpo}?text=${encodeURIComponent(msg)}`, '_blank');
+        };
+
+        window.vozAtiva = false;
+        let recognition;
+        window.alternarVoz = () => {
+            const btn = document.getElementById("btnVoz");
+            if (window.vozAtiva) { if(recognition) recognition.stop(); btn.classList.remove('mic-ativo'); window.vozAtiva = false; return; }
+            window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!window.SpeechRecognition) return alert("O seu navegador não suporta voz.");
+            recognition = new SpeechRecognition(); recognition.lang = 'pt-BR'; recognition.continuous = true;
+            recognition.onstart = () => { window.vozAtiva = true; btn.classList.add('mic-ativo'); };
+            recognition.onresult = (event) => {
+                const textoLimpo = event.results[event.results.length - 1][0].transcript.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+                if (textoLimpo.includes("salvar tudo")) { if(window.gerarFaturasEmLote) window.gerarFaturasEmLote(); return; }
+                const linhas = document.querySelectorAll('input[id^="h-total-"]');
+                for (let input of linhas) {
+                    const id = input.id.replace('h-total-', '');
+                    const primeiroNome = input.dataset.nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(' ')[0];
+                    if (textoLimpo.includes(primeiroNome)) {
+                        const match = textoLimpo.match(/\d+/);
+                        if (match) {
+                            document.getElementById('atu-' + id).value = match[0];
+                            window.calcularLinha(id);
+                            document.getElementById('linha-'+id).style.backgroundColor = "#fffbeb";
+                            setTimeout(()=> { document.getElementById('linha-'+id).style.backgroundColor = ""; }, 2000);
+                        }
+                        break;
+                    }
+                }
+            };
+            recognition.start();
+        };
+
+        window.renderizarSelectAvulso = (filtro = "") => {
+            const select = document.getElementById("avulsoFamilia");
+            const displayNome = document.getElementById("avulsoClienteNomeExibicao");
+            
+            let html = "<option value='TODOS'>🌟 RATEIO: COBRAR TODOS</option>";
+            let matchCount = 0;
+            let firstMatchId = null;
+            let firstMatchName = null;
+
+            const termoBuscado = filtro.toLowerCase().trim();
+
+            // ORDENAÇÃO ALFABÉTICA NO AVULSO
+            const moradoresAvulso = Object.entries(window.familiasGlobal).map(([id, f]) => ({id, ...f}));
+            moradoresAvulso.sort((a,b) => (a.nome || "").localeCompare(b.nome || "", 'pt-BR'));
+
+            moradoresAvulso.forEach(f => {
+                const texto = `${f.nome} ${f.cpf} ${f.lote_endereco}`.toLowerCase();
+                if(texto.includes(termoBuscado)) {
+                    html += `<option value="${f.id}" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}">${f.nome} (${f.lote_endereco})</option>`;
+                    if(matchCount === 0) { firstMatchId = f.id; firstMatchName = f.nome; }
+                    matchCount++;
+                }
+            });
+            select.innerHTML = html;
+
+            if (termoBuscado === "") {
+                select.value = 'TODOS';
+                displayNome.innerText = "🌟 RATEIO: COBRAR TODOS";
+                displayNome.classList.remove('hidden');
+                displayNome.className = "text-xs md:text-sm font-bold text-blue-700 bg-blue-50 p-2 md:p-3 rounded-xl mt-2";
+            } else if (firstMatchId) {
+                select.value = firstMatchId;
+                displayNome.innerText = `✅ Selecionado: ${firstMatchName}`;
+                displayNome.classList.remove('hidden');
+                displayNome.className = "text-xs md:text-sm font-bold text-green-700 bg-green-50 p-2 md:p-3 rounded-xl mt-2 border border-green-200";
+            } else {
+                select.value = "";
+                displayNome.innerText = "❌ Nenhum cliente encontrado";
+                displayNome.classList.remove('hidden');
+                displayNome.className = "text-xs md:text-sm font-bold text-red-700 bg-red-50 p-2 md:p-3 rounded-xl mt-2";
+            }
+        };
+
+        window.filtrarAvulsoESelecionar = () => {
+            const termo = document.getElementById("buscaClienteAvulso").value;
+            window.renderizarSelectAvulso(termo);
         };
     </script>
 
@@ -512,11 +603,11 @@
         window.submitMorador = async (e) => {
             e.preventDefault();
             const id = document.getElementById("modId").value;
-            // Aplica a formatação automática (Iniciais Maiúsculas) antes de salvar no banco de dados
-            const nomeFormatado = window.formatarNomeParaBanco(document.getElementById("modNome").value);
+            // Trata espaços em branco que o usuário possa ter deixado no fim, mas preservando o formato
+            let nomeFinal = window.formatarNomeParaBanco(document.getElementById("modNome").value).trim();
             
             const d = { 
-                nome: nomeFormatado, 
+                nome: nomeFinal, 
                 cpf: document.getElementById("modCpf").value.replace(/\D/g, ''), 
                 telefone: document.getElementById("modTel").value, 
                 lote_endereco: document.getElementById("modLote").value 
@@ -540,9 +631,9 @@
             const tbody = document.getElementById("tabelaMoradores");
             await window.atualizarCacheFamilias();
             
-            // Ordenação Alfabética Automática
+            // ORDENAÇÃO ALFABÉTICA ABSOLUTA
             const moradores = Object.entries(window.familiasGlobal).map(([id, f]) => ({id, ...f}));
-            moradores.sort((a,b) => (a.nome || "").localeCompare(b.nome || ""));
+            moradores.sort((a,b) => (a.nome || "").localeCompare(b.nome || "", 'pt-BR'));
             
             let html = "";
             moradores.forEach(f => {
@@ -564,9 +655,9 @@
                 const hoje = new Date(); hoje.setHours(0,0,0,0);
                 const multaPadrao = parseFloat(localStorage.getItem('config_multa_padrao')) || 25.00;
 
-                // Ordenação Alfabética para Lote
+                // ORDENAÇÃO ALFABÉTICA PARA LOTE DE ÁGUA
                 const moradoresLote = Object.entries(window.familiasGlobal).map(([id, f]) => ({id, ...f}));
-                moradoresLote.sort((a,b) => (a.nome || "").localeCompare(b.nome || ""));
+                moradoresLote.sort((a,b) => (a.nome || "").localeCompare(b.nome || "", 'pt-BR'));
 
                 moradoresLote.forEach(f => {
                     const famId = f.id;
@@ -764,18 +855,17 @@
         window.excluirFatura = async (id) => { if(confirm("Tem certeza que deseja apagar?")) { await deleteDoc(doc(db, "faturas", id)); } };
         window.marcarPago = async (id) => { if(confirm("Confirmar baixa de pagamento manual?")) { await updateDoc(doc(db, "faturas", id), {status: "pago", data_pagamento: new Date().toISOString()}); } };
 
-        // --- RELATÓRIOS COM MEMÓRIA CACHE (FILTRO CORRIGIDO E ORDENAÇÃO) ---
         let todasFaturasCache = [];
         
         window.carregarRelatorio = async () => {
             window.mostrarLoading("A consultar...");
             const snap = await getDocs(collection(db, "faturas"));
             
-            todasFaturasCache = []; // Limpa e carrega a memória global
+            todasFaturasCache = [];
             snap.forEach(d => todasFaturasCache.push(d.data()));
             
             window.esconderLoading();
-            window.gerarRelatorioFiltrado(); // Executa o filtro com a memória preenchida
+            window.gerarRelatorioFiltrado();
         };
 
         window.gerarRelatorioFiltrado = () => {
@@ -784,7 +874,6 @@
             const statusF = document.getElementById("relStatus").value;
             const termo = document.getElementById("relBusca").value.toLowerCase();
             
-            // Usa a memória cache para filtrar de forma instantânea
             let filtradas = todasFaturasCache.filter(f => {
                 let matchD = true;
                 if(dtIni || dtFim) {
@@ -797,13 +886,8 @@
                 return matchD && matchS && matchB;
             });
 
-            // NOVO SISTEMA DE ORDENAÇÃO
             filtradas.sort((a,b) => {
-                // 1. Força as faturas PENDENTES para o topo da lista
-                if (a.status !== b.status) {
-                    return a.status === 'pendente' ? -1 : 1;
-                }
-                // 2. Desempata ordenando pela data de vencimento (mais recentes primeiro)
+                if (a.status !== b.status) return a.status === 'pendente' ? -1 : 1;
                 return new Date(b.vencimento) - new Date(a.vencimento);
             });
 
