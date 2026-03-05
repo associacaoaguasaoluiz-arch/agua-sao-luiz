@@ -185,7 +185,7 @@
                     
                     <div class="text-center mb-6 md:mb-8 pb-4 md:pb-6 border-b border-slate-300">
                         <img src="capanema.jpg" alt="Capanema" class="mx-auto w-full max-w-[280px] md:max-w-md h-auto object-contain rounded-xl shadow-md mb-4" onerror="this.style.display='none'">
-                        <h1 class="text-lg md:text-3xl font-black text-blue-900 tracking-tight">ASSOCIAÇÃO DE ÁGUA DO SÃO LUIZ</h1>
+                        <h1 class="text-lg md:text-3xl font-black text-blue-900 tracking-tight">ASSOCIAÇÃO DE ÁGUA DISTRITO SÃO LUIZ</h1>
                         <p class="text-slate-500 font-bold uppercase text-[9px] md:text-xs tracking-widest mt-1 md:mt-2">Relatório Oficial de Gestão Financeira</p>
                     </div>
 
@@ -502,9 +502,9 @@
             
             let msg = "";
             if (tipo === 'avulso') {
-                msg = `*ÁGUA SÃO LUIZ*\n\nOlá, *${nomeLimpo}*!\nUma nova cobrança foi gerada em seu nome.\n\n- *Ref:* ${ref}\n- *Valor:* R$ ${valor}\n- *Vencimento:* ${venc}\n\n> Acesse o link para copiar o PIX:\nhttps://agua-sao-luiz.vercel.app\n\n*Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456 (caso não tenha alterado).*`;
+                msg = `*FATURA DE ÁGUA DISTRITO SÃO LUIZ*\n\nOlá, *${nomeLimpo}*!\nUma nova cobrança foi gerada em seu nome.\n\n- *Ref:* ${ref}\n- *Valor:* R$ ${valor}\n- *Vencimento:* ${venc}\n\n> Acesse o link para copiar o PIXe efetuar pagamento:\nhttps://agua-sao-luiz.vercel.app\n\n*Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456 (caso não tenha alterado).*`;
             } else {
-                msg = `*ÁGUA SÃO LUIZ*\n\nOlá, *${nomeLimpo}*!\nA sua fatura de ${ref} está disponível no sistema.\n\n- *Total:* R$ ${valor}\n- *Vencimento:* ${venc}\n\n> Acesse o portal para ver e copiar o PIX:\nhttps://agua-sao-luiz.vercel.app\n\n*Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456 (caso não tenha alterado).*`;
+                msg = `*FATURA DE ÁGUA DISTRITO SÃO LUIZ*\n\nOlá, *${nomeLimpo}*!\nA sua fatura de ${ref} está disponível no sistema.\n\n- *Total:* R$ ${valor}\n- *Vencimento:* ${venc}\n\n> Acesse o portal para ver e copiar o PIX e efetuar pagamento:\nhttps://agua-sao-luiz.vercel.app\n\n*Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456 (caso não tenha alterado).*`;
             }
 
             window.open(`https://wa.me/${telLimpo}?text=${encodeURIComponent(msg)}`, '_blank');
