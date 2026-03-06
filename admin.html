@@ -24,7 +24,7 @@
         .mic-ativo { animation: pulse-red 1.5s infinite; background-color: #ef4444 !important; color: white !important; }
         @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
         @media print {
-            aside, nav, .md\:hidden, header, .no-print, button { display: none !important; }
+            aside, nav, .md\:hidden, header, .no-print, button, details { display: none !important; }
             #painelAdmin, main, #aba-relatorios { display: block !important; padding: 0 !important; margin: 0 !important; background: white; }
             .print-area { width: 100% !important; border: none !important; box-shadow: none !important; }
         }
@@ -259,7 +259,7 @@
                             <details class="group border border-slate-200 rounded-xl mt-6 bg-slate-50 overflow-hidden cursor-pointer shadow-sm">
                                 <summary class="flex justify-between items-center p-4 font-bold text-sm text-blue-800 list-none outline-none">
                                     <div class="flex items-center gap-2">
-                                        <i class="fa-solid fa-list-check text-blue-600"></i> Histórico de Sincronização do Agente
+                                        <i class="fa-solid fa-list-check text-blue-600"></i> Histórico de Atividades (Logs)
                                     </div>
                                     <div class="flex items-center gap-4">
                                         <span class="text-xs text-gray-500 font-normal">Clique para expandir</span>
@@ -268,12 +268,20 @@
                                 </summary>
                                 <div class="p-4 border-t border-slate-200 bg-white cursor-default">
                                     <div class="flex justify-end mb-3">
-                                        <button onclick="if(window.carregarLogsAgente) window.carregarLogsAgente()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold px-4 py-2 rounded-lg text-xs transition shadow-sm"><i class="fa-solid fa-rotate-right mr-1"></i> Atualizar Logs Agora</button>
+                                        <button onclick="window.carregarLogsAgente()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold px-4 py-2 rounded-lg text-xs transition shadow-sm"><i class="fa-solid fa-rotate-right mr-1"></i> Atualizar Logs Agora</button>
                                     </div>
-                                    <div class="overflow-x-auto w-full max-h-60 overflow-y-auto scroll-suave border border-slate-100 rounded-xl">
-                                        <table class="w-full text-left text-sm">
+                                    <div class="overflow-x-auto w-full max-h-80 overflow-y-auto scroll-suave border border-slate-100 rounded-xl">
+                                        <table class="w-full text-left text-sm whitespace-nowrap">
+                                            <thead class="bg-slate-50 sticky top-0 z-10">
+                                                <tr class="text-gray-500 text-[10px] uppercase border-b border-slate-200">
+                                                    <th class="p-3 font-bold">Data / Hora</th>
+                                                    <th class="p-3 font-bold">Ação</th>
+                                                    <th class="p-3 font-bold">Cliente</th>
+                                                    <th class="p-3 font-bold text-right">Valor (R$)</th>
+                                                </tr>
+                                            </thead>
                                             <tbody id="tabelaLogsAgente" class="divide-y divide-slate-100">
-                                                <tr><td class="p-6 text-center text-gray-400 text-xs">Clique em 'Atualizar Logs' para carregar a lista...</td></tr>
+                                                <tr><td colspan="4" class="p-6 text-center text-gray-400 text-xs">Clique em 'Atualizar Logs' para carregar a lista...</td></tr>
                                             </tbody>
                                         </table>
                                     </div>
@@ -340,7 +348,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // CONEXÃO COM O BANCO DE DADOS (AGORA APENAS UMA VEZ)
+        // CONEXÃO COM O BANCO DE DADOS
         const firebaseConfig = {
             apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ",
             authDomain: "sistema-agua-sao-luiz.firebaseapp.com",
@@ -441,12 +449,12 @@
             window.renderizarSelectAvulso("");
         };
 
-        // --- FUNÇÕES RESTAURADAS DE WHATSAPP MANUAL E VOZ ---
+        // --- FUNÇÕES DE WHATSAPP MANUAL E VOZ ---
         window.enviarWhatsAppSemEmoji = (tipo, telefone, nome, ref, valor, venc) => {
             if(!telefone || String(telefone).trim().length < 8) return alert("Sem WhatsApp válido.");
             const nomeLimpo = String(nome).replace(/[\s\u200B-\u200D\uFEFF\xA0]+$/g, '').trim();
             const telLimpo = String(telefone).replace(/\D/g, '');
-            let msg = `*FATURA DE ÁGUA DISTRITO SÃO LUIZ*\n\nOlá, *${nomeLimpo}*!\n${tipo === 'avulso' ? 'Uma nova cobrança foi gerada em seu nome.' : `A sua fatura de ${ref} está disponível.`}\n\n- *Total:* R$ ${valor}\n- *Vencimento:* ${venc}\n\n> Acesse o link para copiar o PIX:\nhttps://agua-sao-luiz.vercel.app\n\n*Lembrando que o seu usuário é o seu CPF y la contraseña padrão é 123456.*`;
+            let msg = `*FATURA DE ÁGUA DISTRITO SÃO LUIZ*\n\nOlá, *${nomeLimpo}*!\n${tipo === 'avulso' ? 'Uma nova cobrança foi gerada em seu nome.' : `A sua fatura de ${ref} está disponível.`}\n\n- *Total:* R$ ${valor}\n- *Vencimento:* ${venc}\n\n> Acesse o link para copiar o PIX:\nhttps://agua-sao-luiz.vercel.app\n\n*Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456.*`;
             window.open(`https://wa.me/${telLimpo}?text=${encodeURIComponent(msg)}`, '_blank');
         };
 
@@ -553,7 +561,7 @@
                 } else {
                     document.getElementById("erroLogin").classList.remove('hidden');
                 }
-            } catch(err) { alert("Erro de conexão al banco de dados."); }
+            } catch(err) { alert("Erro de conexão ao banco de dados."); }
             window.esconderLoading();
         };
 
@@ -566,7 +574,7 @@
                 window.esconderLoading();
                 alert("✅ Senha do Administrador alterada com sucesso!");
                 document.getElementById("cfgSenhaAdmin").value = "";
-            } catch(e) { window.esconderLoading(); alert("Erro al comunicar com Firebase."); }
+            } catch(e) { window.esconderLoading(); alert("Erro ao comunicar com Firebase."); }
         };
 
         window.salvarSenhaAgente = async () => {
@@ -578,7 +586,7 @@
                 window.esconderLoading();
                 alert("✅ Senha do Agente alterada com sucesso!");
                 document.getElementById("cfgSenhaAgente").value = "";
-            } catch(e) { window.esconderLoading(); alert("Erro al comunicar com Firebase."); }
+            } catch(e) { window.esconderLoading(); alert("Erro ao comunicar com Firebase."); }
         };
 
         window.sairAdmin = () => { localStorage.removeItem("admin_saoluiz_logado"); location.reload(); };
@@ -602,7 +610,7 @@
             if(id === 'aba-config') window.carregarLogsAgente();
         };
 
-        // GESTIÓN DE MORADORES
+        // GESTÃO DE MORADORES E CÁLCULO
         window.abrirModalCadastro = () => { document.getElementById("formMorador").reset(); document.getElementById("modId").value = ""; document.getElementById("modalMorador").style.display = "flex"; };
         window.abrirModalEdicao = (id, n, c, t, l) => { document.getElementById("modId").value=id; document.getElementById("modNome").value=n; document.getElementById("modCpf").value=c; document.getElementById("modTel").value=t; document.getElementById("modLote").value=l; document.getElementById("modalMorador").style.display="flex"; };
         
@@ -629,7 +637,7 @@
         };
 
         window.excluirMorador = async (id, nome) => {
-            if(confirm(`¿Apagar ${nome} definitivamente?`)) {
+            if(confirm(`Apagar ${nome} definitivamente?`)) {
                 window.mostrarLoading("A apagar..."); await deleteDoc(doc(db, "familias", id)); window.carregarFamilias(); window.esconderLoading();
             }
         };
@@ -646,7 +654,6 @@
             tbody.innerHTML = html;
         };
 
-        // GERAÇÃO DE LOTE COM VALORES DA NUVEM
         window.calcularLinha = (id) => {
             const ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0;
             const atu_str = document.getElementById(`atu-${id}`).value;
@@ -670,9 +677,10 @@
             document.getElementById(`h-total-${id}`).value = total;
         };
 
+        // GERAÇÃO DE LOTES COM REGISTRO DETALHADO
         window.carregarLoteFaturas = async () => {
             const corpo = document.getElementById("corpoTabelaLote");
-            corpo.innerHTML = "<tr><td colspan='7' class='p-8 text-center text-blue-600 font-bold'>A sincronizar datos recientes del servidor...</td></tr>";
+            corpo.innerHTML = "<tr><td colspan='7' class='p-8 text-center text-blue-600 font-bold'>A sincronizar dados recentes do servidor...</td></tr>";
             try {
                 await window.atualizarCacheFamilias();
                 const fatSnap = await getDocs(collection(db, "faturas"));
@@ -722,7 +730,7 @@
                 return total > 0 && (atuVal !== "" || taxa > 0 || multa > 0);
             });
 
-            if(linhas.length === 0) return alert("¡Preencha as leituras, multas ou agende taxas para faturar!");
+            if(linhas.length === 0) return alert("Preencha as leituras, multas ou agende taxas para faturar!");
             const totalLinhas = linhas.length;
             window.mostrarLoading(`A preparar ${totalLinhas} faturas...`);
             
@@ -732,7 +740,7 @@
             
             for(let input of linhas) {
                 contadorProcessado++;
-                window.mostrarLoading(`A comunicar con el banco...\nGenerando PIX ${contadorProcessado} de ${totalLinhas}`);
+                window.mostrarLoading(`A comunicar com o banco...\nGerando PIX ${contadorProcessado} de ${totalLinhas}`);
                 const total = parseFloat(input.value);
                 const id = input.id.replace('h-total-', '');
                 const vAgua = parseFloat(document.getElementById(`h-agua-${id}`).value);
@@ -756,6 +764,15 @@
                     if(pix.sucesso) {
                         await addDoc(collection(db, "faturas"), { familia_id: id, mes_referencia: descFinal, leitura_anterior: l_ant, leitura_atual: l_atu, consumo_m3: consumoFinal, valor_agua: vAgua, valor_multa: vMulta, taxa_extra: taxaPendente, valor_total: total, vencimento: venc, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), data_lancamento: new Date().toISOString(), telefone: input.dataset.tel, nome_morador: nome });
                         await updateDoc(doc(db, "familias", id), { ultima_leitura: l_atu, taxa_pendente_valor: 0, taxa_pendente_desc: "" });
+                        
+                        // LOG DETALHADO DA GERAÇÃO
+                        await addDoc(collection(db, "logs_agente"), {
+                            data: new Date().toISOString(),
+                            acao: 'Lote Mensal',
+                            cliente: nome,
+                            valor: total
+                        });
+
                         const nomePZ = nome.replace(/'/g, "\\'"); 
                         const dataBr = venc.split('-').reverse().join('/');
                         const statusElement = document.getElementById(`status-${id}`);
@@ -766,7 +783,7 @@
                 } catch(e) {}
                 if (contadorProcessado < totalLinhas) { await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * (2500 - 1500 + 1)) + 1500)); }
             }
-            window.esconderLoading(); alert("✅ ¡Lote de Faturas Concluido com Sucesso!");
+            window.esconderLoading(); alert("✅ Lote de Faturas Concluído com Sucesso!");
         };
 
         // AVULSOS
@@ -787,7 +804,7 @@
             
             if(tipo === 'somar_proxima') {
                 if(familiaId === 'TODOS') {
-                    if(!confirm(`¿Somar R$ ${valor.toFixed(2).replace('.',',')} na conta de TODOS?`)) { window.esconderLoading(); return; }
+                    if(!confirm(`Somar R$ ${valor.toFixed(2).replace('.',',')} na conta de TODOS?`)) { window.esconderLoading(); return; }
                     for(let id of Object.keys(window.familiasGlobal)) { await updateDoc(doc(db, "familias", id), { taxa_pendente_valor: valor, taxa_pendente_desc: descricao }); }
                 } else { await updateDoc(doc(db, "familias", familiaId), { taxa_pendente_valor: valor, taxa_pendente_desc: descricao }); }
                 window.esconderLoading(); alert("✅ Serviço agendado para a próxima fatura de água!"); 
@@ -796,12 +813,21 @@
             }
             
             if(familiaId === 'TODOS') {
-                if(!confirm(`¿Gerar PIX para TODOS?`)) { window.esconderLoading(); return; }
+                if(!confirm(`Gerar PIX para TODOS?`)) { window.esconderLoading(); return; }
                 for(let [id, f] of Object.entries(window.familiasGlobal)) {
                     try {
                         const res = await fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: f.nome, cpf: f.cpf.replace(/\D/g, '')}) });
                         const pix = await res.json();
-                        if(pix.sucesso) { await addDoc(collection(db, "faturas"), { familia_id: id, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: f.telefone, nome_morador: f.nome, data_lancamento: new Date().toISOString() }); }
+                        if(pix.sucesso) { 
+                            await addDoc(collection(db, "faturas"), { familia_id: id, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: f.telefone, nome_morador: f.nome, data_lancamento: new Date().toISOString() }); 
+                            
+                            await addDoc(collection(db, "logs_agente"), {
+                                data: new Date().toISOString(),
+                                acao: 'Avulso (Massa)',
+                                cliente: f.nome,
+                                valor: valor
+                            });
+                        }
                     } catch(err) {}
                 }
                 window.esconderLoading(); alert(`✅ Faturas avulsas geradas.`);
@@ -815,8 +841,15 @@
                         for(let i = 0; i < repeticoes; i++) {
                             let descFinal = repeticoes > 1 ? `${descricao} (Cópia ${i+1}/${repeticoes})` : descricao;
                             await addDoc(collection(db, "faturas"), { familia_id: familiaId, mes_referencia: descFinal, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: opt.dataset.tel, nome_morador: opt.dataset.nome, data_lancamento: new Date().toISOString() });
+                            
+                            await addDoc(collection(db, "logs_agente"), {
+                                data: new Date().toISOString(),
+                                acao: 'Avulso (Unidade)',
+                                cliente: nome,
+                                valor: valor
+                            });
                         }
-                        window.esconderLoading(); alert(`✅ ¡${repeticoes} serviço(s) gerado(s) com sucesso na fila do robô!`);
+                        window.esconderLoading(); alert(`✅ ${repeticoes} serviço(s) gerado(s) com sucesso na fila do robô!`);
                         document.getElementById("formAvulso").reset(); document.getElementById("avulsoRepeticoes").value = 1;
                     }
                 } catch(e) { window.esconderLoading(); alert("Erro na geração da fatura."); }
@@ -824,7 +857,7 @@
             document.getElementById("formAvulso").reset(); document.getElementById("buscaClienteAvulso").value = ""; document.getElementById("avulsoRepeticoes").value = 1; window.filtrarAvulsoESelecionar();
         };
 
-        // GESTIÓN DE PENDIENTES Y PAGADOS
+        // GESTÃO DE ABERTAS COM CANCELAMENTO DETALHADO NO LOG
         window.iniciarListenerAbertas = async () => {
             if(unsubAbertas) unsubAbertas();
             const tbody = document.getElementById("tabelaAbertas");
@@ -864,6 +897,7 @@
                         <span class="text-[9px] font-normal opacity-90 mb-[3px]">${hrCriacao}</span><span class="flex items-center">${linhaBaixo}</span>
                     </button>`;
 
+                    // Passei o nome e o valor para a função de cancelar!
                     html += `<tr class="${rowClass} border-b">
                         <td class="p-3 md:p-4 font-mono text-[10px] md:text-sm">${isOverdue ? "🚨 " : "⏳ "}${dataBr}</td>
                         <td class="p-3 md:p-4 leading-tight"><strong>${f.nome_morador}</strong><br><small class="text-gray-500 text-[10px] md:text-xs">${f.mes_referencia}</small></td>
@@ -872,12 +906,12 @@
                             <div class="flex items-center justify-end gap-1 md:gap-2">
                                 ${btnZap}
                                 <button onclick="window.marcarPago('${f.id}')" class="bg-blue-600 text-white px-3 md:px-4 rounded-lg text-[10px] md:text-xs font-bold transition hover:bg-blue-700 h-[36px] md:h-[40px] flex items-center justify-center">Baixa</button>
-                                <button onclick="window.excluirFatura('${f.id}')" class="bg-red-100 text-red-600 px-3 md:px-4 rounded-lg text-[10px] md:text-xs font-bold transition hover:bg-red-200 h-[36px] md:h-[40px] flex items-center justify-center">🗑️</button>
+                                <button onclick="window.excluirFatura('${f.id}', '${nomePZ}', ${f.valor_total})" class="bg-red-100 text-red-600 px-3 md:px-4 rounded-lg text-[10px] md:text-xs font-bold transition hover:bg-red-200 h-[36px] md:h-[40px] flex items-center justify-center">🗑️</button>
                             </div>
                         </td>
                     </tr>`;
                 }
-                tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center text-green-600 font-bold'>¡Tudo Pago!</td></tr>";
+                tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center text-green-600 font-bold'>Tudo Pago!</td></tr>";
             });
         };
 
@@ -900,18 +934,26 @@
             });
         };
 
-        // CANCELAMIENTO VÍA ROBÔ
-        window.excluirFatura = async (id) => { 
-            if(confirm("¿Deseja cancelar esta fatura e apagar a mensagem no WhatsApp do cliente?")) { 
+        window.excluirFatura = async (id, nome, valor) => { 
+            if(confirm(`Deseja cancelar a fatura de ${nome} e apagar a mensagem do cliente?`)) { 
                 window.mostrarLoading("A enviar comando para o Robô...");
+                
                 await updateDoc(doc(db, "faturas", id), {status: "cancelar"}); 
+                
+                // SALVA O LOG DE CANCELAMENTO NA HORA
+                await addDoc(collection(db, "logs_agente"), {
+                    data: new Date().toISOString(),
+                    acao: 'Cancelada',
+                    cliente: nome,
+                    valor: valor
+                });
+
                 window.esconderLoading();
             } 
         };
 
-        window.marcarPago = async (id) => { if(confirm("¿Confirmar baixa de pagamento manual?")) { await updateDoc(doc(db, "faturas", id), {status: "pago", data_pagamento: new Date().toISOString()}); } };
+        window.marcarPago = async (id) => { if(confirm("Confirmar baixa de pagamento manual?")) { await updateDoc(doc(db, "faturas", id), {status: "pago", data_pagamento: new Date().toISOString()}); } };
 
-        // RELATORIOS
         let todasFaturasCache = [];
         window.carregarRelatorio = async () => {
             window.mostrarLoading("A consultar...");
@@ -969,30 +1011,47 @@
             document.getElementById("tabelaRelatorio").innerHTML = html || "<tr><td colspan='5' class='p-8 text-center text-gray-400'>Sem resultados.</td></tr>";
         };
 
-        // HISTORIAL DE LOGS AGENTE
+        // HISTÓRICO DE LOGS DETALHADO DO AGENTE/SISTEMA
         window.carregarLogsAgente = async () => {
             window.mostrarLoading("A procurar histórico...");
             try {
                 const snap = await getDocs(collection(db, "logs_agente"));
                 let logs = []; 
-                snap.forEach(d => logs.push(d.data())); // <-- Corrigido aqui
+                snap.forEach(d => logs.push(d.data())); 
                 
                 logs.sort((a,b) => new Date(b.data) - new Date(a.data));
                 let html = "";
+                
                 logs.forEach(l => {
                     const dt = new Date(l.data);
                     const dtF = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-                    html += `<tr class="hover:bg-slate-50"><td class="p-3 text-[10px] md:text-xs font-mono text-gray-500 whitespace-nowrap w-1/4">${dtF}</td><td class="p-3 font-bold text-xs md:text-sm text-blue-700">${l.mensagem}</td></tr>`;
+                    
+                    if (l.mensagem) {
+                        // Compatibilidade com logs antigos
+                        html += `<tr class="hover:bg-slate-50 border-b border-slate-100"><td class="p-3 text-[10px] font-mono text-gray-500 whitespace-nowrap">${dtF}</td><td class="p-3 text-[10px]"><span class="bg-slate-200 text-slate-700 px-2 py-1 rounded-md font-bold shadow-sm">Antigo</span></td><td class="p-3 text-xs font-bold text-slate-700" colspan="2">${l.mensagem}</td></tr>`;
+                    } else {
+                        // Layout Logs Novos Detalhados
+                        let corBadge = "bg-emerald-50 text-emerald-600 border border-emerald-100";
+                        if (l.acao === 'Cancelada') corBadge = "bg-red-50 text-red-600 border border-red-100";
+                        if (l.acao.includes('Avulso')) corBadge = "bg-orange-50 text-orange-600 border border-orange-100";
+
+                        html += `<tr class="hover:bg-slate-50 border-b border-slate-100">
+                            <td class="p-3 text-[10px] md:text-xs font-mono text-gray-500 whitespace-nowrap">${dtF}</td>
+                            <td class="p-3 text-[10px]"><span class="${corBadge} px-2 py-1 rounded-md font-bold shadow-sm whitespace-nowrap">${l.acao}</span></td>
+                            <td class="p-3 text-[11px] md:text-xs font-bold text-slate-700 max-w-[120px] truncate" title="${l.cliente}">${l.cliente}</td>
+                            <td class="p-3 text-[11px] md:text-xs font-black text-right text-slate-700 whitespace-nowrap">R$ ${parseFloat(l.valor).toFixed(2).replace('.',',')}</td>
+                        </tr>`;
+                    }
                 });
-                document.getElementById("tabelaLogsAgente").innerHTML = html || "<tr><td class='p-6 text-center text-gray-400'>Nenhum lançamento foi efetuado pelo agente.</td></tr>";
+                
+                document.getElementById("tabelaLogsAgente").innerHTML = html || "<tr><td colspan='4' class='p-6 text-center text-gray-400'>Nenhum histórico encontrado.</td></tr>";
             } catch(e) { 
                 console.error(e);
-                document.getElementById("tabelaLogsAgente").innerHTML = "<tr><td class='p-4 text-center text-red-500'>Erro ao carregar histórico.</td></tr>";
+                document.getElementById("tabelaLogsAgente").innerHTML = "<tr><td colspan='4' class='p-4 text-center text-red-500'>Erro ao carregar histórico.</td></tr>";
             }
             window.esconderLoading();
         };
 
-        // EXPORTAÇÃO E IMPORTAÇÃO
         window.exportarBase = async () => {
             window.mostrarLoading("A iniciar Backup...");
             const famSnap = await getDocs(collection(db, "familias"));
@@ -1008,25 +1067,25 @@
 
         window.importarBase = async () => {
             const file = document.getElementById("fileImport").files[0];
-            if(!file || !confirm("¿Adicionar dados ao sistema?")) return;
+            if(!file || !confirm("Adicionar dados ao sistema?")) return;
             window.mostrarLoading("A importar base de dados...");
             const reader = new FileReader();
             reader.onload = async (e) => {
                 const data = JSON.parse(e.target.result);
                 if(data.familias) for(let f of data.familias) { const {id, ...rest} = f; await setDoc(doc(db, "familias", id), rest); }
                 if(data.faturas) for(let f of data.faturas) { const {id, ...rest} = f; await setDoc(doc(db, "faturas", id), rest); }
-                alert("¡Importação Sucesso!"); window.carregarFamilias(); window.esconderLoading();
+                alert("Importação Sucesso!"); window.carregarFamilias(); window.esconderLoading();
             };
             reader.readAsText(file);
         };
 
         window.limparFaturas = async () => {
-            if(!confirm("🚨 PERIGO EXTREMO: ¿Apagar TODO o historial de faturas?")) return;
+            if(!confirm("🚨 PERIGO EXTREMO: Apagar TODO o historial de faturas?")) return;
             if(prompt("Digite CONFIRMO para prosseguir") !== "CONFIRMO") return;
             window.mostrarLoading("A formatar base de dados...");
             const snap = await getDocs(collection(db, "faturas"));
             snap.forEach(async (d) => { await deleteDoc(doc(db, "faturas", d.id)); });
-            alert("¡Base formatada!"); window.carregarLoteFaturas(); window.esconderLoading();
+            alert("Base formatada!"); window.carregarLoteFaturas(); window.esconderLoading();
         };
     </script>
 </body>
