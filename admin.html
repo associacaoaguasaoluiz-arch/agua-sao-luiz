@@ -647,10 +647,19 @@
             authDomain: "sistema-agua-sao-luiz.firebaseapp.com",
             projectId: "sistema-agua-sao-luiz"
         };
+        const firebaseConfig = {
+            apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ",
+            authDomain: "sistema-agua-sao-luiz.firebaseapp.com",
+            projectId: "sistema-agua-sao-luiz"
+        };
         const db = getFirestore(initializeApp(firebaseConfig));
 
         let unsubAbertas = null;
         let unsubPagos = null;
+
+        // ===== COLE AS DUAS FUNÇÕES AQUI =====
+        window.salvarSenhaAgente = async () => {
+        // ... (código que você colou)
 
         window.atualizarCacheFamilias = async () => {
             const snap = await getDocs(collection(db, "familias"));
