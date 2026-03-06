@@ -31,7 +31,7 @@
         <header class="bg-slate-900 text-white p-4 flex justify-between items-center shadow-md z-40">
             <div>
                 <h1 class="font-black text-lg leading-tight">Água São Luiz</h1>
-                <p class="text-[10px] text-slate-400">Modo Coleta</p>
+                <p class="text-[10px] text-slate-400">Modo Coleta Offline</p>
             </div>
             <div class="flex items-center gap-3">
                 <div id="statusConexao" class="flex items-center gap-1 bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-xs font-bold border border-green-500/30">
@@ -42,13 +42,18 @@
             </div>
         </header>
 
-        <main class="flex-1 overflow-y-auto p-4 pb-24">
+        <main class="flex-1 overflow-y-auto p-4 pb-24 relative">
+            
             <div class="flex justify-between items-center mb-4">
                 <h2 class="font-black text-slate-700 text-lg"><i class="fa-solid fa-clipboard-list text-blue-600 mr-2"></i>Leituras do Mês</h2>
-                <span id="contadorLeituras" class="bg-blue-100 text-blue-700 font-bold px-3 py-1 rounded-lg text-xs">0 pendentes</span>
+                <span id="contadorLeituras" class="bg-blue-100 text-blue-700 font-bold px-3 py-1 rounded-lg text-xs">0 digitadas</span>
             </div>
 
             <input type="text" id="buscaMorador" onkeyup="filtrarCards()" placeholder="🔍 Buscar morador ou endereço..." class="w-full p-4 bg-white shadow-sm border border-gray-200 rounded-2xl mb-4 outline-none focus:border-blue-500 text-sm">
+
+            <div id="avisoRascunho" class="hidden bg-amber-50 border border-amber-200 text-amber-700 p-3 rounded-xl mb-4 text-xs font-bold flex items-center gap-2">
+                <i class="fa-solid fa-floppy-disk text-amber-500"></i> Rascunhos recuperados! Suas digitações anteriores foram restauradas.
+            </div>
 
             <div id="listaCards" class="space-y-4">
                 <p class="text-center text-gray-400 text-sm mt-10">A carregar dados dos moradores...</p>
@@ -75,15 +80,20 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Ativar Persistência Offline do Firebase (A Mágica)
-        enableIndexedDbPersistence(db).catch((err) => {
-            if (err.code == 'failed-precondition') console.log("Abas múltiplas abertas. Offline não suportado.");
-            else if (err.code == 'unimplemented') console.log("Navegador não suporta offline.");
-        });
+        // Ativa banco de dados offline
+        enableIndexedDbPersistence(db).catch((err) => { console.log("Offline não suportado."); });
 
         let moradoresGlobal = [];
 
-        // Controle Online/Offline Visual
+        // Proteção contra atualizar a página acidentalmente
+        window.addEventListener('beforeunload', function (e) {
+            const rascunhos = JSON.parse(localStorage.getItem('rascunhos_coleta') || '{}');
+            if (Object.keys(rascunhos).length > 0) {
+                e.preventDefault();
+                e.returnValue = 'Existem leituras digitadas não enviadas. Tem certeza que deseja sair?';
+            }
+        });
+
         const atualizarStatusRede = () => {
             const el = document.getElementById("statusConexao");
             const btnSync = document.getElementById("btnSincronizar");
@@ -91,19 +101,18 @@
                 el.innerHTML = '<span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span> Online';
                 el.className = "flex items-center gap-1 bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-xs font-bold border border-green-500/30";
                 btnSync.classList.remove("opacity-50", "pointer-events-none");
-                btnSync.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Sincronizar e Gerar Faturas';
+                btnSync.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Sincronizar Faturas';
             } else {
                 el.innerHTML = '<i class="fa-solid fa-plane-slash"></i> Offline';
                 el.className = "flex items-center gap-1 bg-red-500/20 text-red-500 px-3 py-1 rounded-full text-xs font-bold border border-red-500/30";
                 btnSync.classList.add("opacity-50", "pointer-events-none");
-                btnSync.innerHTML = '<i class="fa-solid fa-wifi"></i> Requer Internet para Sincronizar';
+                btnSync.innerHTML = '<i class="fa-solid fa-wifi"></i> Sem Internet';
             }
         };
         window.addEventListener('online', atualizarStatusRede);
         window.addEventListener('offline', atualizarStatusRede);
         atualizarStatusRede();
 
-        // Login Simples
         window.entrarAgente = (e) => {
             e.preventDefault();
             if(document.getElementById("senhaAgente").value === "agente123") {
@@ -122,11 +131,9 @@
             carregarListaColeta();
         }
 
-        // Regras de Negócio e Cálculos
         const val1 = parseFloat(localStorage.getItem('agua_val1')) || 25;
         const val2 = parseFloat(localStorage.getItem('agua_val2')) || 50;
         const val3 = parseFloat(localStorage.getItem('agua_val3')) || 100;
-        const multaPadrao = parseFloat(localStorage.getItem('config_multa_padrao')) || 25.00;
 
         window.calcularTotalCard = (id) => {
             const ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0;
@@ -144,13 +151,23 @@
             const total = vAgua + multa + taxa;
             document.getElementById(`total-${id}`).innerText = "R$ " + total.toFixed(2).replace('.', ',');
             
-            // Salva temporariamente no elemento para quando for sincronizar
             document.getElementById(`card-${id}`).dataset.valoragua = vAgua;
             document.getElementById(`card-${id}`).dataset.valortotal = total;
             document.getElementById(`card-${id}`).dataset.consumo = consumo;
+
+            // SALVA O RASCUNHO AUTO-SAVE NA MEMÓRIA
+            let rascunhos = JSON.parse(localStorage.getItem('rascunhos_coleta') || '{}');
+            if (atuStr !== "" || multa !== 0) {
+                rascunhos[id] = { atu: atuStr, multa: multa };
+            } else {
+                delete rascunhos[id]; // Limpa se apagou
+            }
+            localStorage.setItem('rascunhos_coleta', JSON.stringify(rascunhos));
+            
+            // Atualiza o contador de pendentes na tela
+            document.getElementById("contadorLeituras").innerText = `${Object.keys(rascunhos).length} digitadas`;
         };
 
-        // Carrega as Famílias do Firebase (usa cache se estiver offline)
         async function carregarListaColeta() {
             document.getElementById("loading").style.display = "flex";
             try {
@@ -160,23 +177,35 @@
                 moradoresGlobal.sort((a,b) => (a.nome || "").localeCompare(b.nome || "", 'pt-BR'));
                 renderizarCards(moradoresGlobal);
             } catch(e) {
-                console.error("Erro ao carregar dados", e);
-                document.getElementById("listaCards").innerHTML = "<p class='text-red-500 text-center font-bold'>Erro ao aceder dados offline.</p>";
+                document.getElementById("listaCards").innerHTML = "<p class='text-red-500 text-center font-bold'>Erro ao aceder dados offline. Conecte à internet pelo menos uma vez.</p>";
             }
             document.getElementById("loading").style.display = "none";
         }
 
         function renderizarCards(lista) {
             let html = "";
-            let pendentes = 0;
+            let rascunhos = JSON.parse(localStorage.getItem('rascunhos_coleta') || '{}');
             
+            if(Object.keys(rascunhos).length > 0) {
+                document.getElementById("avisoRascunho").classList.remove("hidden");
+            } else {
+                document.getElementById("avisoRascunho").classList.add("hidden");
+            }
+
             lista.forEach(f => {
                 const taxa = f.taxa_pendente_valor || 0;
-                // Exibe no ecrã apenas se não tiver preenchido ainda nesta sessão
-                pendentes++;
+                
+                // Resgata o Rascunho se a pessoa já tinha digitado antes
+                const rascunho = rascunhos[f.id] || {};
+                const atuVal = rascunho.atu !== undefined ? rascunho.atu : "";
+                const multaVal = rascunho.multa !== undefined ? rascunho.multa : "0.00";
+
+                // Visual de card já preenchido (Dá um destaque verde)
+                const cardAtivoClass = atuVal !== "" ? "border-green-400 bg-green-50 shadow-md" : "border-gray-200 bg-white";
+
                 html += `
-                <div class="card-morador bg-white border border-gray-200 p-4 rounded-2xl shadow-sm" id="card-${f.id}" data-nome="${f.nome.toLowerCase()}" data-cpf="${f.cpf}" data-telefone="${f.telefone}" data-taxa="${taxa}" data-desc="${f.taxa_pendente_desc || ""}">
-                    <div class="flex justify-between items-start border-b pb-3 mb-3">
+                <div class="card-morador border p-4 rounded-2xl mb-4 transition-all ${cardAtivoClass}" id="card-${f.id}" data-nome="${f.nome.toLowerCase()}" data-cpf="${f.cpf}" data-telefone="${f.telefone}" data-taxa="${taxa}" data-desc="${f.taxa_pendente_desc || ""}">
+                    <div class="flex justify-between items-start border-b border-gray-200 pb-3 mb-3">
                         <div>
                             <h3 class="font-black text-slate-800 leading-tight">${f.nome}</h3>
                             <p class="text-[10px] text-gray-500 font-mono mt-1">${f.lote_endereco || "Sem endereço"}</p>
@@ -185,29 +214,29 @@
                     </div>
                     
                     <div class="grid grid-cols-2 gap-3 mb-3">
-                        <div class="bg-gray-50 p-2 rounded-xl text-center border border-gray-100">
+                        <div class="bg-gray-50/50 p-2 rounded-xl text-center border border-gray-100">
                             <span class="block text-[9px] font-bold text-gray-400 uppercase mb-1">Anterior</span>
                             <input type="number" id="ant-${f.id}" value="${f.ultima_leitura || 0}" readonly class="w-full bg-transparent text-center font-bold text-gray-600 outline-none">
                         </div>
-                        <div class="bg-blue-50 p-2 rounded-xl text-center border-2 border-blue-200">
+                        <div class="bg-white p-2 rounded-xl text-center border-2 border-blue-200 focus-within:border-blue-500 focus-within:shadow-md transition">
                             <span class="block text-[9px] font-black text-blue-600 uppercase mb-1">Atual</span>
-                            <input type="number" inputmode="numeric" id="atu-${f.id}" oninput="calcularTotalCard('${f.id}')" placeholder="Digitar" class="w-full bg-transparent text-center font-black text-blue-800 text-lg outline-none">
+                            <input type="number" inputmode="numeric" id="atu-${f.id}" value="${atuVal}" oninput="calcularTotalCard('${f.id}')" placeholder="Digitar..." class="w-full bg-transparent text-center font-black text-blue-800 text-lg outline-none">
                         </div>
                     </div>
                     
-                    <div class="flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100 mb-3">
+                    <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-gray-100 mb-3">
                         <div class="flex-1">
                             <label class="block text-[9px] font-bold text-gray-500 uppercase mb-1">Consumo</label>
                             <span id="cons-${f.id}" class="font-black text-blue-600">0 m³</span>
                         </div>
-                        <div class="flex-1 border-l pl-3 border-gray-200">
+                        <div class="flex-1 border-l pl-3 border-gray-100">
                             <label class="block text-[9px] font-bold text-red-400 uppercase mb-1">Multa (R$)</label>
-                            <input type="number" step="0.01" id="multa-${f.id}" value="0.00" oninput="calcularTotalCard('${f.id}')" class="w-full bg-white border border-red-100 p-1 text-center font-bold text-red-600 rounded outline-none text-sm">
+                            <input type="number" step="0.01" id="multa-${f.id}" value="${multaVal}" oninput="calcularTotalCard('${f.id}')" class="w-full bg-red-50 border border-red-100 p-1 text-center font-bold text-red-600 rounded outline-none text-sm focus:border-red-400">
                             <input type="hidden" id="taxa-${f.id}" value="${taxa}">
                         </div>
                     </div>
                     
-                    <div class="flex justify-between items-center bg-slate-900 text-white p-3 rounded-xl">
+                    <div class="flex justify-between items-center bg-slate-900 text-white p-3 rounded-xl shadow-inner">
                         <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Total a Pagar</span>
                         <span id="total-${f.id}" class="font-black text-lg text-green-400">R$ 0,00</span>
                     </div>
@@ -215,9 +244,9 @@
                 `;
             });
             document.getElementById("listaCards").innerHTML = html;
-            document.getElementById("contadorLeituras").innerText = `${pendentes} pendentes`;
+            document.getElementById("contadorLeituras").innerText = `${Object.keys(rascunhos).length} digitadas`;
             
-            // Inicializa cálculos base
+            // Recalcula todos os totais baseados nos rascunhos recuperados
             lista.forEach(f => calcularTotalCard(f.id));
         }
 
@@ -231,12 +260,8 @@
             });
         };
 
-        // --- SINCRONIZAÇÃO E GERAÇÃO COM A API DO PIX (REQUER INTERNET) ---
         window.sincronizarEGerarLote = async () => {
-            if(!navigator.onLine) {
-                alert("Você precisa estar conectado à internet para gerar o PIX e sincronizar com o robô.");
-                return;
-            }
+            if(!navigator.onLine) return alert("Você precisa estar conectado à internet para gerar o PIX.");
 
             const cards = document.querySelectorAll(".card-morador");
             let faturasParaGerar = [];
@@ -246,7 +271,6 @@
                 const atuVal = document.getElementById(`atu-${id}`).value;
                 const total = parseFloat(card.dataset.valortotal) || 0;
                 
-                // Só processa quem preencheu a leitura atual ou já tem valor a pagar (multa/taxa)
                 if (atuVal !== "" || total > 0) {
                     faturasParaGerar.push({
                         familia_id: id,
@@ -265,18 +289,14 @@
                 }
             });
 
-            if (faturasParaGerar.length === 0) {
-                return alert("Nenhuma leitura nova preenchida para sincronizar.");
-            }
-
-            if(!confirm(`Gerar ${faturasParaGerar.length} faturas no servidor e enviar para o WhatsApp?`)) return;
+            if (faturasParaGerar.length === 0) return alert("Nenhuma leitura nova preenchida para sincronizar.");
+            if(!confirm(`Gerar e Sincronizar ${faturasParaGerar.length} faturas para o Robô enviar?`)) return;
 
             document.getElementById("loadingMsg").innerText = `A Sincronizar ${faturasParaGerar.length} faturas...`;
             document.getElementById("loading").style.display = "flex";
 
             const dataAtual = new Date();
             const mesStr = `${String(dataAtual.getMonth() + 1).padStart(2, '0')}/${dataAtual.getFullYear()}`;
-            // Joga vencimento para o dia 20 do mês atual ou próximo
             const vencimentoStr = `${dataAtual.getFullYear()}-${String(dataAtual.getMonth() + 1).padStart(2, '0')}-20`;
 
             let sucessoCont = 0;
@@ -286,7 +306,6 @@
                 if(fat.taxa_extra > 0) descFinal += ` + ${fat.desc_taxa}`;
 
                 try {
-                    // API do PIX (Por isso precisa de Internet)
                     const res = await fetch("/api/gerar-pix", { 
                         method: "POST", headers: { "Content-Type": "application/json" }, 
                         body: JSON.stringify({ valor: fat.valor_total, descricao: descFinal, nome: fat.nome, cpf: fat.cpf }) 
@@ -294,7 +313,6 @@
                     const pix = await res.json();
 
                     if(pix.sucesso) {
-                        // Grava no Firebase sinalizando o Robô (whatsapp_enviado: false)
                         await addDoc(collection(db, "faturas"), { 
                             familia_id: fat.familia_id, 
                             mes_referencia: descFinal, 
@@ -307,7 +325,7 @@
                             valor_total: fat.valor_total, 
                             vencimento: vencimentoStr, 
                             status: "pendente", 
-                            whatsapp_enviado: false, // ROBÔ VAI LER AQUI
+                            whatsapp_enviado: false, 
                             pix_copia_cola: pix.copiaECola, 
                             qr_code_base64: pix.qrCodeBase64, 
                             pix_txid: String(pix.txid), 
@@ -316,7 +334,6 @@
                             nome_morador: fat.nome 
                         });
                         
-                        // Atualiza a família
                         await updateDoc(doc(db, "familias", fat.familia_id), { 
                             ultima_leitura: fat.leitura_atual, 
                             taxa_pendente_valor: 0, 
@@ -324,8 +341,6 @@
                         });
 
                         sucessoCont++;
-                        // Esconde o card que já foi sincronizado
-                        document.getElementById(`card-${fat.familia_id}`).style.display = "none";
                     }
                 } catch(e) {
                     console.error(`Falha no PIX de ${fat.nome}`, e);
@@ -333,8 +348,12 @@
             }
 
             document.getElementById("loading").style.display = "none";
-            alert(`✅ Sincronização concluída! ${sucessoCont} faturas salvas e enviadas para a fila do robô.`);
-            carregarListaColeta(); // Recarrega para limpar as taxas
+            
+            // LIMPA OS RASCUNHOS SALVOS JÁ QUE FOI TUDO ENVIADO
+            localStorage.removeItem('rascunhos_coleta');
+            
+            alert(`✅ Sincronização concluída! ${sucessoCont} faturas enviadas.`);
+            carregarListaColeta();
         };
     </script>
 </body>
