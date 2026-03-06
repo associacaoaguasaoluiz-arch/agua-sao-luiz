@@ -864,17 +864,19 @@
             document.getElementById("formAvulso").reset(); document.getElementById("buscaClienteAvulso").value = ""; document.getElementById("avulsoRepeticoes").value = 1; window.filtrarAvulsoESelecionar();
         };
 
-        window.iniciarListenerAbertas = async () => {
+       window.iniciarListenerAbertas = async () => {
             if(unsubAbertas) unsubAbertas();
             const tbody = document.getElementById("tabelaAbertas");
             tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center'>A carregar...</td></tr>";
             const q = query(collection(db, "faturas"), where("status", "==", "pendente"));
+            
             unsubAbertas = onSnapshot(q, (snap) => {
                 const hoje = new Date(); hoje.setHours(0,0,0,0);
                 let abertas = [];
                 snap.forEach(d => abertas.push({id: d.id, ...d.data()}));
                 abertas.sort((a,b) => new Date(a.vencimento) - new Date(b.vencimento));
                 let html = "";
+                
                 for(let f of abertas) {
                     const isOverdue = new Date(f.vencimento + "T00:00:00") < hoje;
                     const rowClass = isOverdue ? "bg-red-50" : "hover:bg-amber-50";
@@ -884,32 +886,45 @@
                     const dataBr = f.vencimento.split('-').reverse().join('/');
                     const valorForm = f.valor_total.toFixed(2);
 
-                    // Lê do Firebase se o robô já enviou para pintar de verde, caso contrário, fica vermelho
-                   // Formata a hora de criação (Lançamento)
+                    // --- LÓGICA DO BOTÃO ZAP (COM HORAS, SEGUNDOS E ALTURA FIXA) ---
                     let dtLanc = new Date(f.data_lancamento);
-                    let horaCriacao = !isNaN(dtLanc) ? dtLanc.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}) : '--:--';
+                    // Pega a hora de criação com Segundos
+                    let hrCriacao = !isNaN(dtLanc) ? dtLanc.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit', second:'2-digit'}) : '--:--:--';
                     
-                    let tempoTexto = `Criado: ${horaCriacao}`;
-                    let corZap = 'bg-red-500 hover:bg-red-600'; // Começa vermelho
+                    let corZap = 'bg-red-500 hover:bg-red-600';
+                    let linhaBaixo = `<i class="fa-brands fa-whatsapp mr-1"></i> ZAP`;
                     
-                    // Se o robô enviou, pinta de verde e calcula o tempo
+                    // Se o robô enviou, pinta de verde e mostra a hora de envio com Segundos embaixo
                     if (f.whatsapp_enviado) {
                         corZap = 'bg-green-500 hover:bg-green-600';
                         if (f.data_envio_whatsapp) {
                             let dtEnv = new Date(f.data_envio_whatsapp);
-                            let min = Math.max(1, Math.round((dtEnv - dtLanc) / 60000));
-                            tempoTexto = `Enviado em ${min} min`;
+                            let hrEnvio = dtEnv.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+                            linhaBaixo = `<i class="fa-brands fa-whatsapp mr-1"></i> ${hrEnvio}`;
                         } else {
-                            tempoTexto = `Enviado!`;
+                            linhaBaixo = `<i class="fa-brands fa-whatsapp mr-1"></i> --:--:--`;
                         }
                     }
 
-                    // Botão agora tem duas linhas (Ícone ZAP em cima e o Tempinho em baixo)
-                    const btnZap = `<button onclick="window.enviarWhatsAppSemEmoji('normal', '${tel}', '${nomePZ}', '${f.mes_referencia}', '${valorForm}', '${dataBr}')" class="${corZap} text-white px-3 py-1 md:px-4 md:py-1.5 rounded-lg text-[10px] md:text-xs font-bold shadow mr-1 transition flex flex-col items-center justify-center leading-tight">
-                        <span class="flex items-center gap-1"><i class="fa-brands fa-whatsapp"></i> ZAP</span>
-                        <span class="text-[8px] font-normal opacity-90">${tempoTexto}</span>
+                    // Botão estruturado para ter Altura Fixa (h-[36px])
+                    const btnZap = `<button onclick="window.enviarWhatsAppSemEmoji('normal', '${tel}', '${nomePZ}', '${f.mes_referencia}', '${valorForm}', '${dataBr}')" class="${corZap} text-white rounded-lg text-[10px] md:text-[11px] font-bold shadow transition flex flex-col items-center justify-center min-w-[75px] h-[36px] md:h-[40px] leading-none px-2">
+                        <span class="text-[9px] font-normal opacity-90 mb-[3px]">${hrCriacao}</span>
+                        <span class="flex items-center">${linhaBaixo}</span>
                     </button>`;
-                    html += `<tr class="${rowClass} border-b"><td class="p-3 md:p-4 font-mono text-[10px] md:text-sm">${isOverdue ? "🚨 " : "⏳ "}${dataBr}</td><td class="p-3 md:p-4"><strong>${f.nome_morador}</strong><br><small class="text-gray-500 text-[10px] md:text-xs">${f.mes_referencia}</small></td><td class="p-3 md:p-4 text-right font-bold text-amber-700 text-sm md:text-base">R$ ${valorForm}</td><td class="p-3 md:p-4 text-right whitespace-nowrap">${btnZap} <button onclick="window.marcarPago('${f.id}')" class="bg-blue-600 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg text-[10px] md:text-xs font-bold mr-1 transition hover:bg-blue-700">Baixa</button> <button onclick="window.excluirFatura('${f.id}')" class="bg-red-100 text-red-600 px-3 py-2 md:px-4 md:py-2 rounded-lg text-[10px] md:text-xs font-bold transition hover:bg-red-200">🗑️</button></td></tr>`;
+
+                    // Linha da tabela atualizada com um Container Flexbox para forçar todos os 3 botões a terem a MESMA ALTURA
+                    html += `<tr class="${rowClass} border-b">
+                        <td class="p-3 md:p-4 font-mono text-[10px] md:text-sm">${isOverdue ? "🚨 " : "⏳ "}${dataBr}</td>
+                        <td class="p-3 md:p-4 leading-tight"><strong>${f.nome_morador}</strong><br><small class="text-gray-500 text-[10px] md:text-xs">${f.mes_referencia}</small></td>
+                        <td class="p-3 md:p-4 text-right font-bold text-amber-700 text-sm md:text-base">R$ ${valorForm}</td>
+                        <td class="p-2 md:p-4">
+                            <div class="flex items-center justify-end gap-1 md:gap-2">
+                                ${btnZap}
+                                <button onclick="window.marcarPago('${f.id}')" class="bg-blue-600 text-white px-3 md:px-4 rounded-lg text-[10px] md:text-xs font-bold transition hover:bg-blue-700 h-[36px] md:h-[40px] flex items-center justify-center">Baixa</button>
+                                <button onclick="window.excluirFatura('${f.id}')" class="bg-red-100 text-red-600 px-3 md:px-4 rounded-lg text-[10px] md:text-xs font-bold transition hover:bg-red-200 h-[36px] md:h-[40px] flex items-center justify-center">🗑️</button>
+                            </div>
+                        </td>
+                    </tr>`;
                 }
                 tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center text-green-600 font-bold'>Tudo Pago!</td></tr>";
             });
