@@ -139,20 +139,20 @@
 
                             <div>
                                 <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Título do Serviço</label>
-                                <input type="text" id="avulsoDescricao" required placeholder="Ex: Conserto do encanamento" class="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500 transition shadow-sm text-sm md:text-base">
+                                <input type="text" id="avulsoDescricao" required placeholder="Ex: Conserto do encanamento" class="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500 transition shadow-sm text-sm md:text-base" onkeydown="window.focarProximo(event, 'avulsoValor')">
                             </div>
                             <div class="flex flex-col sm:flex-row gap-4">
                                 <div class="flex-[2]">
                                     <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Valor (R$)</label>
-                                   <input type="text" inputmode="numeric" id="avulsoValor" required placeholder="0,00" class="w-full p-3 bg-gray-50 border rounded-xl outline-none text-blue-600 font-bold text-lg focus:border-blue-500 transition shadow-sm" oninput="window.mascaraMoeda(event)">
+                                   <input type="text" inputmode="numeric" id="avulsoValor" required placeholder="0,00" class="w-full p-3 bg-gray-50 border rounded-xl outline-none text-blue-600 font-bold text-lg focus:border-blue-500 transition shadow-sm" oninput="window.mascaraMoeda(event)" onkeydown="if(document.getElementById('avulsoTipo').value === 'pix_agora') { window.focarProximo(event, 'avulsoVencimento'); } else { window.focarProximo(event, 'btnSubmitAvulso'); }">
                                 </div>
                                 <div class="flex-[2]" id="divVencimentoAvulso">
                                     <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Vencimento (Só p/ Pix)</label>
-                                    <input type="date" id="avulsoVencimento" class="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500 transition shadow-sm text-sm md:text-base">
+                                    <input type="date" id="avulsoVencimento" class="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500 transition shadow-sm text-sm md:text-base" onkeydown="window.focarProximo(event, 'avulsoRepeticoes')">
                                 </div>
                                 <div class="flex-1">
                                     <label class="block text-[10px] md:text-xs font-bold text-orange-500 uppercase mb-1">Cópias</label>
-                                    <input type="number" id="avulsoRepeticoes" value="1" min="1" class="w-full p-3 bg-orange-50 border border-orange-200 rounded-xl outline-none font-black text-orange-700 text-center transition shadow-sm text-sm md:text-base">
+                                    <input type="number" id="avulsoRepeticoes" value="1" min="1" class="w-full p-3 bg-orange-50 border border-orange-200 rounded-xl outline-none font-black text-orange-700 text-center transition shadow-sm text-sm md:text-base" onkeydown="window.focarProximo(event, 'btnSubmitAvulso')">
                                 </div>
                             </div>
                             <button type="submit" id="btnSubmitAvulso" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-black py-3 md:py-4 rounded-xl shadow-lg mt-2 active:scale-95 transition text-base md:text-lg">Confirmar Lançamento</button>
@@ -284,6 +284,7 @@
                             <h3 class="font-bold text-base md:text-lg text-red-700 mb-3 md:mb-4">🚨 Multa Padrão (Atraso)</h3>
                             <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
                                 <div class="w-full sm:w-1/3"><label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1">Valor da Multa (R$)</label><input type="number" step="0.01" id="cfgMulta" class="w-full p-3 border rounded-xl font-bold text-red-600 outline-none text-sm md:text-base"></div>
+                                <div class="w-full sm:w-2/3 text-[10px] md:text-xs text-gray-500 leading-relaxed">Valor preenchido automaticamente ao gerar lote se houver pendências. Pode ser alterado na grelha manualmente.</div>
                             </div>
                             <button onclick="window.salvarConfigMulta()" class="mt-4 w-full sm:w-auto bg-red-500 hover:bg-red-600 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">💾 Guardar Multa</button>
                         </div>
@@ -383,6 +384,89 @@
                     if(nextInput) { nextInput.focus(); nextInput.select(); }
                 }
             }
+        };
+
+        // --- FUNÇÕES RESTAURADAS PARA O SERVIÇO AVULSO ---
+        window.renderizarSelectAvulso = (filtro = "") => {
+            const select = document.getElementById("avulsoFamilia");
+            const displayNome = document.getElementById("avulsoClienteNomeExibicao");
+            
+            let html = "<option value='TODOS'>🌟 RATEIO: COBRAR TODOS</option>";
+            let matchCount = 0; let firstMatchId = null; let firstMatchName = null;
+
+            const termoBuscado = filtro.toLowerCase().trim();
+            const moradoresAvulso = Object.entries(window.familiasGlobal).map(([id, f]) => ({id, ...f}));
+            moradoresAvulso.sort((a,b) => (a.nome || "").localeCompare(b.nome || "", 'pt-BR'));
+
+            moradoresAvulso.forEach(f => {
+                const texto = `${f.nome} ${f.cpf} ${f.lote_endereco}`.toLowerCase();
+                if(texto.includes(termoBuscado)) {
+                    html += `<option value="${f.id}" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}">${f.nome} (${f.lote_endereco})</option>`;
+                    if(matchCount === 0) { firstMatchId = f.id; firstMatchName = f.nome; }
+                    matchCount++;
+                }
+            });
+            select.innerHTML = html;
+
+            if (termoBuscado === "") {
+                select.value = 'TODOS';
+                displayNome.innerText = "🌟 RATEIO: COBRAR TODOS"; displayNome.classList.remove('hidden');
+                displayNome.className = "text-xs md:text-sm font-bold text-blue-700 bg-blue-50 p-2 md:p-3 rounded-xl mt-2";
+            } else if (firstMatchId) {
+                select.value = firstMatchId;
+                displayNome.innerText = `✅ Selecionado: ${firstMatchName}`; displayNome.classList.remove('hidden');
+                displayNome.className = "text-xs md:text-sm font-bold text-green-700 bg-green-50 p-2 md:p-3 rounded-xl mt-2 border border-green-200";
+            } else {
+                select.value = ""; displayNome.innerText = "❌ Nenhum cliente encontrado"; displayNome.classList.remove('hidden');
+                displayNome.className = "text-xs md:text-sm font-bold text-red-700 bg-red-50 p-2 md:p-3 rounded-xl mt-2";
+            }
+        };
+
+        window.filtrarAvulsoESelecionar = () => { window.renderizarSelectAvulso(document.getElementById("buscaClienteAvulso").value); };
+        
+        window.carregarSelectAvulso = () => {
+            document.getElementById("buscaClienteAvulso").value = "";
+            window.renderizarSelectAvulso("");
+        };
+
+        // --- FUNÇÕES RESTAURADAS DE WHATSAPP MANUAL E VOZ ---
+        window.enviarWhatsAppSemEmoji = (tipo, telefone, nome, ref, valor, venc) => {
+            if(!telefone || String(telefone).trim().length < 8) return alert("Sem WhatsApp válido.");
+            const nomeLimpo = String(nome).replace(/[\s\u200B-\u200D\uFEFF\xA0]+$/g, '').trim();
+            const telLimpo = String(telefone).replace(/\D/g, '');
+            let msg = `*FATURA DE ÁGUA DISTRITO SÃO LUIZ*\n\nOlá, *${nomeLimpo}*!\n${tipo === 'avulso' ? 'Uma nova cobrança foi gerada em seu nome.' : `A sua fatura de ${ref} está disponível.`}\n\n- *Total:* R$ ${valor}\n- *Vencimento:* ${venc}\n\n> Acesse o link para copiar o PIX:\nhttps://agua-sao-luiz.vercel.app\n\n*Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456.*`;
+            window.open(`https://wa.me/${telLimpo}?text=${encodeURIComponent(msg)}`, '_blank');
+        };
+
+        window.vozAtiva = false;
+        let recognition;
+        window.alternarVoz = () => {
+            const btn = document.getElementById("btnVoz");
+            if (window.vozAtiva) { if(recognition) recognition.stop(); btn.classList.remove('mic-ativo'); window.vozAtiva = false; return; }
+            window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!window.SpeechRecognition) return alert("O seu navegador não suporta voz.");
+            recognition = new SpeechRecognition(); recognition.lang = 'pt-BR'; recognition.continuous = true;
+            recognition.onstart = () => { window.vozAtiva = true; btn.classList.add('mic-ativo'); };
+            recognition.onresult = (event) => {
+                const textoLimpo = event.results[event.results.length - 1][0].transcript.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+                if (textoLimpo.includes("salvar tudo")) { if(window.gerarFaturasEmLote) window.gerarFaturasEmLote(); return; }
+                const linhas = document.querySelectorAll('input[id^="h-total-"]');
+                for (let input of linhas) {
+                    const id = input.id.replace('h-total-', '');
+                    const primeiroNome = input.dataset.nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(' ')[0];
+                    if (textoLimpo.includes(primeiroNome)) {
+                        const match = textoLimpo.match(/\d+/);
+                        if (match) {
+                            document.getElementById('atu-' + id).value = match[0];
+                            window.calcularLinha(id);
+                            document.getElementById('linha-'+id).style.backgroundColor = "#fffbeb";
+                            setTimeout(()=> { document.getElementById('linha-'+id).style.backgroundColor = ""; }, 2000);
+                        }
+                        break;
+                    }
+                }
+            };
+            recognition.start();
         };
 
         // INICIALIZAÇÃO
@@ -673,7 +757,7 @@
             window.esconderLoading(); alert("✅ Lote de Faturas Concluído com Sucesso!");
         };
 
-        // AVULSOS E MULTIPLICAÇÃO
+        // AVULSOS
         window.submitAvulso = async (e) => {
             e.preventDefault();
             const tipo = document.getElementById("avulsoTipo").value;
@@ -877,7 +961,7 @@
             window.mostrarLoading("A procurar histórico...");
             try {
                 const snap = await getDocs(collection(db, "logs_agente"));
-                let logs = []; snap.forEach(d => logs.push(d.data()));
+                let logs = []; snap.forEach(d => push(d.data()));
                 logs.sort((a,b) => new Date(b.data) - new Date(a.data));
                 let html = "";
                 logs.forEach(l => {
