@@ -11,10 +11,9 @@
         .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.95); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         .animate-slide-up { animation: slideUp 0.3s ease-out forwards; }
-        .scroll-suave::-webkit-scrollbar { display: none; } /* Oculta scrollbar nas sugestões */
+        .scroll-suave::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="text-gray-800 h-screen flex flex-col overflow-hidden">
@@ -49,23 +48,18 @@
                 <h3 class="font-black text-xl text-slate-800"><i class="fa-solid fa-wrench text-blue-600 mr-2"></i>Serviço Extra</h3>
                 <button onclick="document.getElementById('modalAvulsoAgente').classList.add('hidden')" class="text-gray-400 hover:text-red-500 text-3xl leading-none">&times;</button>
             </div>
-            
             <input type="hidden" id="avulsoAgenteId">
-            
             <label class="block text-[10px] font-bold text-gray-500 mb-1 uppercase">Descrição do Serviço</label>
             <input type="text" id="avulsoAgenteDesc" placeholder="Ex: Multa, Conserto..." class="w-full p-3 border-2 border-gray-200 rounded-xl mb-2 outline-none focus:border-blue-500 text-sm font-bold text-slate-700">
-            
             <div class="flex gap-2 mb-4 overflow-x-auto pb-2 scroll-suave">
                 <button onclick="document.getElementById('avulsoAgenteDesc').value='Multa por Atraso'; document.getElementById('avulsoAgenteValor').value=window.cfgGlobais.multa || '25.00';" class="whitespace-nowrap bg-red-50 text-red-600 border border-red-200 px-3 py-1.5 rounded-full text-xs font-black hover:bg-red-100 transition shadow-sm active:scale-95">🚨 Aplicar Multa</button>
                 <button onclick="document.getElementById('avulsoAgenteDesc').value='Taxa de Religação';" class="whitespace-nowrap bg-blue-50 text-blue-600 border border-blue-200 px-3 py-1.5 rounded-full text-xs font-black hover:bg-blue-100 transition shadow-sm active:scale-95">💧 Religação</button>
                 <button onclick="document.getElementById('avulsoAgenteDesc').value='Manutenção do Cavalete';" class="whitespace-nowrap bg-amber-50 text-amber-600 border border-amber-200 px-3 py-1.5 rounded-full text-xs font-black hover:bg-amber-100 transition shadow-sm active:scale-95">🔧 Manutenção</button>
             </div>
-
             <label class="block text-[10px] font-bold text-gray-500 mb-1 uppercase">Valor a Cobrar (R$)</label>
             <input type="number" step="0.01" id="avulsoAgenteValor" placeholder="0.00" class="w-full p-3 border-2 border-gray-200 rounded-xl mb-6 outline-none focus:border-blue-500 text-xl font-black text-blue-600 text-center">
-            
             <div class="flex gap-2">
-                <button onclick="window.limparAvulsoAgente()" class="flex-1 bg-gray-100 text-red-500 py-3.5 rounded-xl font-bold hover:bg-gray-200 transition text-sm">Zerar / Remover</button>
+                <button onclick="window.limparAvulsoAgente()" class="flex-1 bg-gray-100 text-red-500 py-3.5 rounded-xl font-bold hover:bg-gray-200 transition text-sm">Zerar</button>
                 <button onclick="window.salvarAvulsoAgente()" class="flex-[2] bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-black shadow-lg active:scale-95 transition">Confirmar Lançamento</button>
             </div>
         </div>
@@ -114,27 +108,20 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, getDocs, doc, updateDoc, enableIndexedDbPersistence, addDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        const firebaseConfig = { 
-            apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ", 
-            authDomain: "sistema-agua-sao-luiz.firebaseapp.com", 
-            projectId: "sistema-agua-sao-luiz" 
-        };
+        const firebaseConfig = { apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ", authDomain: "sistema-agua-sao-luiz.firebaseapp.com", projectId: "sistema-agua-sao-luiz" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Ativa Banco de Dados Offline no Telemóvel
         enableIndexedDbPersistence(db).catch((err) => { console.log("Offline não suportado pelo navegador."); });
 
         window.moradoresGlobal = [];
         window.cfgGlobais = { val1: 25, val2: 50, val3: 100, multa: 25 };
 
-        // Prevenção de perda de dados
         window.addEventListener('beforeunload', function (e) {
             const rascunhos = JSON.parse(localStorage.getItem('rascunhos_coleta') || '{}');
             if (Object.keys(rascunhos).length > 0) { e.preventDefault(); e.returnValue = 'Existem leituras digitadas não enviadas.'; }
         });
 
-        // Controlo Visual Online/Offline
         const atualizarStatusRede = () => {
             const el = document.getElementById("statusConexao");
             const btnSync = document.getElementById("btnSincronizar");
@@ -229,7 +216,6 @@
             }
         };
 
-        // ====== LÓGICA DO NOVO MODAL DE AVULSOS ======
         window.abrirModalAvulso = (id) => {
             document.getElementById('avulsoAgenteId').value = id;
             document.getElementById('avulsoAgenteDesc').value = document.getElementById(`avulso-desc-${id}`).value || "";
@@ -265,14 +251,11 @@
             document.getElementById('modalAvulsoAgente').classList.add('hidden');
         };
 
-        // =============================================
-
         window.calcularTotalCard = (id) => {
             const ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0;
             const atuStr = document.getElementById(`atu-${id}`).value;
             const atu = atuStr === "" ? ant : parseFloat(atuStr);
             
-            // Busca a nova taxa avulsa lançada pelo agente no modal
             const avulsoVal = parseFloat(document.getElementById(`avulso-val-${id}`).value) || 0;
             const taxaBanco = parseFloat(document.getElementById(`taxa-banco-${id}`).value) || 0;
 
@@ -293,7 +276,6 @@
             document.getElementById(`card-${id}`).dataset.valortotal = total;
             document.getElementById(`card-${id}`).dataset.consumo = consumo;
 
-            // Atualiza o visual do botão Avulso no Card
             const btnAvulso = document.getElementById(`btn-avulso-${id}`);
             if(avulsoVal > 0) {
                 btnAvulso.innerHTML = `<span class="truncate max-w-[80px]">${document.getElementById(`avulso-desc-${id}`).value}</span> <span>+ R$ ${avulsoVal.toFixed(2).replace('.',',')}</span>`;
@@ -303,7 +285,6 @@
                 btnAvulso.className = "w-full bg-orange-50 text-orange-600 border border-orange-200 hover:bg-orange-100 p-2 text-center font-bold rounded-xl outline-none text-[11px] md:text-xs transition shadow-sm flex justify-center items-center";
             }
 
-            // Salva na memória do telemóvel (Auto-Save)
             let rascunhos = JSON.parse(localStorage.getItem('rascunhos_coleta') || '{}');
             if (atuStr !== "" || avulsoVal > 0) { 
                 rascunhos[id] = { atu: atuStr, avulsoVal: avulsoVal, avulsoDesc: document.getElementById(`avulso-desc-${id}`).value }; 
@@ -403,7 +384,7 @@
         };
 
         window.sincronizarEGerarLote = async () => {
-            if(!navigator.onLine) return alert("Precisa de estar conectado à internet para gerar o PIX e sincronizar com o Servidor.");
+            if(!navigator.onLine) return alert("Precisa de estar conectado à internet para gerar o PIX e sincronizar.");
 
             const cards = document.querySelectorAll(".card-morador");
             let faturasParaGerar = [];
@@ -418,7 +399,6 @@
                 const taxaBanco = parseFloat(document.getElementById(`taxa-banco-${id}`).value) || 0;
                 const taxaBancoDesc = document.getElementById(`taxa-banco-desc-${id}`).value || "";
 
-                // Junta as taxas avulsas caso o Admin e o Agente tenham colocado taxas simultâneas
                 let taxaFinal = taxaBanco + avulsoVal;
                 let descFinalTaxa = [];
                 if(taxaBancoDesc) descFinalTaxa.push(taxaBancoDesc);
@@ -435,7 +415,7 @@
                         leitura_atual: parseFloat(atuVal) || parseFloat(document.getElementById(`ant-${id}`).value),
                         consumo_m3: parseFloat(card.dataset.consumo),
                         valor_agua: parseFloat(card.dataset.valoragua),
-                        valor_multa: 0, // A multa agora vai dentro da taxa extra para ficar melhor explicada
+                        valor_multa: 0, 
                         taxa_extra: taxaFinal,
                         desc_taxa: descTaxaJunta,
                         valor_total: total
@@ -443,7 +423,7 @@
                 }
             });
 
-            if (faturasParaGerar.length === 0) return alert("Nenhuma leitura nova ou serviço preenchido para sincronizar.");
+            if (faturasParaGerar.length === 0) return alert("Nenhuma leitura nova preenchida para sincronizar.");
             if(!confirm(`Gerar e Sincronizar ${faturasParaGerar.length} faturas para o Robô enviar?`)) return;
 
             document.getElementById("loadingMsg").innerText = `A Sincronizar ${faturasParaGerar.length} faturas...`;
@@ -493,20 +473,18 @@
                             taxa_pendente_valor: 0, 
                             taxa_pendente_desc: "" 
                         });
+                        
+                        // NOVO LOG DETALHADO DO AGENTE
+                        await addDoc(collection(db, "logs_agente"), {
+                            data: new Date().toISOString(),
+                            acao: 'Gerada (Agente)',
+                            cliente: fat.nome,
+                            valor: fat.valor_total
+                        });
 
                         sucessoCont++;
                     }
                 } catch(e) { console.error(`Falha no PIX de ${fat.nome}`, e); }
-            }
-
-            if(sucessoCont > 0) {
-                try {
-                    await addDoc(collection(db, "logs_agente"), {
-                        data: new Date().toISOString(),
-                        qtd: sucessoCont,
-                        mensagem: `O agente sincronizou ${sucessoCont} faturas no sistema.`
-                    });
-                } catch(e) {}
             }
 
             document.getElementById("loading").style.display = "none";
