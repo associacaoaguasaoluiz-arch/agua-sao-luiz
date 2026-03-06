@@ -146,14 +146,18 @@
                                 <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Título do Serviço</label>
                                 <input type="text" id="avulsoDescricao" required placeholder="Ex: Conserto do encanamento" onkeydown="if(window.focarProximo) window.focarProximo(event, 'avulsoValor')" class="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500 focus:bg-white transition shadow-sm text-sm md:text-base">
                             </div>
-                            <div class="flex flex-col sm:flex-row gap-4">
-                                <div class="flex-1">
+                        <div class="flex flex-col sm:flex-row gap-3">
+                                <div class="flex-[2]">
                                     <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Valor (R$)</label>
                                    <input type="text" inputmode="numeric" id="avulsoValor" required placeholder="0,00" class="w-full p-3 bg-gray-50 border rounded-xl outline-none text-blue-600 font-bold text-lg focus:border-blue-500 focus:bg-white transition shadow-sm" oninput="window.mascaraMoeda(event)" onkeydown="if(document.getElementById('avulsoTipo').value === 'pix_agora') { if(window.focarProximo) window.focarProximo(event, 'avulsoVencimento'); } else { if(window.focarProximo) window.focarProximo(event, 'btnSubmitAvulso'); }">
                                 </div>
-                                <div class="flex-1" id="divVencimentoAvulso">
-                                    <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Vencimento (Só p/ Pix)</label>
-                                    <input type="date" id="avulsoVencimento" onkeydown="if(window.focarProximo) window.focarProximo(event, 'btnSubmitAvulso')" class="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500 focus:bg-white transition shadow-sm text-sm md:text-base">
+                                <div class="flex-[2]" id="divVencimentoAvulso">
+                                    <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Vencimento</label>
+                                    <input type="date" id="avulsoVencimento" onkeydown="if(window.focarProximo) window.focarProximo(event, 'avulsoRepeticoes')" class="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500 focus:bg-white transition shadow-sm text-sm md:text-base">
+                                </div>
+                                <div class="flex-1">
+                                    <label class="block text-[10px] md:text-xs font-bold text-orange-500 uppercase mb-1">Cópias</label>
+                                    <input type="number" id="avulsoRepeticoes" value="1" min="1" title="Qtd de vezes para multiplicar a fatura (Teste do Robô)" onkeydown="if(window.focarProximo) window.focarProximo(event, 'btnSubmitAvulso')" class="w-full p-3 bg-orange-50 border border-orange-200 rounded-xl outline-none focus:border-orange-500 font-black text-orange-700 text-center transition shadow-sm text-sm md:text-base">
                                 </div>
                             </div>
                             <button type="submit" id="btnSubmitAvulso" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-black py-3 md:py-4 rounded-xl shadow-lg mt-2 active:scale-95 transition text-base md:text-lg">Confirmar Lançamento</button>
@@ -723,12 +727,20 @@
             });
 
             if(linhas.length === 0) return alert("Preencha as leituras, multas ou agende taxas para faturar!");
-            window.mostrarLoading(`A gerar e processar ${linhas.length} faturas...`);
+            
+            const totalLinhas = linhas.length;
+            window.mostrarLoading(`A preparar ${totalLinhas} faturas...`);
             
             const mes = document.getElementById("mesReferencia").value;
             const venc = document.getElementById("dataVencimento").value;
             
+            let contadorProcessado = 0;
+            
             for(let input of linhas) {
+                contadorProcessado++;
+                // Atualiza a tela de loading para mostrar o progresso real
+                window.mostrarLoading(`A comunicar com o banco...\nGerando PIX ${contadorProcessado} de ${totalLinhas}`);
+
                 const total = parseFloat(input.value);
                 const id = input.id.replace('h-total-', '');
                 const vAgua = parseFloat(document.getElementById(`h-agua-${id}`).value);
@@ -751,7 +763,6 @@
                     const pix = await res.json();
                     
                     if(pix.sucesso) {
-                        // Linha corrigida com whatsapp_enviado: false
                         await addDoc(collection(db, "faturas"), { familia_id: id, mes_referencia: descFinal, leitura_anterior: l_ant, leitura_atual: l_atu, consumo_m3: consumoFinal, valor_agua: vAgua, valor_multa: vMulta, taxa_extra: taxaPendente, valor_total: total, vencimento: venc, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), data_lancamento: new Date().toISOString(), telefone: input.dataset.tel, nome_morador: nome });
                         
                         await updateDoc(doc(db, "familias", id), { ultima_leitura: l_atu, taxa_pendente_valor: 0, taxa_pendente_desc: "" });
@@ -765,7 +776,16 @@
                         document.getElementById(`atu-${id}`).disabled = true;
                         document.getElementById(`multa-${id}`).disabled = true;
                     }
-                } catch(e) {}
+                } catch(e) {
+                    console.error("Erro ao gerar fatura para: ", nome);
+                }
+
+                // TRAVA DE PROTEÇÃO ANTI-BLOQUEIO API
+                // Se não for o último cliente da lista, o sistema "dorme" um tempo aleatório entre 1,5 a 2,5 segundos
+                if (contadorProcessado < totalLinhas) {
+                    const delay = Math.floor(Math.random() * (2500 - 1500 + 1)) + 1500;
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
             }
             window.esconderLoading(); alert("✅ Lote de Faturas Concluído com Sucesso!");
         };
@@ -785,27 +805,29 @@
             const familiaId = select.value;
             const descricao = document.getElementById("avulsoDescricao").value;
             
-            // Lê o valor formatado (ex: 1.234,50 -> 1234.50) para salvar no banco
+            // Lê o número de repetições (se estiver vazio, o padrão é 1)
+            const repeticoes = parseInt(document.getElementById("avulsoRepeticoes").value) || 1;
+            
             const valorStr = document.getElementById("avulsoValor").value;
             const valor = parseFloat(valorStr.replace(/\./g, '').replace(',', '.'));
             
             if(isNaN(valor) || valor <= 0) return alert("Digite um valor válido.");
 
             const vencimento = document.getElementById("avulsoVencimento").value;
-            window.mostrarLoading("A processar...");
+            window.mostrarLoading(repeticoes > 1 ? `A clonar ${repeticoes} faturas para teste...` : "A processar...");
             
             if(tipo === 'somar_proxima') {
                 if(familiaId === 'TODOS') {
-                    if(!confirm(`Somar R$ ${valor.toFixed(2).replace('.',',')} na conta de água de TODOS?`)) { window.esconderLoading(); return; }
+                    if(!confirm(`Somar R$ ${valor.toFixed(2).replace('.',',')} na conta de TODOS?`)) { window.esconderLoading(); return; }
                     for(let id of Object.keys(window.familiasGlobal)) { await updateDoc(doc(db, "familias", id), { taxa_pendente_valor: valor, taxa_pendente_desc: descricao }); }
                 } else { await updateDoc(doc(db, "familias", familiaId), { taxa_pendente_valor: valor, taxa_pendente_desc: descricao }); }
                 window.esconderLoading(); alert("✅ Serviço agendado para a próxima fatura de água!"); 
-                document.getElementById("formAvulso").reset(); document.getElementById("buscaClienteAvulso").value = ""; window.filtrarAvulsoESelecionar();
+                document.getElementById("formAvulso").reset(); document.getElementById("buscaClienteAvulso").value = ""; document.getElementById("avulsoRepeticoes").value = 1; window.filtrarAvulsoESelecionar();
                 return;
             }
             
             if(familiaId === 'TODOS') {
-                if(!confirm(`Gerar PIX SEPARADO de R$ ${valor.toFixed(2).replace('.',',')} para TODOS?`)) { window.esconderLoading(); return; }
+                if(!confirm(`Gerar PIX para TODOS?`)) { window.esconderLoading(); return; }
                 for(let [id, f] of Object.entries(window.familiasGlobal)) {
                     try {
                         const res = await fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: f.nome, cpf: f.cpf.replace(/\D/g, '')}) });
@@ -819,18 +841,27 @@
             } else {
                 try {
                     const nome = opt.dataset.nome;
+                    // Consulta o banco Central (API) apenas UMA vez para evitar bloqueio anti-spam
                     const res = await fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: nome, cpf: opt.dataset.cpf.replace(/\D/g, '')}) });
                     const pix = await res.json();
+                    
                     if(pix.sucesso) { 
-                        await addDoc(collection(db, "faturas"), { familia_id: familiaId, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: opt.dataset.tel, nome_morador: opt.dataset.nome, data_lancamento: new Date().toISOString() });
+                        // Faz o "Loop" multiplicador no Firebase para o Robô pegar
+                        for(let i = 0; i < repeticoes; i++) {
+                            // Cria um nome de descrição único se for teste, ex: "Manutenção (Teste 1/150)"
+                            let descFinal = repeticoes > 1 ? `${descricao} (Cópia ${i+1}/${repeticoes})` : descricao;
+                            
+                            await addDoc(collection(db, "faturas"), { familia_id: familiaId, mes_referencia: descFinal, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: opt.dataset.tel, nome_morador: opt.dataset.nome, data_lancamento: new Date().toISOString() });
+                        }
                         
                         window.esconderLoading(); 
-                        alert("✅ Serviço avulso gerado com sucesso! (Aguardando robô enviar)");
+                        alert(`✅ ${repeticoes} serviço(s) gerado(s) com sucesso na fila do robô!`);
                         document.getElementById("formAvulso").reset();
+                        document.getElementById("avulsoRepeticoes").value = 1; // Volta para 1 por segurança
                     }
                 } catch(e) { window.esconderLoading(); alert("Erro na geração da fatura."); }
             }
-            document.getElementById("formAvulso").reset(); document.getElementById("buscaClienteAvulso").value = ""; window.filtrarAvulsoESelecionar();
+            document.getElementById("formAvulso").reset(); document.getElementById("buscaClienteAvulso").value = ""; document.getElementById("avulsoRepeticoes").value = 1; window.filtrarAvulsoESelecionar();
         };
 
         window.iniciarListenerAbertas = async () => {
