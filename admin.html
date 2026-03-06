@@ -380,7 +380,6 @@
             }
         };
 
-        // LOGIN E SENHA
         window.entrarAdmin = (e) => {
             e.preventDefault();
             const senhaCorreta = localStorage.getItem("admin_senha_config") || "admin123";
@@ -392,39 +391,12 @@
             } else { document.getElementById("erroLogin").classList.remove('hidden'); }
         };
 
-      window.salvarSenhaAgente = async () => {
-            const novaSenha = document.getElementById("cfgSenhaAgente").value;
+        window.salvarSenhaAdmin = () => {
+            const novaSenha = document.getElementById("cfgSenhaAdmin").value;
             if(novaSenha.length < 4) return alert("A senha deve ter no mínimo 4 caracteres.");
-            window.mostrarLoading("A forçar senha no servidor...");
-            try {
-                // Força a nova senha no banco de dados
-                await setDoc(doc(db, "config", "agente"), { senha: novaSenha });
-                window.esconderLoading();
-                alert("✅ Senha do agente alterada com sucesso! Ele precisará usar esta senha no próximo login online.");
-                document.getElementById("cfgSenhaAgente").value = "";
-            } catch(e) { window.esconderLoading(); alert("Erro ao comunicar com Firebase."); }
-        };
-
-        window.carregarLogsAgente = async () => {
-            window.mostrarLoading("A procurar histórico...");
-            try {
-                const snap = await getDocs(collection(db, "logs_agente"));
-                let logs = [];
-                snap.forEach(d => logs.push(d.data()));
-                
-                // Ordena do mais recente para o mais antigo
-                logs.sort((a,b) => new Date(b.data) - new Date(a.data));
-                
-                let html = "";
-                logs.forEach(l => {
-                    const dt = new Date(l.data);
-                    const dtF = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-                    html += `<tr class="hover:bg-slate-50"><td class="p-3 text-[10px] md:text-xs font-mono text-gray-500 whitespace-nowrap">${dtF}</td><td class="p-3 font-bold text-xs md:text-sm text-blue-700">${l.mensagem}</td></tr>`;
-                });
-                
-                document.getElementById("tabelaLogsAgente").innerHTML = html || "<tr><td class='p-4 text-center text-gray-400'>Nenhum lançamento foi efetuado pelo agente ainda.</td></tr>";
-            } catch(e) { console.error(e); }
-            window.esconderLoading();
+            localStorage.setItem("admin_senha_config", novaSenha);
+            alert("✅ Senha do administrador alterada com sucesso!");
+            document.getElementById("cfgSenhaAdmin").value = "";
         };
 
         window.sairAdmin = () => { localStorage.removeItem("admin_saoluiz_logado"); location.reload(); };
@@ -433,13 +405,11 @@
             document.querySelectorAll('.conteudo-aba').forEach(a => a.classList.add('tela-oculta'));
             document.getElementById(id).classList.remove('tela-oculta');
             
-            // Reseta botões Desktop
             document.querySelectorAll('.menu-btn').forEach(b => { 
                 b.classList.remove('bg-blue-600', 'text-white'); 
                 b.classList.add('text-slate-400');
             });
 
-            // Reseta botões Mobile (tira o azul e o contorno)
             document.querySelectorAll('nav button').forEach(b => {
                 b.classList.remove('text-blue-600', 'bg-blue-50', 'border-blue-200');
                 b.classList.add('text-gray-400', 'bg-transparent', 'border-transparent');
@@ -447,11 +417,9 @@
 
             if(el) { 
                 if(el.classList.contains('menu-btn')) { 
-                    // Aplica ativo Desktop
                     el.classList.add('bg-blue-600', 'text-white'); 
                     el.classList.remove('text-slate-400'); 
                 } else { 
-                    // Aplica ativo Mobile (coloca texto azul, fundo azul claro e borda)
                     el.classList.add('text-blue-600', 'bg-blue-50', 'border-blue-200'); 
                     el.classList.remove('text-gray-400', 'bg-transparent', 'border-transparent'); 
                 }
@@ -519,42 +487,28 @@
             document.getElementById(`h-total-${id}`).value = total;
         };
 
-        // NOVA FUNÇÃO: Capitaliza perfeitamente a 1ª letra e mantém conectivos e lida com Acentos
         window.formatarNomeParaBanco = (texto) => {
             if (!texto) return "";
             const preposicoes = ["de", "da", "do", "das", "dos", "e"];
-            
             const partes = texto.toLowerCase().split(" ");
-            
             const formatado = partes.map((palavra, index) => {
                 if (palavra.length === 0) return ""; 
-                // Se não for a 1ª palavra e for preposição, mantém minúscula
                 if (index > 0 && preposicoes.includes(palavra)) return palavra;
-                // Capitaliza a primeira letra e junta o resto
                 return palavra.charAt(0).toUpperCase() + palavra.substring(1);
             });
-            
-            return formatado.join(" ").trimStart(); // Usar trimStart em vez de trim para não comer os espaços que o usuário ainda está a digitar no final
+            return formatado.join(" ").trimStart(); 
         };
 
-        // Função para gerar WhatsApp sem Emojis - Totalmente compatível com ANSI / Bloco de Notas
         window.enviarWhatsAppSemEmoji = (tipo, telefone, nome, ref, valor, venc) => {
-            if(!telefone || String(telefone).trim().length < 8) {
-                alert("Este morador não tem um número de WhatsApp válido cadastrado.");
-                return;
-            }
-            
-            // Regex agressiva para destruir espaços em branco invisíveis do nome (garante o negrito)
+            if(!telefone || String(telefone).trim().length < 8) { return alert("Sem WhatsApp válido."); }
             const nomeLimpo = String(nome).replace(/[\s\u200B-\u200D\uFEFF\xA0]+$/g, '').trim();
             const telLimpo = String(telefone).replace(/\D/g, '');
-            
             let msg = "";
             if (tipo === 'avulso') {
                 msg = `*FATURA DE ÁGUA DISTRITO SÃO LUIZ*\n\nOlá, *${nomeLimpo}*!\nUma nova cobrança foi gerada em seu nome.\n\n- *Ref:* ${ref}\n- *Valor:* R$ ${valor}\n- *Vencimento:* ${venc}\n\n> Acesse o link para copiar o PIX e efetuar o pagamento:\nhttps://agua-sao-luiz.vercel.app\n\n*Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456 (caso não tenha alterado).*`;
             } else {
                 msg = `*FATURA DE ÁGUA DISTRITO SÃO LUIZ*\n\nOlá, *${nomeLimpo}*!\nA sua fatura de ${ref} está disponível no sistema.\n\n- *Total:* R$ ${valor}\n- *Vencimento:* ${venc}\n\n> Acesse o link para copiar o PIX e efetuar o pagamento:\nhttps://agua-sao-luiz.vercel.app\n\n*Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456 (caso não tenha alterado).*`;
             }
-
             window.open(`https://wa.me/${telLimpo}?text=${encodeURIComponent(msg)}`, '_blank');
         };
 
@@ -594,13 +548,9 @@
             const displayNome = document.getElementById("avulsoClienteNomeExibicao");
             
             let html = "<option value='TODOS'>🌟 RATEIO: COBRAR TODOS</option>";
-            let matchCount = 0;
-            let firstMatchId = null;
-            let firstMatchName = null;
+            let matchCount = 0; let firstMatchId = null; let firstMatchName = null;
 
             const termoBuscado = filtro.toLowerCase().trim();
-
-            // ORDENAÇÃO ALFABÉTICA NO AVULSO
             const moradoresAvulso = Object.entries(window.familiasGlobal).map(([id, f]) => ({id, ...f}));
             moradoresAvulso.sort((a,b) => (a.nome || "").localeCompare(b.nome || "", 'pt-BR'));
 
@@ -616,26 +566,19 @@
 
             if (termoBuscado === "") {
                 select.value = 'TODOS';
-                displayNome.innerText = "🌟 RATEIO: COBRAR TODOS";
-                displayNome.classList.remove('hidden');
+                displayNome.innerText = "🌟 RATEIO: COBRAR TODOS"; displayNome.classList.remove('hidden');
                 displayNome.className = "text-xs md:text-sm font-bold text-blue-700 bg-blue-50 p-2 md:p-3 rounded-xl mt-2";
             } else if (firstMatchId) {
                 select.value = firstMatchId;
-                displayNome.innerText = `✅ Selecionado: ${firstMatchName}`;
-                displayNome.classList.remove('hidden');
+                displayNome.innerText = `✅ Selecionado: ${firstMatchName}`; displayNome.classList.remove('hidden');
                 displayNome.className = "text-xs md:text-sm font-bold text-green-700 bg-green-50 p-2 md:p-3 rounded-xl mt-2 border border-green-200";
             } else {
-                select.value = "";
-                displayNome.innerText = "❌ Nenhum cliente encontrado";
-                displayNome.classList.remove('hidden');
+                select.value = ""; displayNome.innerText = "❌ Nenhum cliente encontrado"; displayNome.classList.remove('hidden');
                 displayNome.className = "text-xs md:text-sm font-bold text-red-700 bg-red-50 p-2 md:p-3 rounded-xl mt-2";
             }
         };
 
-        window.filtrarAvulsoESelecionar = () => {
-            const termo = document.getElementById("buscaClienteAvulso").value;
-            window.renderizarSelectAvulso(termo);
-        };
+        window.filtrarAvulsoESelecionar = () => { window.renderizarSelectAvulso(document.getElementById("buscaClienteAvulso").value); };
     </script>
 
     <script type="module">
@@ -647,19 +590,43 @@
             authDomain: "sistema-agua-sao-luiz.firebaseapp.com",
             projectId: "sistema-agua-sao-luiz"
         };
-        const firebaseConfig = {
-            apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ",
-            authDomain: "sistema-agua-sao-luiz.firebaseapp.com",
-            projectId: "sistema-agua-sao-luiz"
-        };
         const db = getFirestore(initializeApp(firebaseConfig));
 
         let unsubAbertas = null;
         let unsubPagos = null;
 
-        // ===== COLE AS DUAS FUNÇÕES AQUI =====
+        // --- NOVAS FUNÇÕES ADICIONADAS CORRETAMENTE AQUI ---
         window.salvarSenhaAgente = async () => {
-        // ... (código que você colou)
+            const novaSenha = document.getElementById("cfgSenhaAgente").value;
+            if(novaSenha.length < 4) return alert("A senha deve ter no mínimo 4 caracteres.");
+            window.mostrarLoading("A forçar senha no servidor...");
+            try {
+                await setDoc(doc(db, "config", "agente"), { senha: novaSenha });
+                window.esconderLoading();
+                alert("✅ Senha do agente alterada com sucesso! Ele precisará usar esta senha no próximo login online.");
+                document.getElementById("cfgSenhaAgente").value = "";
+            } catch(e) { window.esconderLoading(); alert("Erro ao comunicar com Firebase."); }
+        };
+
+        window.carregarLogsAgente = async () => {
+            window.mostrarLoading("A procurar histórico...");
+            try {
+                const snap = await getDocs(collection(db, "logs_agente"));
+                let logs = [];
+                snap.forEach(d => logs.push(d.data()));
+                logs.sort((a,b) => new Date(b.data) - new Date(a.data));
+                let html = "";
+                logs.forEach(l => {
+                    const dt = new Date(l.data);
+                    const dtF = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+                    html += `<tr class="hover:bg-slate-50"><td class="p-3 text-[10px] md:text-xs font-mono text-gray-500 whitespace-nowrap">${dtF}</td><td class="p-3 font-bold text-xs md:text-sm text-blue-700">${l.mensagem}</td></tr>`;
+                });
+                document.getElementById("tabelaLogsAgente").innerHTML = html || "<tr><td class='p-4 text-center text-gray-400'>Nenhum lançamento foi efetuado pelo agente ainda.</td></tr>";
+            } catch(e) { console.error(e); }
+            window.esconderLoading();
+        };
+
+        // --- FIM DAS NOVAS FUNÇÕES ---
 
         window.atualizarCacheFamilias = async () => {
             const snap = await getDocs(collection(db, "familias"));
@@ -670,38 +637,22 @@
         window.submitMorador = async (e) => {
             e.preventDefault();
             const id = document.getElementById("modId").value;
-            // Trata espaços em branco que o usuário possa ter deixado no fim, mas preservando o formato
             let nomeFinal = window.formatarNomeParaBanco(document.getElementById("modNome").value).trim();
-            
-            const d = { 
-                nome: nomeFinal, 
-                cpf: document.getElementById("modCpf").value.replace(/\D/g, ''), 
-                telefone: document.getElementById("modTel").value, 
-                lote_endereco: document.getElementById("modLote").value 
-            };
-            
+            const d = { nome: nomeFinal, cpf: document.getElementById("modCpf").value.replace(/\D/g, ''), telefone: document.getElementById("modTel").value, lote_endereco: document.getElementById("modLote").value };
             window.mostrarLoading("A guardar...");
             if(id) await updateDoc(doc(db, "familias", id), d); else await addDoc(collection(db, "familias"), {...d, senha: "123456", status_ativo: true, ultima_leitura: 0});
             window.fecharModal(); window.carregarFamilias(); window.esconderLoading();
         };
 
         window.excluirMorador = async (id, nome) => {
-            if(confirm(`Apagar ${nome} definitivamente?`)) {
-                window.mostrarLoading("A apagar...");
-                await deleteDoc(doc(db, "familias", id));
-                window.carregarFamilias();
-                window.esconderLoading();
-            }
+            if(confirm(`Apagar ${nome} definitivamente?`)) { window.mostrarLoading("A apagar..."); await deleteDoc(doc(db, "familias", id)); window.carregarFamilias(); window.esconderLoading(); }
         };
 
         window.carregarFamilias = async () => {
             const tbody = document.getElementById("tabelaMoradores");
             await window.atualizarCacheFamilias();
-            
-            // ORDENAÇÃO ALFABÉTICA ABSOLUTA
             const moradores = Object.entries(window.familiasGlobal).map(([id, f]) => ({id, ...f}));
             moradores.sort((a,b) => (a.nome || "").localeCompare(b.nome || "", 'pt-BR'));
-            
             let html = "";
             moradores.forEach(f => {
                 html += `<tr class="border-b hover:bg-slate-50"><td class="p-3"><strong>${f.nome}</strong><br><small>${f.lote_endereco}</small></td><td class="p-3 text-slate-500 font-mono">${f.cpf}</td><td class="p-3"><button onclick="window.abrirModalEdicao('${f.id}','${f.nome}','${f.cpf}','${f.telefone}','${f.lote_endereco}')" class="text-blue-600 bg-blue-50 px-3 py-2 md:px-4 md:py-2 rounded-lg font-bold mr-2 transition hover:bg-blue-100 shadow-sm text-xs md:text-sm">Editar</button><button onclick="window.excluirMorador('${f.id}','${f.nome}')" class="text-red-600 bg-red-50 px-3 py-2 md:px-4 md:py-2 rounded-lg font-bold transition hover:bg-red-100 shadow-sm text-xs md:text-sm">🗑️</button></td></tr>`;
@@ -714,15 +665,11 @@
             corpo.innerHTML = "<tr><td colspan='7' class='p-8 text-center text-blue-600 font-bold'>A sincronizar dados recentes do servidor...</td></tr>";
             try {
                 await window.atualizarCacheFamilias();
-                
                 const fatSnap = await getDocs(collection(db, "faturas"));
                 const faturas = []; fatSnap.forEach(d => faturas.push(d.data()));
-
                 let html = "";
                 const hoje = new Date(); hoje.setHours(0,0,0,0);
                 const multaPadrao = parseFloat(localStorage.getItem('config_multa_padrao')) || 25.00;
-
-                // ORDENAÇÃO ALFABÉTICA PARA LOTE DE ÁGUA
                 const moradoresLote = Object.entries(window.familiasGlobal).map(([id, f]) => ({id, ...f}));
                 moradoresLote.sort((a,b) => (a.nome || "").localeCompare(b.nome || "", 'pt-BR'));
 
@@ -730,45 +677,30 @@
                     const famId = f.id;
                     const temAtraso = faturas.some(fat => fat.familia_id === famId && fat.status === 'pendente' && new Date(fat.vencimento + "T00:00:00") < hoje);
                     const multa = temAtraso ? multaPadrao : 0.0;
-                    
                     const ultimaLeitura = f.ultima_leitura || 0;
                     const taxaPendente = f.taxa_pendente_valor || 0;
                     const descTaxa = f.taxa_pendente_desc || "";
-                    
                     const avisoTaxa = taxaPendente > 0 ? `<br><span class="text-blue-600 font-black text-[9px] md:text-[10px] uppercase bg-blue-50 px-1 rounded inline-block mt-1">+ R$ ${taxaPendente} (${descTaxa})</span>` : "";
 
                     html += `
                         <tr id="linha-${famId}" class="hover:bg-blue-50 border-b">
-                            <td class="p-2 md:p-3 coluna-fixa leading-tight">
-                                <strong class="text-[11px] md:text-xs text-slate-800">${f.nome}</strong><br>
-                                <small class="text-gray-400 font-normal">${f.cpf}</small>
-                                ${avisoTaxa}
-                            </td>
+                            <td class="p-2 md:p-3 coluna-fixa leading-tight"><strong class="text-[11px] md:text-xs text-slate-800">${f.nome}</strong><br><small class="text-gray-400 font-normal">${f.cpf}</small>${avisoTaxa}</td>
                             <td class="p-2 md:p-3 text-center"><input type="number" id="ant-${famId}" value="${ultimaLeitura}" onkeyup="window.calcularLinha('${famId}')" class="input-leitura p-2 md:p-3 border bg-gray-100 rounded-xl text-center outline-none text-gray-600 font-bold"></td>
                             <td class="p-2 md:p-3 text-center"><input type="number" id="atu-${famId}" onkeyup="window.calcularLinha('${famId}')" onkeydown="window.pularLinhaGrelha(event, this)" class="input-leitura p-2 md:p-3 border-2 border-blue-400 bg-blue-50 rounded-xl text-center font-black outline-none text-blue-800"></td>
                             <td class="p-2 md:p-3 text-center font-bold text-blue-600"><span id="cons-${famId}">0</span><span class="text-[10px] md:text-xs ml-1">m³</span></td>
                             <td class="p-2 md:p-3 text-center"><input type="number" step="0.01" id="multa-${famId}" value="${multa}" onkeyup="window.calcularLinha('${famId}')" class="w-16 md:w-24 p-2 md:p-3 border border-red-200 rounded-xl text-center outline-none text-red-600 font-bold text-sm md:text-base"></td>
-                            <td class="p-2 md:p-3 text-right font-black text-green-700 text-sm md:text-lg">R$ <span id="valTotal-${famId}">0,00</span>
-                                <input type="hidden" id="h-total-${famId}" value="0" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}">
-                                <input type="hidden" id="h-agua-${famId}" value="0">
-                                <input type="hidden" id="h-taxa-${famId}" value="${taxaPendente}" data-desc="${descTaxa}">
-                            </td>
+                            <td class="p-2 md:p-3 text-right font-black text-green-700 text-sm md:text-lg">R$ <span id="valTotal-${famId}">0,00</span><input type="hidden" id="h-total-${famId}" value="0" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}"><input type="hidden" id="h-agua-${famId}" value="0"><input type="hidden" id="h-taxa-${famId}" value="${taxaPendente}" data-desc="${descTaxa}"></td>
                             <td class="p-2 md:p-3 text-center" id="status-${famId}"><span class="bg-gray-200 px-2 py-1 md:px-3 md:py-1 rounded-full text-[9px] md:text-[10px] text-gray-500 font-bold uppercase">Espera</span></td>
                         </tr>
                     `;
                 });
                 corpo.innerHTML = html;
-
-                Object.keys(window.familiasGlobal).forEach(famId => {
-                    if(document.getElementById(`atu-${famId}`)) window.calcularLinha(famId);
-                });
-
+                Object.keys(window.familiasGlobal).forEach(famId => { if(document.getElementById(`atu-${famId}`)) window.calcularLinha(famId); });
             } catch (e) { corpo.innerHTML = "<tr><td colspan='7'>Erro ao carregar dados.</td></tr>"; }
         };
 
        window.gerarFaturasEmLote = async () => {
             const inputs = document.querySelectorAll('input[id^="h-total-"]');
-            
             const linhas = Array.from(inputs).filter(i => {
                 const id = i.id.replace('h-total-', '');
                 const atuVal = document.getElementById(`atu-${id}`).value;
@@ -779,20 +711,16 @@
             });
 
             if(linhas.length === 0) return alert("Preencha as leituras, multas ou agende taxas para faturar!");
-            
             const totalLinhas = linhas.length;
             window.mostrarLoading(`A preparar ${totalLinhas} faturas...`);
             
             const mes = document.getElementById("mesReferencia").value;
             const venc = document.getElementById("dataVencimento").value;
-            
             let contadorProcessado = 0;
             
             for(let input of linhas) {
                 contadorProcessado++;
-                // Atualiza a tela de loading para mostrar o progresso real
                 window.mostrarLoading(`A comunicar com o banco...\nGerando PIX ${contadorProcessado} de ${totalLinhas}`);
-
                 const total = parseFloat(input.value);
                 const id = input.id.replace('h-total-', '');
                 const vAgua = parseFloat(document.getElementById(`h-agua-${id}`).value);
@@ -806,7 +734,6 @@
                 const atu_str = document.getElementById(`atu-${id}`).value;
                 const l_atu = atu_str === "" ? l_ant : parseFloat(atu_str); 
                 const consumoFinal = (l_atu > l_ant) ? l_atu - l_ant : 0;
-
                 let descFinal = `Água ${mes}`;
                 if(taxaPendente > 0) descFinal += ` + ${descTaxa}`;
 
@@ -816,37 +743,18 @@
                     
                     if(pix.sucesso) {
                         await addDoc(collection(db, "faturas"), { familia_id: id, mes_referencia: descFinal, leitura_anterior: l_ant, leitura_atual: l_atu, consumo_m3: consumoFinal, valor_agua: vAgua, valor_multa: vMulta, taxa_extra: taxaPendente, valor_total: total, vencimento: venc, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), data_lancamento: new Date().toISOString(), telefone: input.dataset.tel, nome_morador: nome });
-                        
                         await updateDoc(doc(db, "familias", id), { ultima_leitura: l_atu, taxa_pendente_valor: 0, taxa_pendente_desc: "" });
-                        
                         const nomePZ = nome.replace(/'/g, "\\'"); 
                         const dataBr = venc.split('-').reverse().join('/');
-                        
                         const statusElement = document.getElementById(`status-${id}`);
                         if(statusElement) statusElement.innerHTML = `<button onclick="window.enviarWhatsAppSemEmoji('normal', '${input.dataset.tel}', '${nomePZ}', '${mes}', '${total.toFixed(2)}', '${dataBr}')" class="bg-green-500 text-white font-bold px-3 py-1.5 rounded-xl text-[10px] md:text-xs shadow-sm transition hover:bg-green-600">📲 ZAP</button>`;
-                        
                         document.getElementById(`atu-${id}`).disabled = true;
                         document.getElementById(`multa-${id}`).disabled = true;
                     }
-                } catch(e) {
-                    console.error("Erro ao gerar fatura para: ", nome);
-                }
-
-                // TRAVA DE PROTEÇÃO ANTI-BLOQUEIO API
-                // Se não for o último cliente da lista, o sistema "dorme" um tempo aleatório entre 1,5 a 2,5 segundos
-                if (contadorProcessado < totalLinhas) {
-                    const delay = Math.floor(Math.random() * (2500 - 1500 + 1)) + 1500;
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                }
+                } catch(e) {}
+                if (contadorProcessado < totalLinhas) { await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * (2500 - 1500 + 1)) + 1500)); }
             }
             window.esconderLoading(); alert("✅ Lote de Faturas Concluído com Sucesso!");
-        };
-     // Função para formatar o dinheiro ao vivo enquanto digita
-        window.mascaraMoeda = (event) => {
-            let v = event.target.value.replace(/\D/g, '');
-            if(v === '') { event.target.value = ''; return; }
-            v = (parseInt(v, 10) / 100).toFixed(2);
-            event.target.value = v.replace('.', ',');
         };
 
         window.submitAvulso = async (e) => {
@@ -856,15 +764,11 @@
             const opt = select.options[select.selectedIndex];
             const familiaId = select.value;
             const descricao = document.getElementById("avulsoDescricao").value;
-            
-            // Lê o número de repetições (se estiver vazio, o padrão é 1)
             const repeticoes = parseInt(document.getElementById("avulsoRepeticoes").value) || 1;
-            
             const valorStr = document.getElementById("avulsoValor").value;
             const valor = parseFloat(valorStr.replace(/\./g, '').replace(',', '.'));
             
             if(isNaN(valor) || valor <= 0) return alert("Digite um valor válido.");
-
             const vencimento = document.getElementById("avulsoVencimento").value;
             window.mostrarLoading(repeticoes > 1 ? `A clonar ${repeticoes} faturas para teste...` : "A processar...");
             
@@ -884,39 +788,30 @@
                     try {
                         const res = await fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: f.nome, cpf: f.cpf.replace(/\D/g, '')}) });
                         const pix = await res.json();
-                        if(pix.sucesso) { 
-                            await addDoc(collection(db, "faturas"), { familia_id: id, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: f.telefone, nome_morador: f.nome, data_lancamento: new Date().toISOString() }); 
-                        }
+                        if(pix.sucesso) { await addDoc(collection(db, "faturas"), { familia_id: id, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: f.telefone, nome_morador: f.nome, data_lancamento: new Date().toISOString() }); }
                     } catch(err) {}
                 }
                 window.esconderLoading(); alert(`✅ Faturas avulsas geradas.`);
             } else {
                 try {
                     const nome = opt.dataset.nome;
-                    // Consulta o banco Central (API) apenas UMA vez para evitar bloqueio anti-spam
                     const res = await fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: nome, cpf: opt.dataset.cpf.replace(/\D/g, '')}) });
                     const pix = await res.json();
                     
                     if(pix.sucesso) { 
-                        // Faz o "Loop" multiplicador no Firebase para o Robô pegar
                         for(let i = 0; i < repeticoes; i++) {
-                            // Cria um nome de descrição único se for teste, ex: "Manutenção (Teste 1/150)"
                             let descFinal = repeticoes > 1 ? `${descricao} (Cópia ${i+1}/${repeticoes})` : descricao;
-                            
                             await addDoc(collection(db, "faturas"), { familia_id: familiaId, mes_referencia: descFinal, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: opt.dataset.tel, nome_morador: opt.dataset.nome, data_lancamento: new Date().toISOString() });
                         }
-                        
-                        window.esconderLoading(); 
-                        alert(`✅ ${repeticoes} serviço(s) gerado(s) com sucesso na fila do robô!`);
-                        document.getElementById("formAvulso").reset();
-                        document.getElementById("avulsoRepeticoes").value = 1; // Volta para 1 por segurança
+                        window.esconderLoading(); alert(`✅ ${repeticoes} serviço(s) gerado(s) com sucesso na fila do robô!`);
+                        document.getElementById("formAvulso").reset(); document.getElementById("avulsoRepeticoes").value = 1;
                     }
                 } catch(e) { window.esconderLoading(); alert("Erro na geração da fatura."); }
             }
             document.getElementById("formAvulso").reset(); document.getElementById("buscaClienteAvulso").value = ""; document.getElementById("avulsoRepeticoes").value = 1; window.filtrarAvulsoESelecionar();
         };
 
-       window.iniciarListenerAbertas = async () => {
+        window.iniciarListenerAbertas = async () => {
             if(unsubAbertas) unsubAbertas();
             const tbody = document.getElementById("tabelaAbertas");
             tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center'>A carregar...</td></tr>";
@@ -933,38 +828,28 @@
                     const isOverdue = new Date(f.vencimento + "T00:00:00") < hoje;
                     const rowClass = isOverdue ? "bg-red-50" : "hover:bg-amber-50";
                     const tel = f.telefone || window.familiasGlobal[f.familia_id]?.telefone;
-                    
                     const nomePZ = String(f.nome_morador || "Morador").replace(/'/g, "\\'");
                     const dataBr = f.vencimento.split('-').reverse().join('/');
                     const valorForm = f.valor_total.toFixed(2);
-
-                    // --- LÓGICA DO BOTÃO ZAP (COM HORAS, SEGUNDOS E ALTURA FIXA) ---
-                    let dtLanc = new Date(f.data_lancamento);
-                    // Pega a hora de criação com Segundos
-                    let hrCriacao = !isNaN(dtLanc) ? dtLanc.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit', second:'2-digit'}) : '--:--:--';
                     
+                    let dtLanc = new Date(f.data_lancamento);
+                    let hrCriacao = !isNaN(dtLanc) ? dtLanc.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit', second:'2-digit'}) : '--:--:--';
                     let corZap = 'bg-red-500 hover:bg-red-600';
                     let linhaBaixo = `<i class="fa-brands fa-whatsapp mr-1"></i> ZAP`;
                     
-                    // Se o robô enviou, pinta de verde e mostra a hora de envio com Segundos embaixo
                     if (f.whatsapp_enviado) {
                         corZap = 'bg-green-500 hover:bg-green-600';
                         if (f.data_envio_whatsapp) {
                             let dtEnv = new Date(f.data_envio_whatsapp);
                             let hrEnvio = dtEnv.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit', second:'2-digit'});
                             linhaBaixo = `<i class="fa-brands fa-whatsapp mr-1"></i> ${hrEnvio}`;
-                        } else {
-                            linhaBaixo = `<i class="fa-brands fa-whatsapp mr-1"></i> --:--:--`;
-                        }
+                        } else { linhaBaixo = `<i class="fa-brands fa-whatsapp mr-1"></i> --:--:--`; }
                     }
 
-                    // Botão estruturado para ter Altura Fixa (h-[36px])
                     const btnZap = `<button onclick="window.enviarWhatsAppSemEmoji('normal', '${tel}', '${nomePZ}', '${f.mes_referencia}', '${valorForm}', '${dataBr}')" class="${corZap} text-white rounded-lg text-[10px] md:text-[11px] font-bold shadow transition flex flex-col items-center justify-center min-w-[75px] h-[36px] md:h-[40px] leading-none px-2">
-                        <span class="text-[9px] font-normal opacity-90 mb-[3px]">${hrCriacao}</span>
-                        <span class="flex items-center">${linhaBaixo}</span>
+                        <span class="text-[9px] font-normal opacity-90 mb-[3px]">${hrCriacao}</span><span class="flex items-center">${linhaBaixo}</span>
                     </button>`;
 
-                    // Linha da tabela atualizada com um Container Flexbox para forçar todos os 3 botões a terem a MESMA ALTURA
                     html += `<tr class="${rowClass} border-b">
                         <td class="p-3 md:p-4 font-mono text-[10px] md:text-sm">${isOverdue ? "🚨 " : "⏳ "}${dataBr}</td>
                         <td class="p-3 md:p-4 leading-tight"><strong>${f.nome_morador}</strong><br><small class="text-gray-500 text-[10px] md:text-xs">${f.mes_referencia}</small></td>
@@ -1001,7 +886,16 @@
             });
         };
 
-        window.excluirFatura = async (id) => { if(confirm("Tem certeza que deseja apagar?")) { await deleteDoc(doc(db, "faturas", id)); } };
+        // --- CÓDIGO DA LIXEIRA ATUALIZADO PARA MANDAR COMANDO PARA O ROBÔ ---
+        window.excluirFatura = async (id) => { 
+            if(confirm("Deseja cancelar esta fatura e apagar a mensagem no WhatsApp do cliente?")) { 
+                window.mostrarLoading("A processar cancelamento...");
+                await updateDoc(doc(db, "faturas", id), {status: "cancelar"}); 
+                window.esconderLoading();
+            } 
+        };
+        // --------------------------------------------------------------------
+
         window.marcarPago = async (id) => { if(confirm("Confirmar baixa de pagamento manual?")) { await updateDoc(doc(db, "faturas", id), {status: "pago", data_pagamento: new Date().toISOString()}); } };
 
         let todasFaturasCache = [];
@@ -1009,12 +903,9 @@
         window.carregarRelatorio = async () => {
             window.mostrarLoading("A consultar...");
             const snap = await getDocs(collection(db, "faturas"));
-            
             todasFaturasCache = [];
             snap.forEach(d => todasFaturasCache.push(d.data()));
-            
-            window.esconderLoading();
-            window.gerarRelatorioFiltrado();
+            window.esconderLoading(); window.gerarRelatorioFiltrado();
         };
 
         window.gerarRelatorioFiltrado = () => {
@@ -1032,7 +923,8 @@
                 }
                 let matchS = statusF === "TODOS" || f.status === statusF;
                 let matchB = !termo || (f.nome_morador || "").toLowerCase().includes(termo);
-                return matchD && matchS && matchB;
+                // Exclui as canceladas do relatório visual
+                return matchD && matchS && matchB && f.status !== "cancelar";
             });
 
             filtradas.sort((a,b) => {
@@ -1040,29 +932,17 @@
                 return new Date(b.vencimento) - new Date(a.vencimento);
             });
 
-   let tPago = 0, tPend = 0, tInad = 0, tM3 = 0, html = "";
-            const hoje = new Date(); 
-            hoje.setHours(0,0,0,0);
+            let tPago = 0, tPend = 0, tInad = 0, tM3 = 0, html = "";
+            const hoje = new Date(); hoje.setHours(0,0,0,0);
 
             filtradas.forEach(f => {
-                let statusExibicao = f.status;
-                let badge = 'bg-gray-100 text-gray-700';
-
+                let statusExibicao = f.status; let badge = 'bg-gray-100 text-gray-700';
                 if(f.status === "pago") {
-                    tPago += f.valor_total;
-                    statusExibicao = "Recebido";
-                    badge = 'bg-green-100 text-green-700';
+                    tPago += f.valor_total; statusExibicao = "Recebido"; badge = 'bg-green-100 text-green-700';
                 } else {
                     const isOverdue = new Date(f.vencimento + "T00:00:00") < hoje;
-                    if(isOverdue) {
-                        tInad += f.valor_total;
-                        statusExibicao = "Inadimplente";
-                        badge = 'bg-red-100 text-red-700';
-                    } else {
-                        tPend += f.valor_total;
-                        statusExibicao = "Pendente";
-                        badge = 'bg-orange-100 text-orange-700';
-                    }
+                    if(isOverdue) { tInad += f.valor_total; statusExibicao = "Inadimplente"; badge = 'bg-red-100 text-red-700'; } 
+                    else { tPend += f.valor_total; statusExibicao = "Pendente"; badge = 'bg-orange-100 text-orange-700'; }
                 }
                 
                 tM3 += (f.consumo_m3 || 0);
