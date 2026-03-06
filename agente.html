@@ -18,109 +18,151 @@
     <div id="loading" class="loading-overlay"><div class="spinner"></div><p id="loadingMsg" class="mt-4 font-bold text-gray-700">A processar...</p></div>
 
     <div id="loginAgente" class="fixed inset-0 bg-slate-900 flex justify-center items-center z-50 p-4">
-        <form onsubmit="entrarAgente(event)" class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-sm text-center">
+        <form onsubmit="window.entrarAgente(event)" class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-sm text-center">
             <div class="bg-blue-100 w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-4"><i class="fa-solid fa-droplet text-4xl text-blue-600"></i></div>
             <h2 class="text-2xl font-black mb-1 text-slate-800">Portal do Leiturista</h2>
             <p class="text-sm text-gray-500 mb-6">Acesso restrito para coleta de dados</p>
-            <input type="password" id="senhaAgente" required placeholder="Senha do Agente..." class="w-full p-4 border-2 border-gray-200 rounded-xl mb-4 text-center text-lg outline-none focus:border-blue-500 transition">
+            <input type="password" id="senhaAgente" required placeholder="Senha de Acesso..." class="w-full p-4 border-2 border-gray-200 rounded-xl mb-4 text-center text-lg outline-none focus:border-blue-500 transition">
             <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl shadow-lg active:scale-95 transition text-lg">Acessar</button>
         </form>
+    </div>
+
+    <div id="modalSenha" class="hidden fixed inset-0 bg-black/60 z-[100] flex justify-center items-center p-4">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 text-center shadow-2xl">
+            <h3 class="font-black text-xl mb-2 text-slate-800">Alterar Minha Senha</h3>
+            <p class="text-xs text-gray-500 mb-4">Escolha uma nova senha de acesso.</p>
+            <input type="password" id="novaSenhaInput" placeholder="Digite a nova senha..." class="w-full p-4 border-2 border-gray-200 rounded-xl mb-4 text-center outline-none focus:border-blue-500 text-lg font-bold">
+            <div class="flex gap-2">
+                <button onclick="document.getElementById('modalSenha').style.display='none'" class="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-bold">Cancelar</button>
+                <button onclick="window.salvarNovaSenha()" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold">Atualizar</button>
+            </div>
+        </div>
     </div>
 
     <div id="painelAgente" class="flex flex-col w-full h-full hidden">
         <header class="bg-slate-900 text-white p-4 flex justify-between items-center shadow-md z-40">
             <div>
                 <h1 class="font-black text-lg leading-tight">Água São Luiz</h1>
-                <p class="text-[10px] text-slate-400">Modo Coleta Offline</p>
-            </div>
-            <div class="flex items-center gap-3">
-                <div id="statusConexao" class="flex items-center gap-1 bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-xs font-bold border border-green-500/30">
+                <div id="statusConexao" class="flex items-center gap-1 text-green-400 text-[10px] font-bold mt-0.5">
                     <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span>
                     Online
                 </div>
-                <button onclick="sairAgente()" class="text-red-400 p-2"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="document.getElementById('modalSenha').style.display='flex'" class="text-gray-300 hover:text-white p-2 text-sm bg-slate-800 rounded-lg transition"><i class="fa-solid fa-key"></i> Senha</button>
+                <button onclick="window.sairAgente()" class="text-red-400 hover:text-red-300 p-2 text-sm bg-slate-800 rounded-lg transition"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
             </div>
         </header>
 
         <main class="flex-1 overflow-y-auto p-4 pb-24 relative">
-            
             <div class="flex justify-between items-center mb-4">
-                <h2 class="font-black text-slate-700 text-lg"><i class="fa-solid fa-clipboard-list text-blue-600 mr-2"></i>Leituras do Mês</h2>
+                <h2 class="font-black text-slate-700 text-lg"><i class="fa-solid fa-clipboard-list text-blue-600 mr-2"></i>Leituras</h2>
                 <span id="contadorLeituras" class="bg-blue-100 text-blue-700 font-bold px-3 py-1 rounded-lg text-xs">0 digitadas</span>
             </div>
 
-            <input type="text" id="buscaMorador" onkeyup="filtrarCards()" placeholder="🔍 Buscar morador ou endereço..." class="w-full p-4 bg-white shadow-sm border border-gray-200 rounded-2xl mb-4 outline-none focus:border-blue-500 text-sm">
+            <input type="text" id="buscaMorador" onkeyup="window.filtrarCards()" placeholder="🔍 Buscar morador ou endereço..." class="w-full p-4 bg-white shadow-sm border border-gray-200 rounded-2xl mb-4 outline-none focus:border-blue-500 text-sm">
 
             <div id="avisoRascunho" class="hidden bg-amber-50 border border-amber-200 text-amber-700 p-3 rounded-xl mb-4 text-xs font-bold flex items-center gap-2">
                 <i class="fa-solid fa-floppy-disk text-amber-500"></i> Rascunhos recuperados! Suas digitações anteriores foram restauradas.
             </div>
 
             <div id="listaCards" class="space-y-4">
-                <p class="text-center text-gray-400 text-sm mt-10">A carregar dados dos moradores...</p>
+                <p class="text-center text-gray-400 text-sm mt-10">A carregar dados...</p>
             </div>
         </main>
         
         <div class="fixed bottom-0 w-full bg-white border-t p-3 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-            <button onclick="sincronizarEGerarLote()" id="btnSincronizar" class="w-full bg-green-500 text-white font-black py-4 rounded-xl shadow-lg active:scale-95 transition flex justify-center items-center gap-2 text-lg">
-                <i class="fa-solid fa-cloud-arrow-up"></i> Sincronizar e Gerar Faturas
+            <button onclick="window.sincronizarEGerarLote()" id="btnSincronizar" class="w-full bg-green-500 text-white font-black py-4 rounded-xl shadow-lg active:scale-95 transition flex justify-center items-center gap-2 text-lg">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Sincronizar Faturas
             </button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, doc, updateDoc, enableIndexedDbPersistence, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, enableIndexedDbPersistence, addDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ",
-            authDomain: "sistema-agua-sao-luiz.firebaseapp.com",
-            projectId: "sistema-agua-sao-luiz"
-        };
-        
+        const firebaseConfig = { apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ", authDomain: "sistema-agua-sao-luiz.firebaseapp.com", projectId: "sistema-agua-sao-luiz" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Ativa banco de dados offline
         enableIndexedDbPersistence(db).catch((err) => { console.log("Offline não suportado."); });
 
         let moradoresGlobal = [];
 
-        // Proteção contra atualizar a página acidentalmente
         window.addEventListener('beforeunload', function (e) {
             const rascunhos = JSON.parse(localStorage.getItem('rascunhos_coleta') || '{}');
-            if (Object.keys(rascunhos).length > 0) {
-                e.preventDefault();
-                e.returnValue = 'Existem leituras digitadas não enviadas. Tem certeza que deseja sair?';
-            }
+            if (Object.keys(rascunhos).length > 0) { e.preventDefault(); e.returnValue = 'Existem leituras digitadas não enviadas.'; }
         });
 
         const atualizarStatusRede = () => {
             const el = document.getElementById("statusConexao");
             const btnSync = document.getElementById("btnSincronizar");
             if (navigator.onLine) {
-                el.innerHTML = '<span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span> Online';
-                el.className = "flex items-center gap-1 bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-xs font-bold border border-green-500/30";
-                btnSync.classList.remove("opacity-50", "pointer-events-none");
+                el.innerHTML = '<span class="relative flex h-2 w-2 mr-1"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span> Online';
+                el.className = "flex items-center text-green-400 text-[10px] font-bold mt-0.5";
+                btnSync.classList.remove("opacity-50", "pointer-events-none", "bg-gray-400");
+                btnSync.classList.add("bg-green-500");
                 btnSync.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Sincronizar Faturas';
             } else {
-                el.innerHTML = '<i class="fa-solid fa-plane-slash"></i> Offline';
-                el.className = "flex items-center gap-1 bg-red-500/20 text-red-500 px-3 py-1 rounded-full text-xs font-bold border border-red-500/30";
-                btnSync.classList.add("opacity-50", "pointer-events-none");
-                btnSync.innerHTML = '<i class="fa-solid fa-wifi"></i> Sem Internet';
+                el.innerHTML = '<i class="fa-solid fa-plane-slash mr-1"></i> Offline (Salvando Local)';
+                el.className = "flex items-center text-red-400 text-[10px] font-bold mt-0.5";
+                btnSync.classList.add("opacity-50", "pointer-events-none", "bg-gray-400");
+                btnSync.classList.remove("bg-green-500");
+                btnSync.innerHTML = '<i class="fa-solid fa-wifi"></i> Requer Internet para Sincronizar';
             }
         };
         window.addEventListener('online', atualizarStatusRede);
         window.addEventListener('offline', atualizarStatusRede);
         atualizarStatusRede();
 
-        window.entrarAgente = (e) => {
+        // VALIDAÇÃO DE SENHA COM BANCO DE DADOS
+        window.entrarAgente = async (e) => {
             e.preventDefault();
-            if(document.getElementById("senhaAgente").value === "agente123") {
-                localStorage.setItem("agente_logado", "sim");
-                document.getElementById("loginAgente").style.display = "none";
-                document.getElementById("painelAgente").classList.remove('hidden');
-                carregarListaColeta();
-            } else { alert("Senha incorreta!"); }
+            const senhaInput = document.getElementById("senhaAgente").value;
+            document.getElementById("loading").style.display = "flex";
+
+            try {
+                if (navigator.onLine) {
+                    const docRef = doc(db, "config", "agente");
+                    const snapInfo = await getDoc(docRef);
+                    let senhaOficial = "agente123";
+                    if(snapInfo.exists()) { senhaOficial = snapInfo.data().senha; } 
+                    else { await setDoc(docRef, {senha: "agente123"}); }
+
+                    if(senhaInput === senhaOficial) {
+                        localStorage.setItem("agente_senha_cache", senhaOficial);
+                        localStorage.setItem("agente_logado", "sim");
+                        document.getElementById("loginAgente").style.display = "none";
+                        document.getElementById("painelAgente").classList.remove('hidden');
+                        window.carregarListaColeta();
+                    } else { alert("Senha incorreta!"); }
+                } else {
+                    const senhaCache = localStorage.getItem("agente_senha_cache") || "agente123";
+                    if(senhaInput === senhaCache) {
+                        localStorage.setItem("agente_logado", "sim");
+                        document.getElementById("loginAgente").style.display = "none";
+                        document.getElementById("painelAgente").classList.remove('hidden');
+                        window.carregarListaColeta();
+                    } else { alert("Senha incorreta (Modo Offline)!"); }
+                }
+            } catch(err) { alert("Erro ao validar senha."); }
+            document.getElementById("loading").style.display = "none";
+        };
+
+        // AGENTE ALTERA A PRÓPRIA SENHA
+        window.salvarNovaSenha = async () => {
+            if(!navigator.onLine) return alert("Você precisa de internet para alterar a senha.");
+            const nova = document.getElementById("novaSenhaInput").value;
+            if(nova.length < 4) return alert("A senha deve ter no mínimo 4 caracteres.");
+            
+            document.getElementById("loading").style.display = "flex";
+            await setDoc(doc(db, "config", "agente"), { senha: nova });
+            localStorage.setItem("agente_senha_cache", nova);
+            document.getElementById("loading").style.display = "none";
+            document.getElementById('modalSenha').style.display = 'none';
+            document.getElementById("novaSenhaInput").value = "";
+            alert("✅ Senha atualizada com sucesso!");
         };
 
         window.sairAgente = () => { localStorage.removeItem("agente_logado"); location.reload(); };
@@ -128,7 +170,7 @@
         if(localStorage.getItem("agente_logado") === "sim") {
             document.getElementById("loginAgente").style.display = "none";
             document.getElementById("painelAgente").classList.remove('hidden');
-            carregarListaColeta();
+            setTimeout(window.carregarListaColeta, 500); // pequeno atraso pra renderizar a tela
         }
 
         const val1 = parseFloat(localStorage.getItem('agua_val1')) || 25;
@@ -155,53 +197,39 @@
             document.getElementById(`card-${id}`).dataset.valortotal = total;
             document.getElementById(`card-${id}`).dataset.consumo = consumo;
 
-            // SALVA O RASCUNHO AUTO-SAVE NA MEMÓRIA
             let rascunhos = JSON.parse(localStorage.getItem('rascunhos_coleta') || '{}');
-            if (atuStr !== "" || multa !== 0) {
-                rascunhos[id] = { atu: atuStr, multa: multa };
-            } else {
-                delete rascunhos[id]; // Limpa se apagou
-            }
+            if (atuStr !== "" || multa !== 0) { rascunhos[id] = { atu: atuStr, multa: multa }; } 
+            else { delete rascunhos[id]; }
             localStorage.setItem('rascunhos_coleta', JSON.stringify(rascunhos));
-            
-            // Atualiza o contador de pendentes na tela
             document.getElementById("contadorLeituras").innerText = `${Object.keys(rascunhos).length} digitadas`;
         };
 
-        async function carregarListaColeta() {
+        window.carregarListaColeta = async () => {
             document.getElementById("loading").style.display = "flex";
             try {
                 const snap = await getDocs(collection(db, "familias"));
                 moradoresGlobal = [];
                 snap.forEach(d => moradoresGlobal.push({id: d.id, ...d.data()}));
                 moradoresGlobal.sort((a,b) => (a.nome || "").localeCompare(b.nome || "", 'pt-BR'));
-                renderizarCards(moradoresGlobal);
+                window.renderizarCards(moradoresGlobal);
             } catch(e) {
-                document.getElementById("listaCards").innerHTML = "<p class='text-red-500 text-center font-bold'>Erro ao aceder dados offline. Conecte à internet pelo menos uma vez.</p>";
+                document.getElementById("listaCards").innerHTML = "<p class='text-red-500 text-center font-bold'>Erro ao carregar dados. Conecte à internet pelo menos uma vez.</p>";
             }
             document.getElementById("loading").style.display = "none";
-        }
+        };
 
-        function renderizarCards(lista) {
+        window.renderizarCards = (lista) => {
             let html = "";
             let rascunhos = JSON.parse(localStorage.getItem('rascunhos_coleta') || '{}');
-            
-            if(Object.keys(rascunhos).length > 0) {
-                document.getElementById("avisoRascunho").classList.remove("hidden");
-            } else {
-                document.getElementById("avisoRascunho").classList.add("hidden");
-            }
+            if(Object.keys(rascunhos).length > 0) document.getElementById("avisoRascunho").classList.remove("hidden");
+            else document.getElementById("avisoRascunho").classList.add("hidden");
 
             lista.forEach(f => {
                 const taxa = f.taxa_pendente_valor || 0;
-                
-                // Resgata o Rascunho se a pessoa já tinha digitado antes
                 const rascunho = rascunhos[f.id] || {};
                 const atuVal = rascunho.atu !== undefined ? rascunho.atu : "";
                 const multaVal = rascunho.multa !== undefined ? rascunho.multa : "0.00";
-
-                // Visual de card já preenchido (Dá um destaque verde)
-                const cardAtivoClass = atuVal !== "" ? "border-green-400 bg-green-50 shadow-md" : "border-gray-200 bg-white";
+                const cardAtivoClass = atuVal !== "" ? "border-blue-400 bg-blue-50 shadow-md" : "border-gray-200 bg-white";
 
                 html += `
                 <div class="card-morador border p-4 rounded-2xl mb-4 transition-all ${cardAtivoClass}" id="card-${f.id}" data-nome="${f.nome.toLowerCase()}" data-cpf="${f.cpf}" data-telefone="${f.telefone}" data-taxa="${taxa}" data-desc="${f.taxa_pendente_desc || ""}">
@@ -218,9 +246,9 @@
                             <span class="block text-[9px] font-bold text-gray-400 uppercase mb-1">Anterior</span>
                             <input type="number" id="ant-${f.id}" value="${f.ultima_leitura || 0}" readonly class="w-full bg-transparent text-center font-bold text-gray-600 outline-none">
                         </div>
-                        <div class="bg-white p-2 rounded-xl text-center border-2 border-blue-200 focus-within:border-blue-500 focus-within:shadow-md transition">
+                        <div class="bg-white p-2 rounded-xl text-center border-2 border-blue-200 focus-within:border-blue-500 transition">
                             <span class="block text-[9px] font-black text-blue-600 uppercase mb-1">Atual</span>
-                            <input type="number" inputmode="numeric" id="atu-${f.id}" value="${atuVal}" oninput="calcularTotalCard('${f.id}')" placeholder="Digitar..." class="w-full bg-transparent text-center font-black text-blue-800 text-lg outline-none">
+                            <input type="number" inputmode="numeric" id="atu-${f.id}" value="${atuVal}" oninput="window.calcularTotalCard('${f.id}')" placeholder="Digitar" class="w-full bg-transparent text-center font-black text-blue-800 text-lg outline-none">
                         </div>
                     </div>
                     
@@ -231,7 +259,7 @@
                         </div>
                         <div class="flex-1 border-l pl-3 border-gray-100">
                             <label class="block text-[9px] font-bold text-red-400 uppercase mb-1">Multa (R$)</label>
-                            <input type="number" step="0.01" id="multa-${f.id}" value="${multaVal}" oninput="calcularTotalCard('${f.id}')" class="w-full bg-red-50 border border-red-100 p-1 text-center font-bold text-red-600 rounded outline-none text-sm focus:border-red-400">
+                            <input type="number" step="0.01" id="multa-${f.id}" value="${multaVal}" oninput="window.calcularTotalCard('${f.id}')" class="w-full bg-red-50 border border-red-100 p-1 text-center font-bold text-red-600 rounded outline-none text-sm focus:border-red-400">
                             <input type="hidden" id="taxa-${f.id}" value="${taxa}">
                         </div>
                     </div>
@@ -245,23 +273,18 @@
             });
             document.getElementById("listaCards").innerHTML = html;
             document.getElementById("contadorLeituras").innerText = `${Object.keys(rascunhos).length} digitadas`;
-            
-            // Recalcula todos os totais baseados nos rascunhos recuperados
-            lista.forEach(f => calcularTotalCard(f.id));
-        }
+            lista.forEach(f => window.calcularTotalCard(f.id));
+        };
 
         window.filtrarCards = () => {
             const termo = document.getElementById("buscaMorador").value.toLowerCase();
-            const cards = document.querySelectorAll(".card-morador");
-            cards.forEach(c => {
-                const nome = c.dataset.nome;
-                if(nome.includes(termo)) c.style.display = "block";
-                else c.style.display = "none";
+            document.querySelectorAll(".card-morador").forEach(c => {
+                c.style.display = c.dataset.nome.includes(termo) ? "block" : "none";
             });
         };
 
         window.sincronizarEGerarLote = async () => {
-            if(!navigator.onLine) return alert("Você precisa estar conectado à internet para gerar o PIX.");
+            if(!navigator.onLine) return alert("Você precisa estar conectado à internet para gerar o PIX e sincronizar com o Servidor.");
 
             const cards = document.querySelectorAll(".card-morador");
             let faturasParaGerar = [];
@@ -342,18 +365,24 @@
 
                         sucessoCont++;
                     }
-                } catch(e) {
-                    console.error(`Falha no PIX de ${fat.nome}`, e);
-                }
+                } catch(e) { console.error(`Falha no PIX de ${fat.nome}`, e); }
+            }
+
+            // SALVA LOG NO FIREBASE PARA O ADMIN VER
+            if(sucessoCont > 0) {
+                try {
+                    await addDoc(collection(db, "logs_agente"), {
+                        data: new Date().toISOString(),
+                        qtd: sucessoCont,
+                        mensagem: `O agente sincronizou ${sucessoCont} faturas no sistema.`
+                    });
+                } catch(e) {}
             }
 
             document.getElementById("loading").style.display = "none";
-            
-            // LIMPA OS RASCUNHOS SALVOS JÁ QUE FOI TUDO ENVIADO
-            localStorage.removeItem('rascunhos_coleta');
-            
-            alert(`✅ Sincronização concluída! ${sucessoCont} faturas enviadas.`);
-            carregarListaColeta();
+            localStorage.removeItem('rascunhos_coleta'); // Limpa os rascunhos após sucesso
+            alert(`✅ Sincronização concluída! ${sucessoCont} faturas enviadas para a fila do robô.`);
+            window.carregarListaColeta();
         };
     </script>
 </body>
