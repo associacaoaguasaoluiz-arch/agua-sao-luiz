@@ -769,15 +769,7 @@
             }
             window.esconderLoading(); alert("✅ Lote de Faturas Concluído com Sucesso!");
         };
-       // Função para formatar o dinheiro ao vivo enquanto digita
-        window.mascaraMoeda = (event) => {
-            let v = event.target.value.replace(/\D/g, '');
-            if(v === '') { event.target.value = ''; return; }
-            v = (parseInt(v, 10) / 100).toFixed(2);
-            event.target.value = v.replace('.', ',');
-        };
-
-       // Função para formatar o dinheiro ao vivo enquanto digita
+     // Função para formatar o dinheiro ao vivo enquanto digita
         window.mascaraMoeda = (event) => {
             let v = event.target.value.replace(/\D/g, '');
             if(v === '') { event.target.value = ''; return; }
@@ -819,37 +811,8 @@
                         const res = await fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: f.nome, cpf: f.cpf.replace(/\D/g, '')}) });
                         const pix = await res.json();
                         if(pix.sucesso) { 
-                            // Linha corrigida com whatsapp_enviado: false
                             await addDoc(collection(db, "faturas"), { familia_id: id, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: f.telefone, nome_morador: f.nome, data_lancamento: new Date().toISOString() }); 
                         }
-                    } catch(err) {}
-                }
-                window.esconderLoading(); alert(`✅ Faturas avulsas geradas.`);
-            } else {
-                try {
-                    const nome = opt.dataset.nome;
-                    const res = await fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: nome, cpf: opt.dataset.cpf.replace(/\D/g, '')}) });
-                    const pix = await res.json();
-                    if(pix.sucesso) { 
-                        // Linha corrigida com whatsapp_enviado: false
-                        await addDoc(collection(db, "faturas"), { familia_id: familiaId, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: opt.dataset.tel, nome_morador: opt.dataset.nome, data_lancamento: new Date().toISOString() });
-                        
-                        window.esconderLoading(); 
-                        alert("✅ Serviço avulso gerado com sucesso! (Aguardando robô enviar)");
-                        document.getElementById("formAvulso").reset();
-                    }
-                } catch(e) { window.esconderLoading(); alert("Erro na geração da fatura."); }
-            }
-            document.getElementById("formAvulso").reset(); document.getElementById("buscaClienteAvulso").value = ""; window.filtrarAvulsoESelecionar();
-        };
-            
-            if(familiaId === 'TODOS') {
-                if(!confirm(`Gerar PIX SEPARADO de R$ ${valor.toFixed(2).replace('.',',')} para TODOS?`)) { window.esconderLoading(); return; }
-                for(let [id, f] of Object.entries(window.familiasGlobal)) {
-                    try {
-                        const res = await fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: f.nome, cpf: f.cpf.replace(/\D/g, '')}) });
-                        const pix = await res.json();
-                        if(pix.sucesso) { await addDoc(collection(db, "faturas"), { familia_id: id, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: f.telefone, nome_morador: f.nome, data_lancamento: new Date().toISOString() }); }
                     } catch(err) {}
                 }
                 window.esconderLoading(); alert(`✅ Faturas avulsas geradas.`);
