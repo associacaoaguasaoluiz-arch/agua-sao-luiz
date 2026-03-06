@@ -238,18 +238,30 @@
                     <h2 class="text-xl md:text-2xl font-bold text-slate-700 mb-4 md:mb-6 mt-4 md:mt-0">⚙️ Banco de Dados e Configurações</h2>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                         
-                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200 lg:col-span-2">
-                            <h3 class="font-bold text-base md:text-lg text-slate-700 mb-3 md:mb-4">🔐 Alterar Senha do Administrador</h3>
-                            <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                       <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200 lg:col-span-2 mt-2">
+                            <h3 class="font-bold text-base md:text-lg text-slate-700 mb-3 md:mb-4">📱 Controle do Agente (Leiturista)</h3>
+                            
+                            <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center mb-6">
                                 <div class="w-full sm:w-1/2">
-                                    <label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1 uppercase">Nova Senha de Acesso</label>
-                                    <input type="password" id="cfgSenhaAdmin" placeholder="Digite a nova senha..." class="w-full p-3 border rounded-xl font-bold text-slate-700 outline-none text-sm md:text-base">
+                                    <label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1 uppercase">Nova Senha do App Agente</label>
+                                    <input type="password" id="cfgSenhaAgente" placeholder="Forçar nova senha..." class="w-full p-3 border rounded-xl font-bold text-slate-700 outline-none text-sm md:text-base">
                                 </div>
-                                <div class="w-full sm:w-1/2 text-[10px] md:text-xs text-gray-500 leading-relaxed">
-                                    A senha padrão inicial é <strong>admin123</strong>. Você pode alterar essa senha quantas vezes quiser para aumentar a segurança do seu painel.
+                                <button onclick="window.salvarSenhaAgente()" class="mt-4 sm:mt-5 w-full sm:w-auto bg-slate-800 hover:bg-slate-900 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">💾 Salvar Senha Agente</button>
+                            </div>
+
+                            <div class="border-t pt-4">
+                                <div class="flex justify-between items-center mb-3">
+                                    <h4 class="font-bold text-sm text-blue-700"><i class="fa-solid fa-list-check"></i> Histórico de Sincronização</h4>
+                                    <button onclick="window.carregarLogsAgente()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold px-3 py-1.5 rounded-lg text-xs transition"><i class="fa-solid fa-rotate-right"></i> Atualizar Logs</button>
+                                </div>
+                                <div class="overflow-x-auto w-full max-h-48 overflow-y-auto scroll-suave border rounded-xl">
+                                    <table class="w-full text-left text-sm">
+                                        <tbody id="tabelaLogsAgente" class="divide-y divide-slate-100">
+                                            <tr><td class="p-4 text-center text-gray-400 text-xs">Clique em Atualizar Logs para visualizar...</td></tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
-                            <button onclick="window.salvarSenhaAdmin()" class="mt-4 w-full sm:w-auto bg-slate-800 hover:bg-slate-900 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">💾 Guardar Nova Senha</button>
                         </div>
 
                         <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-blue-100 lg:col-span-2">
