@@ -462,6 +462,7 @@
             if(id === 'aba-relatorios' && window.carregarRelatorio) window.carregarRelatorio();
             if(id === 'aba-abertas' && window.iniciarListenerAbertas) window.iniciarListenerAbertas();
             if(id === 'aba-recebimentos' && window.iniciarListenerPagos) window.iniciarListenerPagos();
+            if(id === 'aba-config' && window.carregarLogsAgente) window.carregarLogsAgente();
         };
 
         window.abrirModalCadastro = () => { document.getElementById("formMorador").reset(); document.getElementById("modId").value = ""; document.getElementById("modalMorador").style.display = "flex"; };
