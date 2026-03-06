@@ -12,23 +12,17 @@
         .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
         .coluna-fixa { position: sticky; left: 0; z-index: 20; background-color: white; border-right: 2px solid #e5e7eb; max-width: 130px; min-width: 130px; white-space: normal; font-size: 0.75rem; line-height: 1.2; }
         th.coluna-fixa { background-color: #f8fafc; }
-        
         .overflow-x-auto { -webkit-overflow-scrolling: touch; }
         .scroll-suave::-webkit-scrollbar { height: 6px; }
         .scroll-suave::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         .conteudo-principal { padding-bottom: 100px; } 
-        
         .input-leitura { width: 100%; min-width: 80px; max-width: 120px; font-size: 1rem; transition: all 0.2s; }
         .input-leitura:focus { background-color: #fffbeb; border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2); }
-        
         .modal-fundo { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; justify-content: center; align-items: center; padding: 1rem; }
-        
         .mic-ativo { animation: pulse-red 1.5s infinite; background-color: #ef4444 !important; color: white !important; }
         @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
-        
         @media print {
             aside, nav, .md\:hidden, header, .no-print, button { display: none !important; }
             #painelAdmin, main, #aba-relatorios { display: block !important; padding: 0 !important; margin: 0 !important; background: white; }
@@ -39,10 +33,11 @@
 <body class="text-gray-800 h-screen flex overflow-hidden">
 
     <div id="loading" class="loading-overlay"><div class="spinner"></div><p id="loadingMsg" class="mt-4 font-bold text-gray-700 font-mono text-center px-4">A processar...</p></div>
+    
     <div id="toastVoz" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full font-bold shadow-2xl transition-opacity duration-300 opacity-0 z-[110] flex items-center gap-2 pointer-events-none"><i class="fa-solid fa-microphone"></i> <span id="txtToastVoz">Comando</span></div>
 
     <div id="loginAdmin" class="fixed inset-0 bg-slate-900 flex justify-center items-center z-50 p-4">
-        <form onsubmit="entrarAdmin(event)" class="bg-white p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center">
+        <form onsubmit="window.entrarAdmin(event)" class="bg-white p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center">
             <span class="text-5xl mb-2 block">💧</span>
             <h2 class="text-2xl font-bold mb-6 text-slate-800">São Luiz Admin</h2>
             <input type="password" id="senhaAdmin" required placeholder="Digite a Senha..." class="w-full p-4 border-2 border-gray-200 rounded-xl mb-4 text-center text-lg outline-none focus:border-blue-500 focus:bg-blue-50 transition">
@@ -55,15 +50,15 @@
         <aside class="w-64 bg-slate-900 text-white flex-col hidden md:flex shadow-xl z-30">
             <div class="p-6 text-center border-b border-slate-700"><h1 class="text-xl font-bold">💧 São Luiz</h1></div>
             <nav class="flex-1 p-4 space-y-2 overflow-y-auto scroll-suave text-sm text-gray-400">
-                <button onclick="mudarAba('aba-moradores', this)" class="menu-btn w-full flex items-center p-3 rounded-xl bg-blue-600 text-white font-bold transition"><i class="fa-solid fa-users w-6 mr-2"></i> Moradores</button>
-                <button onclick="mudarAba('aba-leituras', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-pen-to-square w-6 mr-2"></i> Água (Mensal)</button>
-                <button onclick="mudarAba('aba-avulso', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-wrench w-6 mr-2"></i> Taxas Avulsas</button>
-                <button onclick="mudarAba('aba-abertas', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-hourglass-half w-6 mr-2"></i> Pendentes</button>
-                <button onclick="mudarAba('aba-recebimentos', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-check-double w-6 mr-2"></i> Pagos</button>
-                <button onclick="mudarAba('aba-relatorios', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-chart-pie w-6 mr-2"></i> Relatórios</button>
-                <button onclick="mudarAba('aba-config', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-gear w-6 mr-2"></i> Configuração</button>
+                <button onclick="window.mudarAba('aba-moradores', this)" class="menu-btn w-full flex items-center p-3 rounded-xl bg-blue-600 text-white font-bold transition"><i class="fa-solid fa-users w-6 mr-2"></i> Moradores</button>
+                <button onclick="window.mudarAba('aba-leituras', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-pen-to-square w-6 mr-2"></i> Água (Mensal)</button>
+                <button onclick="window.mudarAba('aba-avulso', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-wrench w-6 mr-2"></i> Taxas Avulsas</button>
+                <button onclick="window.mudarAba('aba-abertas', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-hourglass-half w-6 mr-2"></i> Pendentes</button>
+                <button onclick="window.mudarAba('aba-recebimentos', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-check-double w-6 mr-2"></i> Pagos</button>
+                <button onclick="window.mudarAba('aba-relatorios', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-chart-pie w-6 mr-2"></i> Relatórios</button>
+                <button onclick="window.mudarAba('aba-config', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-gear w-6 mr-2"></i> Configuração</button>
                 <div class="pt-6 mt-6 border-t border-slate-700">
-                    <button onclick="sairAdmin()" class="w-full flex items-center justify-center p-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold transition">Sair do Painel</button>
+                    <button onclick="window.sairAdmin()" class="w-full flex items-center justify-center p-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold transition">Sair do Painel</button>
                 </div>
             </nav>
         </aside>
@@ -71,7 +66,7 @@
         <main class="flex-1 overflow-y-auto bg-gray-100 conteudo-principal w-full">
             <div class="md:hidden bg-slate-900 text-white p-4 text-center sticky top-0 z-40 shadow-md font-bold flex justify-between px-4 items-center">
                 <span>💧 São Luiz</span>
-                <button onclick="sairAdmin()" class="text-red-400 bg-slate-800 px-3 py-1 rounded-lg text-xs"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
+                <button onclick="window.sairAdmin()" class="text-red-400 bg-slate-800 px-3 py-1 rounded-lg text-xs"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
             </div>
             
             <div class="p-3 md:p-8 max-w-7xl mx-auto w-full print-area">
@@ -79,10 +74,10 @@
                 <div id="aba-moradores" class="conteudo-aba">
                     <div class="flex flex-col sm:flex-row justify-between items-center mb-4 md:mb-6 gap-3">
                         <h2 class="text-xl md:text-2xl font-bold text-slate-800">👥 Moradores</h2>
-                        <button onclick="abrirModalCadastro()" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold shadow-lg transition text-sm">➕ Novo Cadastro</button>
+                        <button onclick="window.abrirModalCadastro()" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold shadow-lg transition text-sm">➕ Novo Cadastro</button>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
-                        <input type="text" id="buscaMorador" onkeyup="filtrarTabela('buscaMorador', 'tabelaMoradores')" placeholder="🔍 Buscar morador ou lote..." class="w-full p-4 bg-gray-50 border-b outline-none text-sm md:text-base">
+                        <input type="text" id="buscaMorador" onkeyup="window.filtrarTabela('buscaMorador', 'tabelaMoradores')" placeholder="🔍 Buscar morador ou lote..." class="w-full p-4 bg-gray-50 border-b outline-none text-sm md:text-base">
                         <div class="overflow-x-auto scroll-suave w-full">
                             <table class="w-full text-left whitespace-nowrap min-w-[550px]">
                                 <tbody id="tabelaMoradores" class="divide-y text-sm"></tbody>
@@ -94,14 +89,14 @@
                 <div id="aba-leituras" class="conteudo-aba tela-oculta">
                     <div class="mb-4 flex flex-col md:flex-row justify-between items-start md:items-end gap-3">
                         <div>
-                            <h2 class="text-xl md:text-2xl font-bold flex items-center gap-2 text-slate-800">📝 Consumo <button id="btnVoz" onclick="alternarVoz()" class="bg-slate-200 text-slate-600 w-8 h-8 md:w-10 md:h-10 rounded-full flex justify-center items-center shadow-sm"><i class="fa-solid fa-microphone text-xs md:text-base"></i></button></h2>
+                            <h2 class="text-xl md:text-2xl font-bold flex items-center gap-2 text-slate-800">📝 Consumo <button id="btnVoz" onclick="window.alternarVoz()" class="bg-slate-200 text-slate-600 w-8 h-8 md:w-10 md:h-10 rounded-full flex justify-center items-center shadow-sm"><i class="fa-solid fa-microphone text-xs md:text-base"></i></button></h2>
                         </div>
                         <div class="flex gap-2 text-xs w-full md:w-auto">
                             <input type="text" id="mesReferencia" value="04/2026" class="p-2 border rounded-lg font-bold text-center flex-1 md:w-24 outline-none">
-                            <input type="date" id="dataVencimento" value="2026-04-20" class="p-2 border rounded-lg font-bold text-center flex-1 outline-none">
+                            <input type="date" id="dataVencimento" class="p-2 border rounded-lg font-bold text-center flex-1 outline-none">
                         </div>
                     </div>
-                    <button onclick="if(window.gerarFaturasEmLote) window.gerarFaturasEmLote()" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 md:py-4 rounded-2xl font-black text-base md:text-xl shadow-xl active:scale-95 transition mb-6">🚀 GERAR E SALVAR LOTES</button>
+                    <button onclick="window.gerarFaturasEmLote()" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 md:py-4 rounded-2xl font-black text-base md:text-xl shadow-xl active:scale-95 transition mb-6">🚀 GERAR E SALVAR LOTES</button>
                     
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden relative">
                         <div class="overflow-x-auto scroll-suave w-full pb-4">
@@ -126,10 +121,10 @@
                 <div id="aba-avulso" class="conteudo-aba tela-oculta">
                     <h2 class="text-xl md:text-2xl font-bold text-blue-800 mb-4 md:mb-6 mt-4 md:mt-0">🔧 Lançar Serviço Avulso</h2>
                     <div class="bg-white rounded-2xl shadow-sm border p-4 md:p-6 w-full max-w-2xl mx-auto md:mx-0">
-                        <form id="formAvulso" class="space-y-4" onsubmit="if(window.submitAvulso) window.submitAvulso(event)">
+                        <form id="formAvulso" class="space-y-4" onsubmit="window.submitAvulso(event)">
                             <div>
                                 <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Como deseja cobrar?</label>
-                                <select id="avulsoTipo" class="w-full p-3 bg-blue-50 border border-blue-200 rounded-xl outline-none font-bold text-blue-900 text-sm md:text-base" onchange="if(window.focarProximo) window.focarProximo({key: 'Enter', preventDefault: ()=>{}}, 'buscaClienteAvulso')">
+                                <select id="avulsoTipo" class="w-full p-3 bg-blue-50 border border-blue-200 rounded-xl outline-none font-bold text-blue-900 text-sm md:text-base" onchange="window.focarProximo({key: 'Enter', preventDefault: ()=>{}}, 'buscaClienteAvulso')">
                                     <option value="somar_proxima">➕ Somar na Próxima Conta de Água</option>
                                     <option value="pix_agora">⚡ Gerar um PIX Separado Agora</option>
                                 </select>
@@ -137,27 +132,27 @@
                             
                             <div class="bg-slate-50 p-3 md:p-4 rounded-xl border border-slate-200 shadow-inner relative">
                                 <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-2">Busque por Nome ou CPF</label>
-                                <input type="text" id="buscaClienteAvulso" oninput="if(window.filtrarAvulsoESelecionar) window.filtrarAvulsoESelecionar()" onkeydown="if(window.focarProximo) window.focarProximo(event, 'avulsoDescricao')" placeholder="🔍 Digite e aperte Enter..." autocomplete="off" class="w-full p-3 mb-2 bg-white border-2 border-blue-100 rounded-xl outline-none focus:border-blue-500 transition text-sm shadow-sm font-bold text-blue-800">
+                                <input type="text" id="buscaClienteAvulso" oninput="window.filtrarAvulsoESelecionar()" onkeydown="window.focarProximo(event, 'avulsoDescricao')" placeholder="🔍 Digite para buscar..." class="w-full p-3 mb-2 bg-white border-2 border-blue-100 rounded-xl outline-none focus:border-blue-500 text-sm shadow-sm font-bold text-blue-800">
                                 <div id="avulsoClienteNomeExibicao" class="text-[11px] md:text-sm font-bold text-green-700 bg-green-50 p-2 rounded hidden">Nenhum selecionado</div>
-                                <select id="avulsoFamilia" required class="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none font-bold text-gray-700 shadow-sm mt-2 hidden"></select>
+                                <select id="avulsoFamilia" class="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none font-bold text-gray-700 shadow-sm mt-2 hidden"></select>
                             </div>
 
                             <div>
                                 <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Título do Serviço</label>
-                                <input type="text" id="avulsoDescricao" required placeholder="Ex: Conserto do encanamento" onkeydown="if(window.focarProximo) window.focarProximo(event, 'avulsoValor')" class="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500 focus:bg-white transition shadow-sm text-sm md:text-base">
+                                <input type="text" id="avulsoDescricao" required placeholder="Ex: Conserto do encanamento" class="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500 transition shadow-sm text-sm md:text-base">
                             </div>
-                        <div class="flex flex-col sm:flex-row gap-3">
+                            <div class="flex flex-col sm:flex-row gap-4">
                                 <div class="flex-[2]">
                                     <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Valor (R$)</label>
-                                   <input type="text" inputmode="numeric" id="avulsoValor" required placeholder="0,00" class="w-full p-3 bg-gray-50 border rounded-xl outline-none text-blue-600 font-bold text-lg focus:border-blue-500 focus:bg-white transition shadow-sm" oninput="window.mascaraMoeda(event)" onkeydown="if(document.getElementById('avulsoTipo').value === 'pix_agora') { if(window.focarProximo) window.focarProximo(event, 'avulsoVencimento'); } else { if(window.focarProximo) window.focarProximo(event, 'btnSubmitAvulso'); }">
+                                   <input type="text" inputmode="numeric" id="avulsoValor" required placeholder="0,00" class="w-full p-3 bg-gray-50 border rounded-xl outline-none text-blue-600 font-bold text-lg focus:border-blue-500 transition shadow-sm" oninput="window.mascaraMoeda(event)">
                                 </div>
                                 <div class="flex-[2]" id="divVencimentoAvulso">
-                                    <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Vencimento</label>
-                                    <input type="date" id="avulsoVencimento" onkeydown="if(window.focarProximo) window.focarProximo(event, 'avulsoRepeticoes')" class="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500 focus:bg-white transition shadow-sm text-sm md:text-base">
+                                    <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Vencimento (Só p/ Pix)</label>
+                                    <input type="date" id="avulsoVencimento" class="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500 transition shadow-sm text-sm md:text-base">
                                 </div>
                                 <div class="flex-1">
                                     <label class="block text-[10px] md:text-xs font-bold text-orange-500 uppercase mb-1">Cópias</label>
-                                    <input type="number" id="avulsoRepeticoes" value="1" min="1" title="Qtd de vezes para multiplicar a fatura (Teste do Robô)" onkeydown="if(window.focarProximo) window.focarProximo(event, 'btnSubmitAvulso')" class="w-full p-3 bg-orange-50 border border-orange-200 rounded-xl outline-none focus:border-orange-500 font-black text-orange-700 text-center transition shadow-sm text-sm md:text-base">
+                                    <input type="number" id="avulsoRepeticoes" value="1" min="1" class="w-full p-3 bg-orange-50 border border-orange-200 rounded-xl outline-none font-black text-orange-700 text-center transition shadow-sm text-sm md:text-base">
                                 </div>
                             </div>
                             <button type="submit" id="btnSubmitAvulso" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-black py-3 md:py-4 rounded-xl shadow-lg mt-2 active:scale-95 transition text-base md:text-lg">Confirmar Lançamento</button>
@@ -168,7 +163,7 @@
                 <div id="aba-abertas" class="conteudo-aba tela-oculta">
                     <div class="flex flex-col sm:flex-row justify-between sm:items-end mb-4 md:mb-6 gap-2 mt-4 md:mt-0">
                         <h2 class="text-xl md:text-2xl font-bold text-amber-600 flex items-center gap-2">⏳ Pendentes</h2>
-                        <span class="text-[9px] md:text-xs font-bold text-slate-400 uppercase bg-slate-100 px-3 py-1 rounded-full w-fit"><span class="flex h-2 w-2 relative inline-block mr-1"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span></span> Atualização em Tempo Real</span>
+                        <span class="text-[9px] md:text-xs font-bold text-slate-400 uppercase bg-slate-100 px-3 py-1 rounded-full w-fit"><span class="flex h-2 w-2 relative inline-block mr-1"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span></span> Tempo Real</span>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
                         <div class="overflow-x-auto w-full"><table class="w-full text-left whitespace-nowrap min-w-[650px]"><tbody id="tabelaAbertas" class="divide-y text-sm"></tbody></table></div>
@@ -178,7 +173,7 @@
                 <div id="aba-recebimentos" class="conteudo-aba tela-oculta">
                     <div class="flex flex-col sm:flex-row justify-between sm:items-end mb-4 md:mb-6 gap-2 mt-4 md:mt-0">
                         <h2 class="text-xl md:text-2xl font-bold text-green-700 flex items-center gap-2">✅ Recebidos</h2>
-                        <span class="text-[9px] md:text-xs font-bold text-slate-400 uppercase bg-slate-100 px-3 py-1 rounded-full w-fit"><span class="flex h-2 w-2 relative inline-block mr-1"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span> Atualização em Tempo Real</span>
+                        <span class="text-[9px] md:text-xs font-bold text-slate-400 uppercase bg-slate-100 px-3 py-1 rounded-full w-fit"><span class="flex h-2 w-2 relative inline-block mr-1"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span> Tempo Real</span>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
                         <div class="overflow-x-auto w-full"><table class="w-full text-left whitespace-nowrap min-w-[500px]"><tbody id="tabelaPagos" class="divide-y text-sm"></tbody></table></div>
@@ -186,7 +181,6 @@
                 </div>
 
                 <div id="aba-relatorios" class="conteudo-aba tela-oculta">
-                    
                     <div class="text-center mb-6 md:mb-8 pb-4 md:pb-6 border-b border-slate-300">
                         <img src="capanema.jpg" alt="Capanema" class="mx-auto w-full max-w-[280px] md:max-w-md h-auto object-contain rounded-xl shadow-md mb-4" onerror="this.style.display='none'">
                         <h1 class="text-lg md:text-3xl font-black text-blue-900 tracking-tight">ASSOCIAÇÃO DE ÁGUA DISTRITO SÃO LUIZ</h1>
@@ -235,12 +229,25 @@
                 </div>
 
                 <div id="aba-config" class="conteudo-aba tela-oculta">
-                    <h2 class="text-xl md:text-2xl font-bold text-slate-700 mb-4 md:mb-6 mt-4 md:mt-0">⚙️ Banco de Dados e Configurações</h2>
+                    <h2 class="text-xl md:text-2xl font-bold text-slate-700 mb-4 md:mb-6 mt-4 md:mt-0">⚙️ Configurações do Sistema</h2>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                         
+                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200 lg:col-span-2">
+                            <h3 class="font-bold text-base md:text-lg text-slate-700 mb-3 md:mb-4">🔐 Alterar Senha do Administrador</h3>
+                            <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                                <div class="w-full sm:w-1/2">
+                                    <label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1 uppercase">Nova Senha de Acesso</label>
+                                    <input type="password" id="cfgSenhaAdmin" placeholder="Digite a nova senha..." class="w-full p-3 border rounded-xl font-bold text-slate-700 outline-none text-sm md:text-base">
+                                </div>
+                                <div class="w-full sm:w-1/2 text-[10px] md:text-xs text-gray-500 leading-relaxed">
+                                    A senha padrão inicial é <strong>admin123</strong>. Pode alterar esta palavra-passe para aumentar a segurança do painel.
+                                </div>
+                            </div>
+                            <button onclick="window.salvarSenhaAdmin()" class="mt-4 w-full sm:w-auto bg-slate-800 hover:bg-slate-900 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">💾 Guardar Nova Senha</button>
+                        </div>
+
                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200 lg:col-span-2 mt-2">
                             <h3 class="font-bold text-base md:text-lg text-slate-700 mb-3 md:mb-4">📱 Controle do Agente (Leiturista)</h3>
-                            
                             <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center mb-6">
                                 <div class="w-full sm:w-1/2">
                                     <label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1 uppercase">Nova Senha do App Agente</label>
@@ -248,7 +255,6 @@
                                 </div>
                                 <button onclick="window.salvarSenhaAgente()" class="mt-4 sm:mt-5 w-full sm:w-auto bg-slate-800 hover:bg-slate-900 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">💾 Salvar Senha Agente</button>
                             </div>
-
                             <div class="border-t pt-4">
                                 <div class="flex justify-between items-center mb-3">
                                     <h4 class="font-bold text-sm text-blue-700"><i class="fa-solid fa-list-check"></i> Histórico de Sincronização</h4>
@@ -278,94 +284,93 @@
                             <h3 class="font-bold text-base md:text-lg text-red-700 mb-3 md:mb-4">🚨 Multa Padrão (Atraso)</h3>
                             <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
                                 <div class="w-full sm:w-1/3"><label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1">Valor da Multa (R$)</label><input type="number" step="0.01" id="cfgMulta" class="w-full p-3 border rounded-xl font-bold text-red-600 outline-none text-sm md:text-base"></div>
-                                <div class="w-full sm:w-2/3 text-[10px] md:text-xs text-gray-500 leading-relaxed">Valor preenchido automaticamente ao gerar lote se houver pendências. Pode ser alterado na grelha manualmente.</div>
                             </div>
                             <button onclick="window.salvarConfigMulta()" class="mt-4 w-full sm:w-auto bg-red-500 hover:bg-red-600 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">💾 Guardar Multa</button>
                         </div>
                         
-                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-blue-100"><h3 class="font-bold text-base md:text-lg text-blue-700 mb-2">💾 Backup</h3><button onclick="if(window.exportarBase) window.exportarBase()" class="w-full bg-blue-100 hover:bg-blue-200 transition text-blue-700 font-bold py-3 rounded-xl mt-2 text-sm md:text-base">Exportar JSON</button></div>
-                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-emerald-100"><h3 class="font-bold text-base md:text-lg text-emerald-700 mb-2">📂 Importar</h3><input type="file" id="fileImport" accept=".json" class="mb-3 w-full text-xs md:text-sm"><button onclick="if(window.importarBase) window.importarBase()" class="w-full bg-emerald-100 hover:bg-emerald-200 transition text-emerald-700 font-bold py-3 rounded-xl text-sm md:text-base">Importar JSON</button></div>
-                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-red-100 lg:col-span-2"><h3 class="font-bold text-base md:text-lg text-red-600 mb-2">🗑️ Limpeza Absoluta</h3><button onclick="if(window.limparFaturas) window.limparFaturas()" class="w-full bg-red-600 hover:bg-red-700 transition text-white font-bold py-3 rounded-xl shadow-md text-sm md:text-base">Apagar TODAS as Faturas</button></div>
+                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-blue-100"><h3 class="font-bold text-base md:text-lg text-blue-700 mb-2">💾 Backup</h3><button onclick="window.exportarBase()" class="w-full bg-blue-100 hover:bg-blue-200 transition text-blue-700 font-bold py-3 rounded-xl mt-2 text-sm md:text-base">Exportar JSON</button></div>
+                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-emerald-100"><h3 class="font-bold text-base md:text-lg text-emerald-700 mb-2">📂 Importar</h3><input type="file" id="fileImport" accept=".json" class="mb-3 w-full text-xs md:text-sm"><button onclick="window.importarBase()" class="w-full bg-emerald-100 hover:bg-emerald-200 transition text-emerald-700 font-bold py-3 rounded-xl text-sm md:text-base">Importar JSON</button></div>
+                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-red-100 lg:col-span-2"><h3 class="font-bold text-base md:text-lg text-red-600 mb-2">🗑️ Limpeza Absoluta</h3><button onclick="window.limparFaturas()" class="w-full bg-red-600 hover:bg-red-700 transition text-white font-bold py-3 rounded-xl shadow-md text-sm md:text-base">Apagar TODAS as Faturas</button></div>
                     </div>
                 </div>
             </div>
         </main>
 
-     <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t flex justify-around items-center z-50 pb-2 pt-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] no-print px-1 gap-1">
-            <button onclick="mudarAba('aba-moradores', this)" class="w-full p-2 flex flex-col items-center text-blue-600 bg-blue-50 border border-blue-200 rounded-xl transition-all">
-                <i class="fa-solid fa-users text-lg mb-1"></i><span class="text-[9px] font-bold">Pessoas</span>
-            </button>
-            <button onclick="mudarAba('aba-leituras', this)" class="w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all">
-                <i class="fa-solid fa-pen-to-square text-lg mb-1"></i><span class="text-[9px] font-bold">Água</span>
-            </button>
-            <button onclick="mudarAba('aba-avulso', this)" class="w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all">
-                <i class="fa-solid fa-wrench text-lg mb-1"></i><span class="text-[9px] font-bold">Avulso</span>
-            </button>
-            <button onclick="mudarAba('aba-abertas', this)" class="w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all">
-                <i class="fa-solid fa-hourglass-half text-lg mb-1"></i><span class="text-[9px] font-bold">Abertas</span>
-            </button>
-            <button onclick="mudarAba('aba-recebimentos', this)" class="w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all">
-                <i class="fa-solid fa-check-double text-lg mb-1"></i><span class="text-[9px] font-bold">Pagos</span>
-            </button>
-            <button onclick="mudarAba('aba-relatorios', this)" class="w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all">
-                <i class="fa-solid fa-chart-pie text-lg mb-1"></i><span class="text-[9px] font-bold">Gráfico</span>
-            </button>
+        <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t flex justify-around items-center z-50 pb-2 pt-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] no-print px-1 gap-1">
+            <button onclick="window.mudarAba('aba-moradores', this)" class="w-full p-2 flex flex-col items-center text-blue-600 bg-blue-50 border border-blue-200 rounded-xl transition-all"><i class="fa-solid fa-users text-lg mb-1"></i><span class="text-[9px] font-bold">Pessoas</span></button>
+            <button onclick="window.mudarAba('aba-leituras', this)" class="w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all"><i class="fa-solid fa-pen-to-square text-lg mb-1"></i><span class="text-[9px] font-bold">Água</span></button>
+            <button onclick="window.mudarAba('aba-avulso', this)" class="w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all"><i class="fa-solid fa-wrench text-lg mb-1"></i><span class="text-[9px] font-bold">Avulso</span></button>
+            <button onclick="window.mudarAba('aba-abertas', this)" class="w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all"><i class="fa-solid fa-hourglass-half text-lg mb-1"></i><span class="text-[9px] font-bold">Abertas</span></button>
+            <button onclick="window.mudarAba('aba-recebimentos', this)" class="w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all"><i class="fa-solid fa-check-double text-lg mb-1"></i><span class="text-[9px] font-bold">Pagos</span></button>
+            <button onclick="window.mudarAba('aba-relatorios', this)" class="w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all"><i class="fa-solid fa-chart-pie text-lg mb-1"></i><span class="text-[9px] font-bold">Gráfico</span></button>
         </nav>
     </div>
 
     <div id="modalMorador" class="modal-fundo no-print">
         <div class="bg-white rounded-3xl shadow-2xl w-[95%] md:w-full max-w-sm mx-auto overflow-hidden">
-            <div class="bg-slate-900 p-4 md:p-5 flex justify-between items-center text-white"><h3 id="tituloModal" class="font-bold">Morador</h3><button onclick="fecharModal()" class="text-2xl hover:text-red-400 transition">&times;</button></div>
-            <form id="formMorador" class="p-4 md:p-6 space-y-3 md:space-y-4" onsubmit="if(window.submitMorador) window.submitMorador(event)">
+            <div class="bg-slate-900 p-4 md:p-5 flex justify-between items-center text-white"><h3 id="tituloModal" class="font-bold">Morador</h3><button onclick="window.fecharModal()" class="text-2xl hover:text-red-400 transition">&times;</button></div>
+            <form id="formMorador" class="p-4 md:p-6 space-y-3 md:space-y-4" onsubmit="window.submitMorador(event)">
                 <input type="hidden" id="modId">
-                
-                <input type="text" id="modNome" oninput="const p=this.selectionStart; this.value=window.formatarNomeParaBanco(this.value); this.setSelectionRange(p,p);" required placeholder="Nome Completo" class="w-full p-3 md:p-4 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 text-sm md:text-base">
-                
+                <input type="text" id="modNome" oninput="const p=this.selectionStart; window.formatarNomeParaBanco ? this.value=window.formatarNomeParaBanco(this.value) : null; this.setSelectionRange(p,p);" required placeholder="Nome Completo" class="w-full p-3 md:p-4 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 text-sm md:text-base">
                 <input type="tel" id="modCpf" required placeholder="CPF (Apenas números)" class="w-full p-3 md:p-4 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 text-sm md:text-base">
                 <input type="tel" id="modTel" required placeholder="WhatsApp (DDD+Número)" class="w-full p-3 md:p-4 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 text-sm md:text-base">
                 <input type="text" id="modLote" required placeholder="Lote / Morada" class="w-full p-3 md:p-4 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 text-sm md:text-base">
                 <div class="flex gap-2 pt-2 md:pt-4">
-                    <button type="button" onclick="fecharModal()" class="flex-1 bg-gray-200 py-3 md:py-4 rounded-xl font-bold hover:bg-gray-300 transition text-sm md:text-base">Cancelar</button>
+                    <button type="button" onclick="window.fecharModal()" class="flex-1 bg-gray-200 py-3 md:py-4 rounded-xl font-bold hover:bg-gray-300 transition text-sm md:text-base">Cancelar</button>
                     <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 transition text-white py-3 md:py-4 rounded-xl font-bold text-sm md:text-base">Salvar</button>
                 </div>
             </form>
         </div>
     </div>
-    <script>
-        window.familiasGlobal = {}; 
 
-        window.onload = () => {
-            if(localStorage.getItem("admin_saoluiz_logado") === "sim") {
-                document.getElementById("loginAdmin").style.display = "none";
-                document.getElementById("painelAdmin").classList.remove('tela-oculta');
-                if(window.carregarFamilias) window.carregarFamilias();
-            }
-            const date = new Date();
-            document.getElementById("relDataInicio").value = new Date(date.getFullYear(), date.getMonth(), 1).toISOString().split('T')[0];
-            document.getElementById("relDataFim").value = date.toISOString().split('T')[0];
-            
-            if(window.carregarConfigAgua) window.carregarConfigAgua();
-            if(window.carregarConfigMulta) window.carregarConfigMulta();
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-            document.getElementById("avulsoTipo").addEventListener('change', function() {
-                document.getElementById("divVencimentoAvulso").style.display = this.value === 'somar_proxima' ? 'none' : 'block';
-                if(this.value === 'pix_agora') document.getElementById("avulsoVencimento").required = true;
-                else document.getElementById("avulsoVencimento").required = false;
-            });
+        // CONEXÃO COM O BANCO DE DADOS (AGORA APENAS UMA VEZ)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ",
+            authDomain: "sistema-agua-sao-luiz.firebaseapp.com",
+            projectId: "sistema-agua-sao-luiz"
         };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
+        // VARIÁVEIS GLOBAIS SEGURAS
+        window.familiasGlobal = {}; 
+        window.valoresAguaGlobais = { val1: 25, val2: 50, val3: 100, multa: 25 };
+        let unsubAbertas = null;
+        let unsubPagos = null;
+
+        // FUNÇÕES UTILITÁRIAS
         window.mostrarLoading = (msg) => { document.getElementById("loadingMsg").innerText = msg; document.getElementById("loading").style.display = "flex"; };
         window.esconderLoading = () => { document.getElementById("loading").style.display = "none"; };
         window.fecharModal = () => document.getElementById("modalMorador").style.display = "none";
+        
+        window.formatarNomeParaBanco = (texto) => {
+            if (!texto) return "";
+            const preposicoes = ["de", "da", "do", "das", "dos", "e"];
+            const partes = texto.toLowerCase().split(" ");
+            const formatado = partes.map((palavra, index) => {
+                if (palavra.length === 0) return ""; 
+                if (index > 0 && preposicoes.includes(palavra)) return palavra;
+                return palavra.charAt(0).toUpperCase() + palavra.substring(1);
+            });
+            return formatado.join(" ").trimStart(); 
+        };
+
+        window.mascaraMoeda = (event) => {
+            let v = event.target.value.replace(/\D/g, '');
+            if(v === '') { event.target.value = ''; return; }
+            v = (parseInt(v, 10) / 100).toFixed(2);
+            event.target.value = v.replace('.', ',');
+        };
 
         window.focarProximo = (event, nextId) => {
             if (event.key === "Enter") {
                 event.preventDefault(); 
                 const nextEl = document.getElementById(nextId);
-                if(nextEl) {
-                     nextEl.focus();
-                     if(nextEl.tagName === 'INPUT') nextEl.select();
-                }
+                if(nextEl) { nextEl.focus(); if(nextEl.tagName === 'INPUT') nextEl.select(); }
             }
         };
 
@@ -380,222 +385,94 @@
             }
         };
 
-        window.entrarAdmin = (e) => {
-            e.preventDefault();
-            const senhaCorreta = localStorage.getItem("admin_senha_config") || "admin123";
-            if(document.getElementById("senhaAdmin").value === senhaCorreta) {
-                localStorage.setItem("admin_saoluiz_logado", "sim");
+        // INICIALIZAÇÃO
+        window.onload = async () => {
+            const date = new Date();
+            document.getElementById("relDataInicio").value = new Date(date.getFullYear(), date.getMonth(), 1).toISOString().split('T')[0];
+            document.getElementById("relDataFim").value = date.toISOString().split('T')[0];
+            document.getElementById("dataVencimento").value = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-20`;
+
+            if(localStorage.getItem("admin_saoluiz_logado") === "sim") {
                 document.getElementById("loginAdmin").style.display = "none";
                 document.getElementById("painelAdmin").classList.remove('tela-oculta');
-                if(window.carregarFamilias) window.carregarFamilias();
-            } else { document.getElementById("erroLogin").classList.remove('hidden'); }
+                await window.carregarValoresConfig();
+                window.carregarFamilias();
+            }
+
+            document.getElementById("avulsoTipo").addEventListener('change', function() {
+                document.getElementById("divVencimentoAvulso").style.display = this.value === 'somar_proxima' ? 'none' : 'block';
+                document.getElementById("avulsoVencimento").required = this.value === 'pix_agora';
+            });
         };
 
-        window.salvarSenhaAdmin = () => {
+        // CONFIGURAÇÕES GLOBAIS NUVEM (ADMIN E AGENTE)
+        window.carregarValoresConfig = async () => {
+            try {
+                const snap = await getDoc(doc(db, "config", "valores"));
+                if(snap.exists()) { window.valoresAguaGlobais = snap.data(); } 
+                else { await setDoc(doc(db, "config", "valores"), window.valoresAguaGlobais); }
+                
+                document.getElementById('cfgVal1').value = window.valoresAguaGlobais.val1;
+                document.getElementById('cfgVal2').value = window.valoresAguaGlobais.val2;
+                document.getElementById('cfgVal3').value = window.valoresAguaGlobais.val3;
+                document.getElementById('cfgMulta').value = window.valoresAguaGlobais.multa;
+            } catch(e) {}
+        };
+
+        window.salvarConfigAgua = async () => {
+            window.valoresAguaGlobais.val1 = parseFloat(document.getElementById('cfgVal1').value) || 25;
+            window.valoresAguaGlobais.val2 = parseFloat(document.getElementById('cfgVal2').value) || 50;
+            window.valoresAguaGlobais.val3 = parseFloat(document.getElementById('cfgVal3').value) || 100;
+            window.mostrarLoading("A salvar na nuvem...");
+            await setDoc(doc(db, "config", "valores"), window.valoresAguaGlobais);
+            window.esconderLoading();
+            alert("✅ Valores da água guardados com sucesso! O App do agente já foi atualizado.");
+        };
+
+        window.salvarConfigMulta = async () => {
+            window.valoresAguaGlobais.multa = parseFloat(document.getElementById('cfgMulta').value) || 25;
+            window.mostrarLoading("A salvar na nuvem...");
+            await setDoc(doc(db, "config", "valores"), window.valoresAguaGlobais);
+            window.esconderLoading();
+            alert("✅ Valor da multa guardado com sucesso!");
+        };
+
+        // LOGIN ADMIN INTEGRADO AO FIREBASE
+        window.entrarAdmin = async (e) => {
+            e.preventDefault();
+            const senhaInput = document.getElementById("senhaAdmin").value;
+            window.mostrarLoading("A verificar credenciais...");
+            try {
+                const snap = await getDoc(doc(db, "config", "admin"));
+                let senhaCorreta = "admin123";
+                if(snap.exists()) senhaCorreta = snap.data().senha;
+                else await setDoc(doc(db, "config", "admin"), { senha: "admin123" });
+
+                if(senhaInput === senhaCorreta) {
+                    localStorage.setItem("admin_saoluiz_logado", "sim");
+                    document.getElementById("loginAdmin").style.display = "none";
+                    document.getElementById("painelAdmin").classList.remove('tela-oculta');
+                    await window.carregarValoresConfig();
+                    window.carregarFamilias();
+                } else {
+                    document.getElementById("erroLogin").classList.remove('hidden');
+                }
+            } catch(err) { alert("Erro de conexão ao banco de dados."); }
+            window.esconderLoading();
+        };
+
+        window.salvarSenhaAdmin = async () => {
             const novaSenha = document.getElementById("cfgSenhaAdmin").value;
             if(novaSenha.length < 4) return alert("A senha deve ter no mínimo 4 caracteres.");
-            localStorage.setItem("admin_senha_config", novaSenha);
-            alert("✅ Senha do administrador alterada com sucesso!");
-            document.getElementById("cfgSenhaAdmin").value = "";
+            window.mostrarLoading("A forçar senha no servidor...");
+            try {
+                await setDoc(doc(db, "config", "admin"), { senha: novaSenha });
+                window.esconderLoading();
+                alert("✅ Senha do Administrador alterada com sucesso!");
+                document.getElementById("cfgSenhaAdmin").value = "";
+            } catch(e) { window.esconderLoading(); alert("Erro ao comunicar com Firebase."); }
         };
 
-        window.sairAdmin = () => { localStorage.removeItem("admin_saoluiz_logado"); location.reload(); };
-
-        window.mudarAba = (id, el) => {
-            document.querySelectorAll('.conteudo-aba').forEach(a => a.classList.add('tela-oculta'));
-            document.getElementById(id).classList.remove('tela-oculta');
-            
-            document.querySelectorAll('.menu-btn').forEach(b => { 
-                b.classList.remove('bg-blue-600', 'text-white'); 
-                b.classList.add('text-slate-400');
-            });
-
-            document.querySelectorAll('nav button').forEach(b => {
-                b.classList.remove('text-blue-600', 'bg-blue-50', 'border-blue-200');
-                b.classList.add('text-gray-400', 'bg-transparent', 'border-transparent');
-            });
-
-            if(el) { 
-                if(el.classList.contains('menu-btn')) { 
-                    el.classList.add('bg-blue-600', 'text-white'); 
-                    el.classList.remove('text-slate-400'); 
-                } else { 
-                    el.classList.add('text-blue-600', 'bg-blue-50', 'border-blue-200'); 
-                    el.classList.remove('text-gray-400', 'bg-transparent', 'border-transparent'); 
-                }
-            }
-
-            if(id === 'aba-leituras' && window.carregarLoteFaturas) window.carregarLoteFaturas();
-            if(id === 'aba-avulso' && window.carregarSelectAvulso) window.carregarSelectAvulso();
-            if(id === 'aba-relatorios' && window.carregarRelatorio) window.carregarRelatorio();
-            if(id === 'aba-abertas' && window.iniciarListenerAbertas) window.iniciarListenerAbertas();
-            if(id === 'aba-recebimentos' && window.iniciarListenerPagos) window.iniciarListenerPagos();
-            if(id === 'aba-config' && window.carregarLogsAgente) window.carregarLogsAgente();
-        };
-
-        window.abrirModalCadastro = () => { document.getElementById("formMorador").reset(); document.getElementById("modId").value = ""; document.getElementById("modalMorador").style.display = "flex"; };
-        window.abrirModalEdicao = (id, n, c, t, l) => { document.getElementById("modId").value=id; document.getElementById("modNome").value=n; document.getElementById("modCpf").value=c; document.getElementById("modTel").value=t; document.getElementById("modLote").value=l; document.getElementById("modalMorador").style.display="flex"; };
-        window.filtrarTabela = (inputId, tabelaId) => {
-            const filtro = document.getElementById(inputId).value.toLowerCase();
-            const linhas = document.getElementById(tabelaId).getElementsByTagName('tr');
-            for (let i=0; i<linhas.length; i++) linhas[i].style.display = linhas[i].innerText.toLowerCase().includes(filtro) ? "" : "none";
-        };
-
-        window.carregarConfigAgua = () => {
-            document.getElementById('cfgVal1').value = localStorage.getItem('agua_val1') || 25;
-            document.getElementById('cfgVal2').value = localStorage.getItem('agua_val2') || 50;
-            document.getElementById('cfgVal3').value = localStorage.getItem('agua_val3') || 100;
-        };
-        window.salvarConfigAgua = () => {
-            localStorage.setItem('agua_val1', document.getElementById('cfgVal1').value);
-            localStorage.setItem('agua_val2', document.getElementById('cfgVal2').value);
-            localStorage.setItem('agua_val3', document.getElementById('cfgVal3').value);
-            alert("✅ Valores da água guardados!");
-        };
-
-        window.carregarConfigMulta = () => {
-            document.getElementById('cfgMulta').value = localStorage.getItem('config_multa_padrao') || 25;
-        };
-        window.salvarConfigMulta = () => {
-            localStorage.setItem('config_multa_padrao', document.getElementById('cfgMulta').value);
-            alert("✅ Valor padrão da multa guardado!");
-        };
-        
-        window.calcularLinha = (id) => {
-            const ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0;
-            const atu_str = document.getElementById(`atu-${id}`).value;
-            const atu = atu_str === "" ? ant : parseFloat(atu_str); 
-            
-            const multa = parseFloat(document.getElementById(`multa-${id}`).value) || 0;
-            const taxa = parseFloat(document.getElementById(`h-taxa-${id}`).value) || 0;
-
-            let consumo = (atu >= ant && atu > 0) ? atu - ant : 0;
-            document.getElementById(`cons-${id}`).innerText = consumo;
-            
-            let v1 = parseFloat(localStorage.getItem('agua_val1')) || 25;
-            let v2 = parseFloat(localStorage.getItem('agua_val2')) || 50;
-            let v3 = parseFloat(localStorage.getItem('agua_val3')) || 100;
-
-            let vAgua = 0;
-            if (consumo > 0) { 
-                if (consumo <= 10) vAgua = v1; else if (consumo <= 30) vAgua = v2; else vAgua = v3; 
-            }
-            
-            const total = vAgua + multa + taxa; 
-            document.getElementById(`valTotal-${id}`).innerText = total.toFixed(2).replace('.', ',');
-            document.getElementById(`h-agua-${id}`).value = vAgua;
-            document.getElementById(`h-total-${id}`).value = total;
-        };
-
-        window.formatarNomeParaBanco = (texto) => {
-            if (!texto) return "";
-            const preposicoes = ["de", "da", "do", "das", "dos", "e"];
-            const partes = texto.toLowerCase().split(" ");
-            const formatado = partes.map((palavra, index) => {
-                if (palavra.length === 0) return ""; 
-                if (index > 0 && preposicoes.includes(palavra)) return palavra;
-                return palavra.charAt(0).toUpperCase() + palavra.substring(1);
-            });
-            return formatado.join(" ").trimStart(); 
-        };
-
-        window.enviarWhatsAppSemEmoji = (tipo, telefone, nome, ref, valor, venc) => {
-            if(!telefone || String(telefone).trim().length < 8) { return alert("Sem WhatsApp válido."); }
-            const nomeLimpo = String(nome).replace(/[\s\u200B-\u200D\uFEFF\xA0]+$/g, '').trim();
-            const telLimpo = String(telefone).replace(/\D/g, '');
-            let msg = "";
-            if (tipo === 'avulso') {
-                msg = `*FATURA DE ÁGUA DISTRITO SÃO LUIZ*\n\nOlá, *${nomeLimpo}*!\nUma nova cobrança foi gerada em seu nome.\n\n- *Ref:* ${ref}\n- *Valor:* R$ ${valor}\n- *Vencimento:* ${venc}\n\n> Acesse o link para copiar o PIX e efetuar o pagamento:\nhttps://agua-sao-luiz.vercel.app\n\n*Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456 (caso não tenha alterado).*`;
-            } else {
-                msg = `*FATURA DE ÁGUA DISTRITO SÃO LUIZ*\n\nOlá, *${nomeLimpo}*!\nA sua fatura de ${ref} está disponível no sistema.\n\n- *Total:* R$ ${valor}\n- *Vencimento:* ${venc}\n\n> Acesse o link para copiar o PIX e efetuar o pagamento:\nhttps://agua-sao-luiz.vercel.app\n\n*Lembrando que o seu usuário é o seu CPF e a senha padrão é 123456 (caso não tenha alterado).*`;
-            }
-            window.open(`https://wa.me/${telLimpo}?text=${encodeURIComponent(msg)}`, '_blank');
-        };
-
-        window.vozAtiva = false;
-        let recognition;
-        window.alternarVoz = () => {
-            const btn = document.getElementById("btnVoz");
-            if (window.vozAtiva) { if(recognition) recognition.stop(); btn.classList.remove('mic-ativo'); window.vozAtiva = false; return; }
-            window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!window.SpeechRecognition) return alert("O seu navegador não suporta voz.");
-            recognition = new SpeechRecognition(); recognition.lang = 'pt-BR'; recognition.continuous = true;
-            recognition.onstart = () => { window.vozAtiva = true; btn.classList.add('mic-ativo'); };
-            recognition.onresult = (event) => {
-                const textoLimpo = event.results[event.results.length - 1][0].transcript.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
-                if (textoLimpo.includes("salvar tudo")) { if(window.gerarFaturasEmLote) window.gerarFaturasEmLote(); return; }
-                const linhas = document.querySelectorAll('input[id^="h-total-"]');
-                for (let input of linhas) {
-                    const id = input.id.replace('h-total-', '');
-                    const primeiroNome = input.dataset.nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(' ')[0];
-                    if (textoLimpo.includes(primeiroNome)) {
-                        const match = textoLimpo.match(/\d+/);
-                        if (match) {
-                            document.getElementById('atu-' + id).value = match[0];
-                            window.calcularLinha(id);
-                            document.getElementById('linha-'+id).style.backgroundColor = "#fffbeb";
-                            setTimeout(()=> { document.getElementById('linha-'+id).style.backgroundColor = ""; }, 2000);
-                        }
-                        break;
-                    }
-                }
-            };
-            recognition.start();
-        };
-
-        window.renderizarSelectAvulso = (filtro = "") => {
-            const select = document.getElementById("avulsoFamilia");
-            const displayNome = document.getElementById("avulsoClienteNomeExibicao");
-            
-            let html = "<option value='TODOS'>🌟 RATEIO: COBRAR TODOS</option>";
-            let matchCount = 0; let firstMatchId = null; let firstMatchName = null;
-
-            const termoBuscado = filtro.toLowerCase().trim();
-            const moradoresAvulso = Object.entries(window.familiasGlobal).map(([id, f]) => ({id, ...f}));
-            moradoresAvulso.sort((a,b) => (a.nome || "").localeCompare(b.nome || "", 'pt-BR'));
-
-            moradoresAvulso.forEach(f => {
-                const texto = `${f.nome} ${f.cpf} ${f.lote_endereco}`.toLowerCase();
-                if(texto.includes(termoBuscado)) {
-                    html += `<option value="${f.id}" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}">${f.nome} (${f.lote_endereco})</option>`;
-                    if(matchCount === 0) { firstMatchId = f.id; firstMatchName = f.nome; }
-                    matchCount++;
-                }
-            });
-            select.innerHTML = html;
-
-            if (termoBuscado === "") {
-                select.value = 'TODOS';
-                displayNome.innerText = "🌟 RATEIO: COBRAR TODOS"; displayNome.classList.remove('hidden');
-                displayNome.className = "text-xs md:text-sm font-bold text-blue-700 bg-blue-50 p-2 md:p-3 rounded-xl mt-2";
-            } else if (firstMatchId) {
-                select.value = firstMatchId;
-                displayNome.innerText = `✅ Selecionado: ${firstMatchName}`; displayNome.classList.remove('hidden');
-                displayNome.className = "text-xs md:text-sm font-bold text-green-700 bg-green-50 p-2 md:p-3 rounded-xl mt-2 border border-green-200";
-            } else {
-                select.value = ""; displayNome.innerText = "❌ Nenhum cliente encontrado"; displayNome.classList.remove('hidden');
-                displayNome.className = "text-xs md:text-sm font-bold text-red-700 bg-red-50 p-2 md:p-3 rounded-xl mt-2";
-            }
-        };
-
-        window.filtrarAvulsoESelecionar = () => { window.renderizarSelectAvulso(document.getElementById("buscaClienteAvulso").value); };
-    </script>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ",
-            authDomain: "sistema-agua-sao-luiz.firebaseapp.com",
-            projectId: "sistema-agua-sao-luiz"
-        };
-        const db = getFirestore(initializeApp(firebaseConfig));
-
-        let unsubAbertas = null;
-        let unsubPagos = null;
-
-        // --- NOVAS FUNÇÕES ADICIONADAS CORRETAMENTE AQUI ---
         window.salvarSenhaAgente = async () => {
             const novaSenha = document.getElementById("cfgSenhaAgente").value;
             if(novaSenha.length < 4) return alert("A senha deve ter no mínimo 4 caracteres.");
@@ -603,30 +480,41 @@
             try {
                 await setDoc(doc(db, "config", "agente"), { senha: novaSenha });
                 window.esconderLoading();
-                alert("✅ Senha do agente alterada com sucesso! Ele precisará usar esta senha no próximo login online.");
+                alert("✅ Senha do Agente alterada com sucesso!");
                 document.getElementById("cfgSenhaAgente").value = "";
             } catch(e) { window.esconderLoading(); alert("Erro ao comunicar com Firebase."); }
         };
 
-        window.carregarLogsAgente = async () => {
-            window.mostrarLoading("A procurar histórico...");
-            try {
-                const snap = await getDocs(collection(db, "logs_agente"));
-                let logs = [];
-                snap.forEach(d => logs.push(d.data()));
-                logs.sort((a,b) => new Date(b.data) - new Date(a.data));
-                let html = "";
-                logs.forEach(l => {
-                    const dt = new Date(l.data);
-                    const dtF = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-                    html += `<tr class="hover:bg-slate-50"><td class="p-3 text-[10px] md:text-xs font-mono text-gray-500 whitespace-nowrap">${dtF}</td><td class="p-3 font-bold text-xs md:text-sm text-blue-700">${l.mensagem}</td></tr>`;
-                });
-                document.getElementById("tabelaLogsAgente").innerHTML = html || "<tr><td class='p-4 text-center text-gray-400'>Nenhum lançamento foi efetuado pelo agente ainda.</td></tr>";
-            } catch(e) { console.error(e); }
-            window.esconderLoading();
+        window.sairAdmin = () => { localStorage.removeItem("admin_saoluiz_logado"); location.reload(); };
+
+        window.mudarAba = (id, el) => {
+            document.querySelectorAll('.conteudo-aba').forEach(a => a.classList.add('tela-oculta'));
+            document.getElementById(id).classList.remove('tela-oculta');
+            document.querySelectorAll('.menu-btn').forEach(b => { b.classList.remove('bg-blue-600', 'text-white'); b.classList.add('text-slate-400'); });
+            document.querySelectorAll('nav button').forEach(b => { b.classList.remove('text-blue-600', 'bg-blue-50', 'border-blue-200'); b.classList.add('text-gray-400', 'bg-transparent', 'border-transparent'); });
+
+            if(el) { 
+                if(el.classList.contains('menu-btn')) { el.classList.add('bg-blue-600', 'text-white'); el.classList.remove('text-slate-400'); } 
+                else { el.classList.add('text-blue-600', 'bg-blue-50', 'border-blue-200'); el.classList.remove('text-gray-400', 'bg-transparent', 'border-transparent'); }
+            }
+
+            if(id === 'aba-leituras') window.carregarLoteFaturas();
+            if(id === 'aba-avulso') window.carregarSelectAvulso();
+            if(id === 'aba-relatorios') window.carregarRelatorio();
+            if(id === 'aba-abertas') window.iniciarListenerAbertas();
+            if(id === 'aba-recebimentos') window.iniciarListenerPagos();
+            if(id === 'aba-config') window.carregarLogsAgente();
         };
 
-        // --- FIM DAS NOVAS FUNÇÕES ---
+        // GESTÃO DE MORADORES
+        window.abrirModalCadastro = () => { document.getElementById("formMorador").reset(); document.getElementById("modId").value = ""; document.getElementById("modalMorador").style.display = "flex"; };
+        window.abrirModalEdicao = (id, n, c, t, l) => { document.getElementById("modId").value=id; document.getElementById("modNome").value=n; document.getElementById("modCpf").value=c; document.getElementById("modTel").value=t; document.getElementById("modLote").value=l; document.getElementById("modalMorador").style.display="flex"; };
+        
+        window.filtrarTabela = (inputId, tabelaId) => {
+            const filtro = document.getElementById(inputId).value.toLowerCase();
+            const linhas = document.getElementById(tabelaId).getElementsByTagName('tr');
+            for (let i=0; i<linhas.length; i++) linhas[i].style.display = linhas[i].innerText.toLowerCase().includes(filtro) ? "" : "none";
+        };
 
         window.atualizarCacheFamilias = async () => {
             const snap = await getDocs(collection(db, "familias"));
@@ -645,7 +533,9 @@
         };
 
         window.excluirMorador = async (id, nome) => {
-            if(confirm(`Apagar ${nome} definitivamente?`)) { window.mostrarLoading("A apagar..."); await deleteDoc(doc(db, "familias", id)); window.carregarFamilias(); window.esconderLoading(); }
+            if(confirm(`Apagar ${nome} definitivamente?`)) {
+                window.mostrarLoading("A apagar..."); await deleteDoc(doc(db, "familias", id)); window.carregarFamilias(); window.esconderLoading();
+            }
         };
 
         window.carregarFamilias = async () => {
@@ -660,6 +550,30 @@
             tbody.innerHTML = html;
         };
 
+        // GERAÇÃO DE LOTE COM VALORES DA NUVEM
+        window.calcularLinha = (id) => {
+            const ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0;
+            const atu_str = document.getElementById(`atu-${id}`).value;
+            const atu = atu_str === "" ? ant : parseFloat(atu_str); 
+            const multa = parseFloat(document.getElementById(`multa-${id}`).value) || 0;
+            const taxa = parseFloat(document.getElementById(`h-taxa-${id}`).value) || 0;
+
+            let consumo = (atu >= ant && atu > 0) ? atu - ant : 0;
+            document.getElementById(`cons-${id}`).innerText = consumo;
+            
+            let vAgua = 0;
+            if (consumo > 0) { 
+                if (consumo <= 10) vAgua = parseFloat(window.valoresAguaGlobais.val1); 
+                else if (consumo <= 30) vAgua = parseFloat(window.valoresAguaGlobais.val2); 
+                else vAgua = parseFloat(window.valoresAguaGlobais.val3); 
+            }
+            
+            const total = vAgua + multa + taxa; 
+            document.getElementById(`valTotal-${id}`).innerText = total.toFixed(2).replace('.', ',');
+            document.getElementById(`h-agua-${id}`).value = vAgua;
+            document.getElementById(`h-total-${id}`).value = total;
+        };
+
         window.carregarLoteFaturas = async () => {
             const corpo = document.getElementById("corpoTabelaLote");
             corpo.innerHTML = "<tr><td colspan='7' class='p-8 text-center text-blue-600 font-bold'>A sincronizar dados recentes do servidor...</td></tr>";
@@ -667,9 +581,11 @@
                 await window.atualizarCacheFamilias();
                 const fatSnap = await getDocs(collection(db, "faturas"));
                 const faturas = []; fatSnap.forEach(d => faturas.push(d.data()));
+
                 let html = "";
                 const hoje = new Date(); hoje.setHours(0,0,0,0);
-                const multaPadrao = parseFloat(localStorage.getItem('config_multa_padrao')) || 25.00;
+                const multaPadrao = parseFloat(window.valoresAguaGlobais.multa) || 25.00;
+
                 const moradoresLote = Object.entries(window.familiasGlobal).map(([id, f]) => ({id, ...f}));
                 moradoresLote.sort((a,b) => (a.nome || "").localeCompare(b.nome || "", 'pt-BR'));
 
@@ -699,7 +615,7 @@
             } catch (e) { corpo.innerHTML = "<tr><td colspan='7'>Erro ao carregar dados.</td></tr>"; }
         };
 
-       window.gerarFaturasEmLote = async () => {
+        window.gerarFaturasEmLote = async () => {
             const inputs = document.querySelectorAll('input[id^="h-total-"]');
             const linhas = Array.from(inputs).filter(i => {
                 const id = i.id.replace('h-total-', '');
@@ -757,6 +673,7 @@
             window.esconderLoading(); alert("✅ Lote de Faturas Concluído com Sucesso!");
         };
 
+        // AVULSOS E MULTIPLICAÇÃO
         window.submitAvulso = async (e) => {
             e.preventDefault();
             const tipo = document.getElementById("avulsoTipo").value;
@@ -811,6 +728,7 @@
             document.getElementById("formAvulso").reset(); document.getElementById("buscaClienteAvulso").value = ""; document.getElementById("avulsoRepeticoes").value = 1; window.filtrarAvulsoESelecionar();
         };
 
+        // GESTÃO DE ABERTAS E PAGAS
         window.iniciarListenerAbertas = async () => {
             if(unsubAbertas) unsubAbertas();
             const tbody = document.getElementById("tabelaAbertas");
@@ -839,11 +757,11 @@
                     
                     if (f.whatsapp_enviado) {
                         corZap = 'bg-green-500 hover:bg-green-600';
-                        if (f.data_envio_whatsapp) {
+                        if (f.data_envio_whatsapp && !f.data_envio_whatsapp.includes("ERRO")) {
                             let dtEnv = new Date(f.data_envio_whatsapp);
                             let hrEnvio = dtEnv.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit', second:'2-digit'});
                             linhaBaixo = `<i class="fa-brands fa-whatsapp mr-1"></i> ${hrEnvio}`;
-                        } else { linhaBaixo = `<i class="fa-brands fa-whatsapp mr-1"></i> --:--:--`; }
+                        } else { linhaBaixo = `<i class="fa-solid fa-triangle-exclamation"></i> ERRO ZAP`; }
                     }
 
                     const btnZap = `<button onclick="window.enviarWhatsAppSemEmoji('normal', '${tel}', '${nomePZ}', '${f.mes_referencia}', '${valorForm}', '${dataBr}')" class="${corZap} text-white rounded-lg text-[10px] md:text-[11px] font-bold shadow transition flex flex-col items-center justify-center min-w-[75px] h-[36px] md:h-[40px] leading-none px-2">
@@ -886,20 +804,19 @@
             });
         };
 
-        // --- CÓDIGO DA LIXEIRA ATUALIZADO PARA MANDAR COMANDO PARA O ROBÔ ---
+        // O SEGREDO DO CANCELAMENTO VIA ROBÔ
         window.excluirFatura = async (id) => { 
             if(confirm("Deseja cancelar esta fatura e apagar a mensagem no WhatsApp do cliente?")) { 
-                window.mostrarLoading("A processar cancelamento...");
+                window.mostrarLoading("A enviar comando para o Robô...");
                 await updateDoc(doc(db, "faturas", id), {status: "cancelar"}); 
                 window.esconderLoading();
             } 
         };
-        // --------------------------------------------------------------------
 
         window.marcarPago = async (id) => { if(confirm("Confirmar baixa de pagamento manual?")) { await updateDoc(doc(db, "faturas", id), {status: "pago", data_pagamento: new Date().toISOString()}); } };
 
+        // RELATÓRIOS E LOGS
         let todasFaturasCache = [];
-        
         window.carregarRelatorio = async () => {
             window.mostrarLoading("A consultar...");
             const snap = await getDocs(collection(db, "faturas"));
@@ -923,7 +840,6 @@
                 }
                 let matchS = statusF === "TODOS" || f.status === statusF;
                 let matchB = !termo || (f.nome_morador || "").toLowerCase().includes(termo);
-                // Exclui as canceladas do relatório visual
                 return matchD && matchS && matchB && f.status !== "cancelar";
             });
 
@@ -957,6 +873,24 @@
             document.getElementById("tabelaRelatorio").innerHTML = html || "<tr><td colspan='5' class='p-8 text-center text-gray-400'>Sem resultados.</td></tr>";
         };
 
+        window.carregarLogsAgente = async () => {
+            window.mostrarLoading("A procurar histórico...");
+            try {
+                const snap = await getDocs(collection(db, "logs_agente"));
+                let logs = []; snap.forEach(d => logs.push(d.data()));
+                logs.sort((a,b) => new Date(b.data) - new Date(a.data));
+                let html = "";
+                logs.forEach(l => {
+                    const dt = new Date(l.data);
+                    const dtF = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+                    html += `<tr class="hover:bg-slate-50"><td class="p-3 text-[10px] md:text-xs font-mono text-gray-500 whitespace-nowrap">${dtF}</td><td class="p-3 font-bold text-xs md:text-sm text-blue-700">${l.mensagem}</td></tr>`;
+                });
+                document.getElementById("tabelaLogsAgente").innerHTML = html || "<tr><td class='p-4 text-center text-gray-400'>Nenhum lançamento foi efetuado pelo agente.</td></tr>";
+            } catch(e) { }
+            window.esconderLoading();
+        };
+
+        // EXPORTAÇÃO E IMPORTAÇÃO
         window.exportarBase = async () => {
             window.mostrarLoading("A iniciar Backup...");
             const famSnap = await getDocs(collection(db, "familias"));
