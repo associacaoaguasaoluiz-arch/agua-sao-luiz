@@ -392,12 +392,39 @@
             } else { document.getElementById("erroLogin").classList.remove('hidden'); }
         };
 
-        window.salvarSenhaAdmin = () => {
-            const novaSenha = document.getElementById("cfgSenhaAdmin").value;
+      window.salvarSenhaAgente = async () => {
+            const novaSenha = document.getElementById("cfgSenhaAgente").value;
             if(novaSenha.length < 4) return alert("A senha deve ter no mínimo 4 caracteres.");
-            localStorage.setItem("admin_senha_config", novaSenha);
-            alert("✅ Senha do administrador alterada com sucesso!");
-            document.getElementById("cfgSenhaAdmin").value = "";
+            window.mostrarLoading("A forçar senha no servidor...");
+            try {
+                // Força a nova senha no banco de dados
+                await setDoc(doc(db, "config", "agente"), { senha: novaSenha });
+                window.esconderLoading();
+                alert("✅ Senha do agente alterada com sucesso! Ele precisará usar esta senha no próximo login online.");
+                document.getElementById("cfgSenhaAgente").value = "";
+            } catch(e) { window.esconderLoading(); alert("Erro ao comunicar com Firebase."); }
+        };
+
+        window.carregarLogsAgente = async () => {
+            window.mostrarLoading("A procurar histórico...");
+            try {
+                const snap = await getDocs(collection(db, "logs_agente"));
+                let logs = [];
+                snap.forEach(d => logs.push(d.data()));
+                
+                // Ordena do mais recente para o mais antigo
+                logs.sort((a,b) => new Date(b.data) - new Date(a.data));
+                
+                let html = "";
+                logs.forEach(l => {
+                    const dt = new Date(l.data);
+                    const dtF = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+                    html += `<tr class="hover:bg-slate-50"><td class="p-3 text-[10px] md:text-xs font-mono text-gray-500 whitespace-nowrap">${dtF}</td><td class="p-3 font-bold text-xs md:text-sm text-blue-700">${l.mensagem}</td></tr>`;
+                });
+                
+                document.getElementById("tabelaLogsAgente").innerHTML = html || "<tr><td class='p-4 text-center text-gray-400'>Nenhum lançamento foi efetuado pelo agente ainda.</td></tr>";
+            } catch(e) { console.error(e); }
+            window.esconderLoading();
         };
 
         window.sairAdmin = () => { localStorage.removeItem("admin_saoluiz_logado"); location.reload(); };
