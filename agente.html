@@ -15,14 +15,17 @@
 </head>
 <body class="text-gray-800 h-screen flex flex-col overflow-hidden">
 
-    <div id="loading" class="loading-overlay"><div class="spinner"></div><p id="loadingMsg" class="mt-4 font-bold text-gray-700">A processar...</p></div>
+    <div id="loading" class="loading-overlay">
+        <div class="spinner"></div>
+        <p id="loadingMsg" class="mt-4 font-bold text-gray-700">A processar...</p>
+    </div>
 
     <div id="loginAgente" class="fixed inset-0 bg-slate-900 flex justify-center items-center z-50 p-4">
         <form onsubmit="window.entrarAgente(event)" class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-sm text-center">
             <div class="bg-blue-100 w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-4"><i class="fa-solid fa-droplet text-4xl text-blue-600"></i></div>
             <h2 class="text-2xl font-black mb-1 text-slate-800">Portal do Leiturista</h2>
             <p class="text-sm text-gray-500 mb-6">Acesso restrito para coleta de dados</p>
-            <input type="password" id="senhaAgente" required placeholder="Senha de Acesso..." class="w-full p-4 border-2 border-gray-200 rounded-xl mb-4 text-center text-lg outline-none focus:border-blue-500 transition">
+            <input type="password" id="senhaAgente" required placeholder="Palavra-passe de Acesso..." class="w-full p-4 border-2 border-gray-200 rounded-xl mb-4 text-center text-lg outline-none focus:border-blue-500 transition">
             <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl shadow-lg active:scale-95 transition text-lg">Acessar</button>
         </form>
     </div>
@@ -30,7 +33,7 @@
     <div id="modalSenha" class="hidden fixed inset-0 bg-black/60 z-[100] flex justify-center items-center p-4">
         <div class="bg-white rounded-3xl w-full max-w-sm p-6 text-center shadow-2xl">
             <h3 class="font-black text-xl mb-2 text-slate-800">Alterar Minha Senha</h3>
-            <p class="text-xs text-gray-500 mb-4">Escolha uma nova senha de acesso.</p>
+            <p class="text-xs text-gray-500 mb-4">Escolha uma nova palavra-passe de acesso.</p>
             <input type="password" id="novaSenhaInput" placeholder="Digite a nova senha..." class="w-full p-4 border-2 border-gray-200 rounded-xl mb-4 text-center outline-none focus:border-blue-500 text-lg font-bold">
             <div class="flex gap-2">
                 <button onclick="document.getElementById('modalSenha').style.display='none'" class="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-bold">Cancelar</button>
@@ -67,7 +70,7 @@
             </div>
 
             <div id="listaCards" class="space-y-4">
-                <p class="text-center text-gray-400 text-sm mt-10">A carregar dados...</p>
+                <p class="text-center text-gray-400 text-sm mt-10">A carregar dados do sistema...</p>
             </div>
         </main>
         
@@ -82,19 +85,27 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, getDocs, doc, updateDoc, enableIndexedDbPersistence, addDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ", authDomain: "sistema-agua-sao-luiz.firebaseapp.com", projectId: "sistema-agua-sao-luiz" };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ", 
+            authDomain: "sistema-agua-sao-luiz.firebaseapp.com", 
+            projectId: "sistema-agua-sao-luiz" 
+        };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        enableIndexedDbPersistence(db).catch((err) => { console.log("Offline não suportado."); });
+        // Ativa Banco de Dados Offline no Telemóvel
+        enableIndexedDbPersistence(db).catch((err) => { console.log("Offline não suportado pelo navegador."); });
 
-        let moradoresGlobal = [];
+        window.moradoresGlobal = [];
+        window.cfgGlobais = { val1: 25, val2: 50, val3: 100, multa: 25 };
 
+        // Prevenção de perda de dados ao atualizar a página
         window.addEventListener('beforeunload', function (e) {
             const rascunhos = JSON.parse(localStorage.getItem('rascunhos_coleta') || '{}');
             if (Object.keys(rascunhos).length > 0) { e.preventDefault(); e.returnValue = 'Existem leituras digitadas não enviadas.'; }
         });
 
+        // Controlo Visual Online/Offline
         const atualizarStatusRede = () => {
             const el = document.getElementById("statusConexao");
             const btnSync = document.getElementById("btnSincronizar");
@@ -105,7 +116,7 @@
                 btnSync.classList.add("bg-green-500");
                 btnSync.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Sincronizar Faturas';
             } else {
-                el.innerHTML = '<i class="fa-solid fa-plane-slash mr-1"></i> Offline (Salvando Local)';
+                el.innerHTML = '<i class="fa-solid fa-plane-slash mr-1"></i> Offline (Guardando Local)';
                 el.className = "flex items-center text-red-400 text-[10px] font-bold mt-0.5";
                 btnSync.classList.add("opacity-50", "pointer-events-none", "bg-gray-400");
                 btnSync.classList.remove("bg-green-500");
@@ -116,7 +127,20 @@
         window.addEventListener('offline', atualizarStatusRede);
         atualizarStatusRede();
 
-        // VALIDAÇÃO DE SENHA COM BANCO DE DADOS
+        // Puxa valores da água atualizados do Firebase
+        window.carregarConfiguracoes = async () => {
+            try {
+                const snap = await getDoc(doc(db, "config", "valores"));
+                if(snap.exists()) {
+                    window.cfgGlobais = snap.data();
+                    localStorage.setItem("cfg_cache", JSON.stringify(window.cfgGlobais));
+                }
+            } catch(e) {
+                const c = localStorage.getItem("cfg_cache");
+                if(c) window.cfgGlobais = JSON.parse(c);
+            }
+        };
+
         window.entrarAgente = async (e) => {
             e.preventDefault();
             const senhaInput = document.getElementById("senhaAgente").value;
@@ -135,26 +159,27 @@
                         localStorage.setItem("agente_logado", "sim");
                         document.getElementById("loginAgente").style.display = "none";
                         document.getElementById("painelAgente").classList.remove('hidden');
+                        await window.carregarConfiguracoes();
                         window.carregarListaColeta();
-                    } else { alert("Senha incorreta!"); }
+                    } else { alert("Palavra-passe incorreta!"); }
                 } else {
                     const senhaCache = localStorage.getItem("agente_senha_cache") || "agente123";
                     if(senhaInput === senhaCache) {
                         localStorage.setItem("agente_logado", "sim");
                         document.getElementById("loginAgente").style.display = "none";
                         document.getElementById("painelAgente").classList.remove('hidden');
+                        await window.carregarConfiguracoes();
                         window.carregarListaColeta();
-                    } else { alert("Senha incorreta (Modo Offline)!"); }
+                    } else { alert("Palavra-passe incorreta (Modo Offline)!"); }
                 }
-            } catch(err) { alert("Erro ao validar senha."); }
+            } catch(err) { alert("Erro ao validar acesso."); }
             document.getElementById("loading").style.display = "none";
         };
 
-        // AGENTE ALTERA A PRÓPRIA SENHA
         window.salvarNovaSenha = async () => {
-            if(!navigator.onLine) return alert("Você precisa de internet para alterar a senha.");
+            if(!navigator.onLine) return alert("Precisa de internet para alterar a palavra-passe.");
             const nova = document.getElementById("novaSenhaInput").value;
-            if(nova.length < 4) return alert("A senha deve ter no mínimo 4 caracteres.");
+            if(nova.length < 4) return alert("A palavra-passe deve ter no mínimo 4 caracteres.");
             
             document.getElementById("loading").style.display = "flex";
             await setDoc(doc(db, "config", "agente"), { senha: nova });
@@ -162,20 +187,19 @@
             document.getElementById("loading").style.display = "none";
             document.getElementById('modalSenha').style.display = 'none';
             document.getElementById("novaSenhaInput").value = "";
-            alert("✅ Senha atualizada com sucesso!");
+            alert("✅ Palavra-passe atualizada com sucesso!");
         };
 
         window.sairAgente = () => { localStorage.removeItem("agente_logado"); location.reload(); };
 
-        if(localStorage.getItem("agente_logado") === "sim") {
-            document.getElementById("loginAgente").style.display = "none";
-            document.getElementById("painelAgente").classList.remove('hidden');
-            setTimeout(window.carregarListaColeta, 500); // pequeno atraso pra renderizar a tela
-        }
-
-        const val1 = parseFloat(localStorage.getItem('agua_val1')) || 25;
-        const val2 = parseFloat(localStorage.getItem('agua_val2')) || 50;
-        const val3 = parseFloat(localStorage.getItem('agua_val3')) || 100;
+        window.onload = async () => {
+            if(localStorage.getItem("agente_logado") === "sim") {
+                document.getElementById("loginAgente").style.display = "none";
+                document.getElementById("painelAgente").classList.remove('hidden');
+                await window.carregarConfiguracoes();
+                window.carregarListaColeta();
+            }
+        };
 
         window.calcularTotalCard = (id) => {
             const ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0;
@@ -188,7 +212,11 @@
             document.getElementById(`cons-${id}`).innerText = consumo + " m³";
 
             let vAgua = 0;
-            if (consumo > 0) { if (consumo <= 10) vAgua = val1; else if (consumo <= 30) vAgua = val2; else vAgua = val3; }
+            if (consumo > 0) { 
+                if (consumo <= 10) vAgua = parseFloat(window.cfgGlobais.val1); 
+                else if (consumo <= 30) vAgua = parseFloat(window.cfgGlobais.val2); 
+                else vAgua = parseFloat(window.cfgGlobais.val3); 
+            }
 
             const total = vAgua + multa + taxa;
             document.getElementById(`total-${id}`).innerText = "R$ " + total.toFixed(2).replace('.', ',');
@@ -197,6 +225,7 @@
             document.getElementById(`card-${id}`).dataset.valortotal = total;
             document.getElementById(`card-${id}`).dataset.consumo = consumo;
 
+            // Salva na memória do telemóvel (Auto-Save)
             let rascunhos = JSON.parse(localStorage.getItem('rascunhos_coleta') || '{}');
             if (atuStr !== "" || multa !== 0) { rascunhos[id] = { atu: atuStr, multa: multa }; } 
             else { delete rascunhos[id]; }
@@ -208,12 +237,12 @@
             document.getElementById("loading").style.display = "flex";
             try {
                 const snap = await getDocs(collection(db, "familias"));
-                moradoresGlobal = [];
-                snap.forEach(d => moradoresGlobal.push({id: d.id, ...d.data()}));
-                moradoresGlobal.sort((a,b) => (a.nome || "").localeCompare(b.nome || "", 'pt-BR'));
-                window.renderizarCards(moradoresGlobal);
+                window.moradoresGlobal = [];
+                snap.forEach(d => window.moradoresGlobal.push({id: d.id, ...d.data()}));
+                window.moradoresGlobal.sort((a,b) => (a.nome || "").localeCompare(b.nome || "", 'pt-BR'));
+                window.renderizarCards(window.moradoresGlobal);
             } catch(e) {
-                document.getElementById("listaCards").innerHTML = "<p class='text-red-500 text-center font-bold'>Erro ao carregar dados. Conecte à internet pelo menos uma vez.</p>";
+                document.getElementById("listaCards").innerHTML = "<p class='text-red-500 text-center font-bold'>Erro ao carregar dados. Conecte à internet pelo menos uma vez para baixar a base de dados.</p>";
             }
             document.getElementById("loading").style.display = "none";
         };
@@ -284,7 +313,7 @@
         };
 
         window.sincronizarEGerarLote = async () => {
-            if(!navigator.onLine) return alert("Você precisa estar conectado à internet para gerar o PIX e sincronizar com o Servidor.");
+            if(!navigator.onLine) return alert("Precisa de estar conectado à internet para gerar o PIX e sincronizar com o Servidor.");
 
             const cards = document.querySelectorAll(".card-morador");
             let faturasParaGerar = [];
