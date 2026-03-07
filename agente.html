@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Coleta - Água Distrito de São Luiz</title>
+    <title>Leitura - Água Distruito de São Luiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-   <style>
-        /* Bloqueia a seleção de texto e o arrastar de elementos */
+    
+    <style>
         body {
             -webkit-user-select: none;
             -moz-user-select: none;
@@ -17,24 +17,19 @@
         }
     </style>
     <script>
-        // 1. Bloqueia o Botão Direito do Rato
         document.addEventListener('contextmenu', event => event.preventDefault());
-
-        // 2. Bloqueia Atalhos de Teclado (F12, Ctrl+Shift+I, Ctrl+U, etc)
         document.onkeydown = function(e) {
-            if(e.keyCode == 123) return false; // Bloqueia F12
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false; // Bloqueia Ctrl+Shift+I
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false; // Bloqueia Ctrl+Shift+C
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false; // Bloqueia Ctrl+Shift+J
-            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false; // Bloqueia Ctrl+U (Ver código fonte)
-            if(e.ctrlKey && e.keyCode == 'S'.charCodeAt(0)) return false; // Bloqueia Ctrl+S (Salvar página)
-            if(e.ctrlKey && e.keyCode == 'P'.charCodeAt(0)) return false; // Bloqueia Ctrl+P (Imprimir - exceto no admin onde já existe botão)
+            if(e.keyCode == 123) return false; 
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false; 
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false; 
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false; 
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false; 
+            if(e.ctrlKey && e.keyCode == 'S'.charCodeAt(0)) return false; 
+            if(e.ctrlKey && e.keyCode == 'P'.charCodeAt(0)) return false; 
         };
-
-        // 3. Armadilha do DevTools (Congela o ecrã se tentarem forçar a abertura)
         setInterval(function() {
             var before = new Date().getTime();
-            debugger; // Isto pausa o navegador do invasor
+            debugger; 
             var after = new Date().getTime();
             if (after - before > 100) {
                 document.body.innerHTML = "<div style='background:#0f172a; color:#ef4444; height:100vh; display:flex; justify-content:center; align-items:center; font-family:sans-serif;'><h1>⛔ ACESSO NEGADO - © SIEKLICKI</h1></div>";
@@ -42,7 +37,7 @@
             }
         }, 1000);
     </script>
-        <style>
+    <style>
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; -webkit-tap-highlight-color: transparent; }
         .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.98); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
         .spinner { border: 5px solid #e2e8f0; border-top: 5px solid #2563eb; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
@@ -50,19 +45,17 @@
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         .animate-slide-up { animation: slideUp 0.3s ease-out forwards; }
         .scroll-suave::-webkit-scrollbar { display: none; }
-        
-        /* Melhorias para digitação no Sol */
         input::placeholder { color: #94a3b8; opacity: 1; }
         .card-preenchido { border-color: #3b82f6 !important; background-color: #eff6ff !important; box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2) !important; }
-        .btn-gigante { min-height: 56px; } /* Área de toque maior para dedos */
-      </style>    
+        .btn-gigante { min-height: 56px; } 
+    </style>
 </head>
 <body class="text-slate-900 h-screen flex flex-col overflow-hidden">
 
     <div id="loading" class="loading-overlay"><div class="spinner"></div><p id="loadingMsg" class="mt-4 font-black text-slate-800 text-lg tracking-tight">A processar...</p></div>
 
     <div id="loginAgente" class="fixed inset-0 bg-slate-900 flex justify-center items-center z-50 p-4">
-        <form onsubmit="window.entrarAgente(event)" class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-sm text-center border-b-8 border-blue-600">
+        <form onsubmit="window.entrarAgente(event)" class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-sm text-center border-b-8 border-blue-600 relative">
             <div class="bg-blue-100 w-24 h-24 mx-auto rounded-full flex items-center justify-center mb-6 shadow-inner"><i class="fa-solid fa-droplet text-5xl text-blue-600"></i></div>
             <h2 class="text-3xl font-black mb-2 text-slate-900 tracking-tight">Leiturista</h2>
             <p class="text-sm text-slate-500 mb-8 font-bold">Modo Terreno de Alta Visibilidade</p>
@@ -89,20 +82,15 @@
                 <h3 class="font-black text-2xl text-slate-900 tracking-tight"><i class="fa-solid fa-wrench text-orange-500 mr-2"></i>Serviço Extra</h3>
                 <button onclick="document.getElementById('modalAvulsoAgente').classList.add('hidden')" class="text-slate-400 hover:text-red-600 text-4xl leading-none bg-slate-100 w-10 h-10 rounded-full flex items-center justify-center pb-1">&times;</button>
             </div>
-            
             <input type="hidden" id="avulsoAgenteId">
-            
             <label class="block text-[11px] font-black text-slate-500 mb-2 uppercase tracking-widest">Qual o Serviço?</label>
             <input type="text" id="avulsoAgenteDesc" placeholder="Ex: Multa, Conserto..." class="btn-gigante w-full p-4 border-2 border-slate-300 rounded-2xl mb-3 outline-none focus:border-blue-600 text-lg font-black text-slate-900 focus:bg-blue-50 transition">
-            
             <div class="flex gap-2 mb-6 overflow-x-auto pb-2 scroll-suave">
                 <button onclick="document.getElementById('avulsoAgenteDesc').value='Multa por Atraso'; document.getElementById('avulsoAgenteValor').value=(window.cfgGlobais.multa || 25).toFixed(2).replace('.', ',');" class="whitespace-nowrap bg-red-100 text-red-700 border-2 border-red-200 px-4 py-2 rounded-xl text-sm font-black active:scale-95 shadow-sm">🚨 Aplicar Multa</button>
                 <button onclick="document.getElementById('avulsoAgenteDesc').value='Taxa de Religação';" class="whitespace-nowrap bg-blue-100 text-blue-700 border-2 border-blue-200 px-4 py-2 rounded-xl text-sm font-black active:scale-95 shadow-sm">💧 Religação</button>
             </div>
-
             <label class="block text-[11px] font-black text-slate-500 mb-2 uppercase tracking-widest">Valor a Cobrar (R$)</label>
             <input type="text" inputmode="numeric" id="avulsoAgenteValor" placeholder="0,00" oninput="window.mascaraMoeda(event)" class="w-full p-4 border-2 border-slate-300 rounded-2xl mb-8 outline-none focus:border-blue-600 text-4xl font-black text-blue-700 text-center focus:bg-blue-50 transition tracking-tighter" style="height: 70px;">
-            
             <div class="flex gap-3">
                 <button onclick="window.limparAvulsoAgente()" class="btn-gigante flex-1 bg-red-100 text-red-600 rounded-2xl font-black text-lg border-2 border-red-200">Zerar</button>
                 <button onclick="window.salvarAvulsoAgente()" class="btn-gigante flex-[1.5] bg-blue-600 text-white rounded-2xl font-black text-lg shadow-xl active:scale-95">Confirmar</button>
@@ -111,9 +99,9 @@
     </div>
 
     <div id="painelAgente" class="flex flex-col w-full h-full hidden">
-   
         <header class="bg-slate-900 text-white p-4 flex justify-between items-center shadow-lg z-40 border-b-4 border-blue-600 relative">
-              <a href="https://wa.me/5546984155591?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20o%20sistema%20de%20gestão%20de%20água." target="_blank" title="Desenvolvido por Sieklicki - Clique para contato" class="absolute top-1 left-2 text-[8px] font-black text-white/40 hover:text-white transition tracking-widest select-none z-50 cursor-pointer">© SIEKLICKI</a>
+            
+            <a href="https://wa.me/5546984155591?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20o%20sistema%20de%20gestão%20de%20água." target="_blank" title="Desenvolvido por Sieklicki - Clique para contato" class="absolute top-1 left-2 text-[8px] font-black text-white/40 hover:text-white transition tracking-widest select-none z-50 cursor-pointer">© SIEKLICKI</a>
             
             <div class="pt-2">
                 <h1 class="font-black text-xl tracking-tight leading-none mb-1">Distrito de São Luiz <span class="text-blue-400">Leitura</span></h1>
@@ -121,7 +109,6 @@
                     <span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span></span> Online
                 </div>
             </div>
-        
             <div class="flex items-center gap-2">
                 <button onclick="document.getElementById('modalSenha').style.display='flex'" class="text-slate-300 hover:text-white p-3 bg-slate-800 rounded-xl transition text-lg"><i class="fa-solid fa-key"></i></button>
                 <button onclick="window.sairAgente()" class="text-red-400 hover:text-red-300 p-3 bg-slate-800 rounded-xl transition text-lg"><i class="fa-solid fa-right-from-bracket"></i></button>
@@ -137,7 +124,7 @@
             <input type="text" id="buscaMorador" onkeyup="window.filtrarCards()" placeholder="🔍 Nome ou morada..." class="btn-gigante w-full p-4 bg-white shadow-md border-2 border-slate-300 rounded-2xl mb-5 outline-none focus:border-blue-600 text-lg font-black text-slate-800 placeholder:text-slate-400 focus:ring-4 focus:ring-blue-100 transition">
 
             <div id="avisoRascunho" class="hidden bg-amber-100 border-l-4 border-amber-500 text-amber-800 p-4 rounded-r-2xl mb-5 text-sm font-black shadow-sm flex items-center gap-3">
-                <i class="fa-solid fa-floppy-disk text-2xl text-amber-500"></i> Rascunhos da última sessão restaurados.
+                <i class="fa-solid fa-floppy-disk text-2xl text-amber-500"></i> Rascunhos restaurados.
             </div>
 
             <div id="listaCards" class="space-y-5">
@@ -160,7 +147,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Ativação do Banco Offline
         enableIndexedDbPersistence(db).catch((err) => { console.log("Offline não suportado."); });
 
         window.moradoresGlobal = [];
@@ -171,7 +157,6 @@
             if (Object.keys(rascunhos).length > 0) { e.preventDefault(); e.returnValue = ''; }
         });
 
-        // Rede e Sincronização
         const atualizarStatusRede = () => {
             const el = document.getElementById("statusConexao");
             const btnSync = document.getElementById("btnSincronizar");
@@ -193,7 +178,6 @@
         window.addEventListener('offline', atualizarStatusRede);
         atualizarStatusRede();
 
-        // Máscara de Dinheiro Inteligente
         window.mascaraMoeda = (event) => {
             let v = event.target.value.replace(/\D/g, '');
             if(v === '') { event.target.value = ''; return; }
@@ -201,22 +185,19 @@
             event.target.value = v.replace('.', ',');
         };
 
-        // Função de Saltar Input (Enter ou Botão Ir)
         window.pularParaProximo = (event, currentId) => {
             if (event.key === 'Enter') {
                 event.preventDefault();
                 const inputs = Array.from(document.querySelectorAll('input[id^="atu-"]'));
-                // Filtra apenas os inputs visíveis (se tiver buscado algo)
                 const inputsVisiveis = inputs.filter(i => i.closest('.card-morador').style.display !== 'none');
                 
                 const currentIndex = inputsVisiveis.findIndex(el => el.id === `atu-${currentId}`);
                 if (currentIndex >= 0 && currentIndex < inputsVisiveis.length - 1) {
                     inputsVisiveis[currentIndex + 1].focus();
                     inputsVisiveis[currentIndex + 1].select();
-                    // Scroll suave para alinhar o input na tela
                     inputsVisiveis[currentIndex + 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
                 } else if (currentIndex === inputsVisiveis.length - 1) {
-                    inputsVisiveis[currentIndex].blur(); // Acabou a lista
+                    inputsVisiveis[currentIndex].blur(); 
                 }
             }
         };
@@ -238,7 +219,6 @@
             e.preventDefault();
             const senhaInput = document.getElementById("senhaAgente").value;
             document.getElementById("loading").style.display = "flex";
-
             try {
                 if (navigator.onLine) {
                     const docRef = doc(db, "config", "agente");
@@ -294,7 +274,6 @@
             }
         };
 
-        // LIXEIRA INDIVIDUAL (NOVIDADE)
         window.limparLeitura = (id) => {
             if(confirm("🚨 Atenção: Deseja apagar a leitura e taxas inseridas para este morador?")) {
                 document.getElementById(`atu-${id}`).value = "";
@@ -304,21 +283,17 @@
             }
         };
 
-        // AVULSO AGENTE
         window.abrirModalAvulso = (id) => {
             document.getElementById('avulsoAgenteId').value = id;
             document.getElementById('avulsoAgenteDesc').value = document.getElementById(`avulso-desc-${id}`).value || "";
             const val = parseFloat(document.getElementById(`avulso-val-${id}`).value);
-            // Insere valor já com formatação da máscara se existir
             document.getElementById('avulsoAgenteValor').value = val > 0 ? val.toFixed(2).replace('.', ',') : "";
-            
             document.getElementById('modalAvulsoAgente').classList.remove('hidden');
         };
 
         window.salvarAvulsoAgente = () => {
             const id = document.getElementById('avulsoAgenteId').value;
             const desc = document.getElementById('avulsoAgenteDesc').value;
-            // Pega o valor da máscara e converte de volta para Float numérico
             const valStr = document.getElementById('avulsoAgenteValor').value.replace(/\./g, '').replace(',', '.');
             const val = parseFloat(valStr) || 0;
             
@@ -329,7 +304,6 @@
 
             document.getElementById(`avulso-desc-${id}`).value = desc;
             document.getElementById(`avulso-val-${id}`).value = val;
-            
             window.calcularTotalCard(id);
             document.getElementById('modalAvulsoAgente').classList.add('hidden');
         };
@@ -338,17 +312,14 @@
             const id = document.getElementById('avulsoAgenteId').value;
             document.getElementById(`avulso-desc-${id}`).value = "";
             document.getElementById(`avulso-val-${id}`).value = 0;
-            
             window.calcularTotalCard(id);
             document.getElementById('modalAvulsoAgente').classList.add('hidden');
         };
 
-        // CÁLCULO E ATUALIZAÇÃO DA TELA
         window.calcularTotalCard = (id) => {
             const ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0;
             const atuStr = document.getElementById(`atu-${id}`).value;
             const atu = atuStr === "" ? ant : parseFloat(atuStr);
-            
             const avulsoVal = parseFloat(document.getElementById(`avulso-val-${id}`).value) || 0;
             const taxaBanco = parseFloat(document.getElementById(`taxa-banco-${id}`).value) || 0;
 
@@ -370,7 +341,6 @@
             cardEl.dataset.valortotal = total;
             cardEl.dataset.consumo = consumo;
 
-            // Muda cor do card para dar feedback visual Forte ao Agente
             if (atuStr !== "" || avulsoVal > 0) {
                 cardEl.classList.add('card-preenchido');
                 cardEl.classList.remove('border-slate-300', 'bg-white');
@@ -379,7 +349,6 @@
                 cardEl.classList.add('border-slate-300', 'bg-white');
             }
 
-            // Atualiza Botão Avulso
             const btnAvulso = document.getElementById(`btn-avulso-${id}`);
             if(avulsoVal > 0) {
                 btnAvulso.innerHTML = `<span class="truncate max-w-[90px]">${document.getElementById(`avulso-desc-${id}`).value}</span> <span>+ R$ ${avulsoVal.toFixed(2).replace('.',',')}</span>`;
@@ -389,7 +358,6 @@
                 btnAvulso.className = "w-full bg-orange-50 text-orange-600 border-2 border-orange-200 hover:bg-orange-100 p-3 text-center font-black rounded-xl outline-none text-sm transition shadow-sm flex justify-center items-center mt-1";
             }
 
-            // Auto-Save Offline
             let rascunhos = JSON.parse(localStorage.getItem('rascunhos_coleta') || '{}');
             if (atuStr !== "" || avulsoVal > 0) { 
                 rascunhos[id] = { atu: atuStr, avulsoVal: avulsoVal, avulsoDesc: document.getElementById(`avulso-desc-${id}`).value }; 
@@ -398,7 +366,6 @@
             }
             localStorage.setItem('rascunhos_coleta', JSON.stringify(rascunhos));
             
-            // Atualiza Contador do Topo
             const totalDigitadas = Object.keys(rascunhos).length;
             document.getElementById("contadorLeituras").innerText = `${totalDigitadas} / ${window.moradoresGlobal.length}`;
         };
@@ -434,7 +401,6 @@
 
                 html += `
                 <div class="card-morador bg-white border-2 border-slate-300 p-5 rounded-3xl mb-5 transition-all" id="card-${f.id}" data-nome="${f.nome.toLowerCase()}" data-cpf="${f.cpf}" data-telefone="${f.telefone}" data-taxa="${taxaBanco}" data-desc="${taxaBancoDesc}">
-                    
                     <div class="flex justify-between items-start border-b-2 border-slate-100 pb-4 mb-4">
                         <div class="pr-2">
                             <h3 class="font-black text-slate-900 text-xl leading-tight mb-1">${f.nome}</h3>
@@ -467,8 +433,7 @@
                             <span id="cons-${f.id}" class="font-black text-blue-600 text-xl">0 m³</span>
                         </div>
                         <div class="flex-[1.5]">
-                            <button onclick="window.abrirModalAvulso('${f.id}')" id="btn-avulso-${f.id}">
-                                </button>
+                            <button onclick="window.abrirModalAvulso('${f.id}')" id="btn-avulso-${f.id}"></button>
                             <input type="hidden" id="avulso-val-${f.id}" value="${avulsoVal}">
                             <input type="hidden" id="avulso-desc-${f.id}" value="${avulsoDesc}">
                             <input type="hidden" id="taxa-banco-${f.id}" value="${taxaBanco}">
@@ -586,7 +551,6 @@
                             taxa_pendente_desc: "" 
                         });
                         
-                        // LOG DETALHADO DO AGENTE
                         await addDoc(collection(db, "logs_agente"), {
                             data: new Date().toISOString(),
                             acao: 'Gerada (Rua)',
@@ -607,11 +571,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
