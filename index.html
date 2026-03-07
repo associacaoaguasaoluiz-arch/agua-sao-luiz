@@ -17,6 +17,25 @@
             -webkit-touch-callout: none;
         }
     </style>
+    
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
+        
+        /* Modais */
+        .modal-fundo { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; justify-content: center; align-items: center; padding: 1rem; backdrop-filter: blur(4px); }
+        
+        /* Rolagem Suave Mobile */
+        .scroll-suave::-webkit-scrollbar { height: 6px; }
+        .scroll-suave::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+        /* Regras de Impressão */
+        .no-print { display: block; }
+        @media print {
+            .no-print { display: none !important; }
+            .card-print { border: 1px solid #e2e8f0; box-shadow: none !important; }
+            body { background: white; }
+            .modal-fundo { display: none !important; }
+        }
+    </style>
     <script>
         // 1. Bloqueia o Botão Direito do Rato
         document.addEventListener('contextmenu', event => event.preventDefault());
@@ -43,25 +62,6 @@
             }
         }, 1000);
     </script>
-
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
-        
-        /* Modais */
-        .modal-fundo { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; justify-content: center; align-items: center; padding: 1rem; backdrop-filter: blur(4px); }
-        
-        /* Rolagem Suave Mobile */
-        .scroll-suave::-webkit-scrollbar { height: 6px; }
-        .scroll-suave::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-
-        /* Regras de Impressão */
-        .no-print { display: block; }
-        @media print {
-            .no-print { display: none !important; }
-            .card-print { border: 1px solid #e2e8f0; box-shadow: none !important; }
-            body { background: white; }
-            .modal-fundo { display: none !important; }
-        }
-    </style>
 </head>
 <body class="p-4 md:p-8 relative">
 
@@ -502,5 +502,6 @@
     </script>
 </body>
 </html>
+
 
 
