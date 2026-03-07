@@ -7,99 +7,107 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
-        .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.95); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
-        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; -webkit-tap-highlight-color: transparent; }
+        .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.98); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
+        .spinner { border: 5px solid #e2e8f0; border-top: 5px solid #2563eb; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         .animate-slide-up { animation: slideUp 0.3s ease-out forwards; }
         .scroll-suave::-webkit-scrollbar { display: none; }
+        
+        /* Melhorias para digitação no Sol */
+        input::placeholder { color: #94a3b8; opacity: 1; }
+        .card-preenchido { border-color: #3b82f6 !important; background-color: #eff6ff !important; box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2) !important; }
+        .btn-gigante { min-height: 56px; } /* Área de toque maior para dedos */
     </style>
 </head>
-<body class="text-gray-800 h-screen flex flex-col overflow-hidden">
+<body class="text-slate-900 h-screen flex flex-col overflow-hidden">
 
-    <div id="loading" class="loading-overlay"><div class="spinner"></div><p id="loadingMsg" class="mt-4 font-bold text-gray-700">A processar...</p></div>
+    <div id="loading" class="loading-overlay"><div class="spinner"></div><p id="loadingMsg" class="mt-4 font-black text-slate-800 text-lg tracking-tight">A processar...</p></div>
 
     <div id="loginAgente" class="fixed inset-0 bg-slate-900 flex justify-center items-center z-50 p-4">
-        <form onsubmit="window.entrarAgente(event)" class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-sm text-center">
-            <div class="bg-blue-100 w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-4"><i class="fa-solid fa-droplet text-4xl text-blue-600"></i></div>
-            <h2 class="text-2xl font-black mb-1 text-slate-800">Portal do Leiturista</h2>
-            <p class="text-sm text-gray-500 mb-6">Acesso restrito para coleta de dados</p>
-            <input type="password" id="senhaAgente" required placeholder="Palavra-passe de Acesso..." class="w-full p-4 border-2 border-gray-200 rounded-xl mb-4 text-center text-lg outline-none focus:border-blue-500 transition">
-            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl shadow-lg active:scale-95 transition text-lg">Acessar</button>
+        <form onsubmit="window.entrarAgente(event)" class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-sm text-center border-b-8 border-blue-600">
+            <div class="bg-blue-100 w-24 h-24 mx-auto rounded-full flex items-center justify-center mb-6 shadow-inner"><i class="fa-solid fa-droplet text-5xl text-blue-600"></i></div>
+            <h2 class="text-3xl font-black mb-2 text-slate-900 tracking-tight">Leiturista</h2>
+            <p class="text-sm text-slate-500 mb-8 font-bold">Modo Terreno de Alta Visibilidade</p>
+            <input type="password" id="senhaAgente" required placeholder="Senha de Acesso..." class="w-full p-5 border-2 border-slate-300 rounded-2xl mb-6 text-center text-2xl font-black outline-none focus:border-blue-600 focus:bg-blue-50 transition placeholder:text-base">
+            <button type="submit" class="btn-gigante w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl shadow-xl active:scale-95 transition text-xl uppercase tracking-wider">Acessar</button>
         </form>
     </div>
 
-    <div id="modalSenha" class="hidden fixed inset-0 bg-black/60 z-[100] flex justify-center items-center p-4">
-        <div class="bg-white rounded-3xl w-full max-w-sm p-6 text-center shadow-2xl">
-            <h3 class="font-black text-xl mb-2 text-slate-800">Alterar Minha Senha</h3>
-            <p class="text-xs text-gray-500 mb-4">Escolha uma nova palavra-passe de acesso.</p>
-            <input type="password" id="novaSenhaInput" placeholder="Digite a nova senha..." class="w-full p-4 border-2 border-gray-200 rounded-xl mb-4 text-center outline-none focus:border-blue-500 text-lg font-bold">
-            <div class="flex gap-2">
-                <button onclick="document.getElementById('modalSenha').style.display='none'" class="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-bold">Cancelar</button>
-                <button onclick="window.salvarNovaSenha()" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold">Atualizar</button>
+    <div id="modalSenha" class="hidden fixed inset-0 bg-slate-900/80 z-[100] flex justify-center items-center p-4">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 text-center shadow-2xl border-2 border-slate-200">
+            <h3 class="font-black text-2xl mb-2 text-slate-900">Alterar Senha</h3>
+            <p class="text-sm text-slate-500 mb-6 font-bold">Escolha uma nova senha.</p>
+            <input type="password" id="novaSenhaInput" placeholder="Nova senha..." class="w-full p-4 border-2 border-slate-300 rounded-2xl mb-6 text-center outline-none focus:border-blue-600 text-2xl font-black focus:bg-blue-50">
+            <div class="flex gap-3">
+                <button onclick="document.getElementById('modalSenha').style.display='none'" class="btn-gigante flex-1 bg-slate-200 text-slate-800 rounded-2xl font-black text-lg">Cancelar</button>
+                <button onclick="window.salvarNovaSenha()" class="btn-gigante flex-[1.5] bg-blue-600 text-white rounded-2xl font-black text-lg shadow-lg">Atualizar</button>
             </div>
         </div>
     </div>
 
-    <div id="modalAvulsoAgente" class="hidden fixed inset-0 bg-black/60 z-[100] flex justify-center items-end sm:items-center p-0 sm:p-4">
-        <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-6 shadow-2xl animate-slide-up">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-black text-xl text-slate-800"><i class="fa-solid fa-wrench text-blue-600 mr-2"></i>Serviço Extra</h3>
-                <button onclick="document.getElementById('modalAvulsoAgente').classList.add('hidden')" class="text-gray-400 hover:text-red-500 text-3xl leading-none">&times;</button>
+    <div id="modalAvulsoAgente" class="hidden fixed inset-0 bg-slate-900/80 z-[100] flex justify-center items-end sm:items-center p-0 sm:p-4">
+        <div class="bg-white rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-6 shadow-2xl animate-slide-up border-t-8 border-orange-500">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-black text-2xl text-slate-900 tracking-tight"><i class="fa-solid fa-wrench text-orange-500 mr-2"></i>Serviço Extra</h3>
+                <button onclick="document.getElementById('modalAvulsoAgente').classList.add('hidden')" class="text-slate-400 hover:text-red-600 text-4xl leading-none bg-slate-100 w-10 h-10 rounded-full flex items-center justify-center pb-1">&times;</button>
             </div>
+            
             <input type="hidden" id="avulsoAgenteId">
-            <label class="block text-[10px] font-bold text-gray-500 mb-1 uppercase">Descrição do Serviço</label>
-            <input type="text" id="avulsoAgenteDesc" placeholder="Ex: Multa, Conserto..." class="w-full p-3 border-2 border-gray-200 rounded-xl mb-2 outline-none focus:border-blue-500 text-sm font-bold text-slate-700">
-            <div class="flex gap-2 mb-4 overflow-x-auto pb-2 scroll-suave">
-                <button onclick="document.getElementById('avulsoAgenteDesc').value='Multa por Atraso'; document.getElementById('avulsoAgenteValor').value=window.cfgGlobais.multa || '25.00';" class="whitespace-nowrap bg-red-50 text-red-600 border border-red-200 px-3 py-1.5 rounded-full text-xs font-black hover:bg-red-100 transition shadow-sm active:scale-95">🚨 Aplicar Multa</button>
-                <button onclick="document.getElementById('avulsoAgenteDesc').value='Taxa de Religação';" class="whitespace-nowrap bg-blue-50 text-blue-600 border border-blue-200 px-3 py-1.5 rounded-full text-xs font-black hover:bg-blue-100 transition shadow-sm active:scale-95">💧 Religação</button>
-                <button onclick="document.getElementById('avulsoAgenteDesc').value='Manutenção do Cavalete';" class="whitespace-nowrap bg-amber-50 text-amber-600 border border-amber-200 px-3 py-1.5 rounded-full text-xs font-black hover:bg-amber-100 transition shadow-sm active:scale-95">🔧 Manutenção</button>
+            
+            <label class="block text-[11px] font-black text-slate-500 mb-2 uppercase tracking-widest">Qual o Serviço?</label>
+            <input type="text" id="avulsoAgenteDesc" placeholder="Ex: Multa, Conserto..." class="btn-gigante w-full p-4 border-2 border-slate-300 rounded-2xl mb-3 outline-none focus:border-blue-600 text-lg font-black text-slate-900 focus:bg-blue-50 transition">
+            
+            <div class="flex gap-2 mb-6 overflow-x-auto pb-2 scroll-suave">
+                <button onclick="document.getElementById('avulsoAgenteDesc').value='Multa por Atraso'; document.getElementById('avulsoAgenteValor').value=(window.cfgGlobais.multa || 25).toFixed(2).replace('.', ',');" class="whitespace-nowrap bg-red-100 text-red-700 border-2 border-red-200 px-4 py-2 rounded-xl text-sm font-black active:scale-95 shadow-sm">🚨 Aplicar Multa</button>
+                <button onclick="document.getElementById('avulsoAgenteDesc').value='Taxa de Religação';" class="whitespace-nowrap bg-blue-100 text-blue-700 border-2 border-blue-200 px-4 py-2 rounded-xl text-sm font-black active:scale-95 shadow-sm">💧 Religação</button>
             </div>
-            <label class="block text-[10px] font-bold text-gray-500 mb-1 uppercase">Valor a Cobrar (R$)</label>
-            <input type="number" step="0.01" id="avulsoAgenteValor" placeholder="0.00" class="w-full p-3 border-2 border-gray-200 rounded-xl mb-6 outline-none focus:border-blue-500 text-xl font-black text-blue-600 text-center">
-            <div class="flex gap-2">
-                <button onclick="window.limparAvulsoAgente()" class="flex-1 bg-gray-100 text-red-500 py-3.5 rounded-xl font-bold hover:bg-gray-200 transition text-sm">Zerar</button>
-                <button onclick="window.salvarAvulsoAgente()" class="flex-[2] bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-black shadow-lg active:scale-95 transition">Confirmar Lançamento</button>
+
+            <label class="block text-[11px] font-black text-slate-500 mb-2 uppercase tracking-widest">Valor a Cobrar (R$)</label>
+            <input type="text" inputmode="numeric" id="avulsoAgenteValor" placeholder="0,00" oninput="window.mascaraMoeda(event)" class="w-full p-4 border-2 border-slate-300 rounded-2xl mb-8 outline-none focus:border-blue-600 text-4xl font-black text-blue-700 text-center focus:bg-blue-50 transition tracking-tighter" style="height: 70px;">
+            
+            <div class="flex gap-3">
+                <button onclick="window.limparAvulsoAgente()" class="btn-gigante flex-1 bg-red-100 text-red-600 rounded-2xl font-black text-lg border-2 border-red-200">Zerar</button>
+                <button onclick="window.salvarAvulsoAgente()" class="btn-gigante flex-[1.5] bg-blue-600 text-white rounded-2xl font-black text-lg shadow-xl active:scale-95">Confirmar</button>
             </div>
         </div>
     </div>
 
     <div id="painelAgente" class="flex flex-col w-full h-full hidden">
-        <header class="bg-slate-900 text-white p-4 flex justify-between items-center shadow-md z-40">
+        <header class="bg-slate-900 text-white p-4 flex justify-between items-center shadow-lg z-40 border-b-4 border-blue-600">
             <div>
-                <h1 class="font-black text-lg leading-tight">Água São Luiz</h1>
-                <div id="statusConexao" class="flex items-center gap-1 text-green-400 text-[10px] font-bold mt-0.5">
-                    <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span>
-                    Online
+                <h1 class="font-black text-xl tracking-tight leading-none mb-1">São Luiz <span class="text-blue-400">Coleta</span></h1>
+                <div id="statusConexao" class="flex items-center gap-1.5 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+                    <span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span></span> Online
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <button onclick="document.getElementById('modalSenha').style.display='flex'" class="text-gray-300 hover:text-white p-2 text-sm bg-slate-800 rounded-lg transition"><i class="fa-solid fa-key"></i> Senha</button>
-                <button onclick="window.sairAgente()" class="text-red-400 hover:text-red-300 p-2 text-sm bg-slate-800 rounded-lg transition"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
+                <button onclick="document.getElementById('modalSenha').style.display='flex'" class="text-slate-300 hover:text-white p-3 bg-slate-800 rounded-xl transition text-lg"><i class="fa-solid fa-key"></i></button>
+                <button onclick="window.sairAgente()" class="text-red-400 hover:text-red-300 p-3 bg-slate-800 rounded-xl transition text-lg"><i class="fa-solid fa-right-from-bracket"></i></button>
             </div>
         </header>
 
-        <main class="flex-1 overflow-y-auto p-4 pb-24 relative">
+        <main class="flex-1 overflow-y-auto p-3 md:p-4 pb-28 relative bg-slate-100">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="font-black text-slate-700 text-lg"><i class="fa-solid fa-clipboard-list text-blue-600 mr-2"></i>Leituras</h2>
-                <span id="contadorLeituras" class="bg-blue-100 text-blue-700 font-bold px-3 py-1 rounded-lg text-xs">0 digitadas</span>
+                <h2 class="font-black text-slate-800 text-xl tracking-tight"><i class="fa-solid fa-list-ol text-blue-600 mr-2"></i>Leituras</h2>
+                <span id="contadorLeituras" class="bg-blue-600 text-white font-black px-4 py-1.5 rounded-xl text-sm shadow-md">0 / 0</span>
             </div>
 
-            <input type="text" id="buscaMorador" onkeyup="window.filtrarCards()" placeholder="🔍 Buscar morador ou endereço..." class="w-full p-4 bg-white shadow-sm border border-gray-200 rounded-2xl mb-4 outline-none focus:border-blue-500 text-sm font-bold text-slate-600">
+            <input type="text" id="buscaMorador" onkeyup="window.filtrarCards()" placeholder="🔍 Nome ou morada..." class="btn-gigante w-full p-4 bg-white shadow-md border-2 border-slate-300 rounded-2xl mb-5 outline-none focus:border-blue-600 text-lg font-black text-slate-800 placeholder:text-slate-400 focus:ring-4 focus:ring-blue-100 transition">
 
-            <div id="avisoRascunho" class="hidden bg-amber-50 border border-amber-200 text-amber-700 p-3 rounded-xl mb-4 text-xs font-bold flex items-center gap-2">
-                <i class="fa-solid fa-floppy-disk text-amber-500"></i> Rascunhos recuperados! Suas digitações anteriores foram restauradas.
+            <div id="avisoRascunho" class="hidden bg-amber-100 border-l-4 border-amber-500 text-amber-800 p-4 rounded-r-2xl mb-5 text-sm font-black shadow-sm flex items-center gap-3">
+                <i class="fa-solid fa-floppy-disk text-2xl text-amber-500"></i> Rascunhos da última sessão restaurados.
             </div>
 
-            <div id="listaCards" class="space-y-4">
-                <p class="text-center text-gray-400 text-sm mt-10">A carregar dados do sistema...</p>
+            <div id="listaCards" class="space-y-5">
+                <p class="text-center text-slate-500 font-bold text-lg mt-10"><i class="fa-solid fa-cloud-arrow-down mb-2 text-3xl"></i><br>A carregar dados...</p>
             </div>
         </main>
         
-        <div class="fixed bottom-0 w-full bg-white border-t p-3 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-            <button onclick="window.sincronizarEGerarLote()" id="btnSincronizar" class="w-full bg-green-500 text-white font-black py-4 rounded-xl shadow-lg active:scale-95 transition flex justify-center items-center gap-2 text-lg">
-                <i class="fa-solid fa-cloud-arrow-up"></i> Sincronizar Faturas
+        <div class="fixed bottom-0 left-0 w-full bg-white border-t-2 border-slate-200 p-3 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)] z-40">
+            <button onclick="window.sincronizarEGerarLote()" id="btnSincronizar" class="w-full bg-emerald-500 text-white font-black py-5 rounded-2xl shadow-[0_4px_0_0_#047857] active:shadow-none active:translate-y-1 transition-all flex justify-center items-center gap-3 text-xl tracking-tight">
+                <i class="fa-solid fa-cloud-arrow-up text-2xl"></i> SINCRONIZAR
             </button>
         </div>
     </div>
@@ -112,36 +120,66 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        enableIndexedDbPersistence(db).catch((err) => { console.log("Offline não suportado pelo navegador."); });
+        // Ativação do Banco Offline
+        enableIndexedDbPersistence(db).catch((err) => { console.log("Offline não suportado."); });
 
         window.moradoresGlobal = [];
         window.cfgGlobais = { val1: 25, val2: 50, val3: 100, multa: 25 };
 
         window.addEventListener('beforeunload', function (e) {
             const rascunhos = JSON.parse(localStorage.getItem('rascunhos_coleta') || '{}');
-            if (Object.keys(rascunhos).length > 0) { e.preventDefault(); e.returnValue = 'Existem leituras digitadas não enviadas.'; }
+            if (Object.keys(rascunhos).length > 0) { e.preventDefault(); e.returnValue = ''; }
         });
 
+        // Rede e Sincronização
         const atualizarStatusRede = () => {
             const el = document.getElementById("statusConexao");
             const btnSync = document.getElementById("btnSincronizar");
             if (navigator.onLine) {
-                el.innerHTML = '<span class="relative flex h-2 w-2 mr-1"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span> Online';
-                el.className = "flex items-center text-green-400 text-[10px] font-bold mt-0.5";
-                btnSync.classList.remove("opacity-50", "pointer-events-none", "bg-gray-400");
-                btnSync.classList.add("bg-green-500");
-                btnSync.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Sincronizar Faturas';
+                el.innerHTML = '<span class="relative flex h-3 w-3 mr-1.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span></span> ONLINE';
+                el.className = "flex items-center text-emerald-500 text-[11px] font-black mt-0.5 tracking-widest";
+                btnSync.classList.remove("opacity-50", "pointer-events-none", "bg-slate-400", "shadow-[0_4px_0_0_#475569]");
+                btnSync.classList.add("bg-emerald-500", "shadow-[0_4px_0_0_#047857]");
+                btnSync.innerHTML = '<i class="fa-solid fa-cloud-arrow-up text-2xl"></i> SINCRONIZAR';
             } else {
-                el.innerHTML = '<i class="fa-solid fa-plane-slash mr-1"></i> Offline (Guardando Local)';
-                el.className = "flex items-center text-red-400 text-[10px] font-bold mt-0.5";
-                btnSync.classList.add("opacity-50", "pointer-events-none", "bg-gray-400");
-                btnSync.classList.remove("bg-green-500");
-                btnSync.innerHTML = '<i class="fa-solid fa-wifi"></i> Requer Internet para Sincronizar';
+                el.innerHTML = '<i class="fa-solid fa-plane-slash mr-1 text-sm"></i> OFFLINE';
+                el.className = "flex items-center text-red-500 text-[11px] font-black mt-0.5 tracking-widest bg-red-100 px-2 py-0.5 rounded border border-red-200";
+                btnSync.classList.add("opacity-50", "pointer-events-none", "bg-slate-400", "shadow-[0_4px_0_0_#475569]");
+                btnSync.classList.remove("bg-emerald-500", "shadow-[0_4px_0_0_#047857]");
+                btnSync.innerHTML = '<i class="fa-solid fa-wifi text-2xl"></i> REQUER INTERNET';
             }
         };
         window.addEventListener('online', atualizarStatusRede);
         window.addEventListener('offline', atualizarStatusRede);
         atualizarStatusRede();
+
+        // Máscara de Dinheiro Inteligente
+        window.mascaraMoeda = (event) => {
+            let v = event.target.value.replace(/\D/g, '');
+            if(v === '') { event.target.value = ''; return; }
+            v = (parseInt(v, 10) / 100).toFixed(2);
+            event.target.value = v.replace('.', ',');
+        };
+
+        // Função de Saltar Input (Enter ou Botão Ir)
+        window.pularParaProximo = (event, currentId) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const inputs = Array.from(document.querySelectorAll('input[id^="atu-"]'));
+                // Filtra apenas os inputs visíveis (se tiver buscado algo)
+                const inputsVisiveis = inputs.filter(i => i.closest('.card-morador').style.display !== 'none');
+                
+                const currentIndex = inputsVisiveis.findIndex(el => el.id === `atu-${currentId}`);
+                if (currentIndex >= 0 && currentIndex < inputsVisiveis.length - 1) {
+                    inputsVisiveis[currentIndex + 1].focus();
+                    inputsVisiveis[currentIndex + 1].select();
+                    // Scroll suave para alinhar o input na tela
+                    inputsVisiveis[currentIndex + 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else if (currentIndex === inputsVisiveis.length - 1) {
+                    inputsVisiveis[currentIndex].blur(); // Acabou a lista
+                }
+            }
+        };
 
         window.carregarConfiguracoes = async () => {
             try {
@@ -176,7 +214,7 @@
                         document.getElementById("painelAgente").classList.remove('hidden');
                         await window.carregarConfiguracoes();
                         window.carregarListaColeta();
-                    } else { alert("Palavra-passe incorreta!"); }
+                    } else { alert("Senha incorreta!"); }
                 } else {
                     const senhaCache = localStorage.getItem("agente_senha_cache") || "agente123";
                     if(senhaInput === senhaCache) {
@@ -185,16 +223,16 @@
                         document.getElementById("painelAgente").classList.remove('hidden');
                         await window.carregarConfiguracoes();
                         window.carregarListaColeta();
-                    } else { alert("Palavra-passe incorreta (Modo Offline)!"); }
+                    } else { alert("Senha incorreta (Modo Offline)!"); }
                 }
             } catch(err) { alert("Erro ao validar acesso."); }
             document.getElementById("loading").style.display = "none";
         };
 
         window.salvarNovaSenha = async () => {
-            if(!navigator.onLine) return alert("Precisa de internet para alterar a palavra-passe.");
+            if(!navigator.onLine) return alert("Precisa de internet para alterar a senha.");
             const nova = document.getElementById("novaSenhaInput").value;
-            if(nova.length < 4) return alert("A palavra-passe deve ter no mínimo 4 caracteres.");
+            if(nova.length < 4) return alert("A senha deve ter no mínimo 4 caracteres.");
             
             document.getElementById("loading").style.display = "flex";
             await setDoc(doc(db, "config", "agente"), { senha: nova });
@@ -202,7 +240,7 @@
             document.getElementById("loading").style.display = "none";
             document.getElementById('modalSenha').style.display = 'none';
             document.getElementById("novaSenhaInput").value = "";
-            alert("✅ Palavra-passe atualizada com sucesso!");
+            alert("✅ Senha atualizada com sucesso!");
         };
 
         window.sairAgente = () => { localStorage.removeItem("agente_logado"); location.reload(); };
@@ -216,11 +254,23 @@
             }
         };
 
+        // LIXEIRA INDIVIDUAL (NOVIDADE)
+        window.limparLeitura = (id) => {
+            if(confirm("🚨 Atenção: Deseja apagar a leitura e taxas inseridas para este morador?")) {
+                document.getElementById(`atu-${id}`).value = "";
+                document.getElementById(`avulso-val-${id}`).value = 0;
+                document.getElementById(`avulso-desc-${id}`).value = "";
+                window.calcularTotalCard(id);
+            }
+        };
+
+        // AVULSO AGENTE
         window.abrirModalAvulso = (id) => {
             document.getElementById('avulsoAgenteId').value = id;
             document.getElementById('avulsoAgenteDesc').value = document.getElementById(`avulso-desc-${id}`).value || "";
             const val = parseFloat(document.getElementById(`avulso-val-${id}`).value);
-            document.getElementById('avulsoAgenteValor').value = val > 0 ? val : "";
+            // Insere valor já com formatação da máscara se existir
+            document.getElementById('avulsoAgenteValor').value = val > 0 ? val.toFixed(2).replace('.', ',') : "";
             
             document.getElementById('modalAvulsoAgente').classList.remove('hidden');
         };
@@ -228,10 +278,12 @@
         window.salvarAvulsoAgente = () => {
             const id = document.getElementById('avulsoAgenteId').value;
             const desc = document.getElementById('avulsoAgenteDesc').value;
-            const val = parseFloat(document.getElementById('avulsoAgenteValor').value) || 0;
+            // Pega o valor da máscara e converte de volta para Float numérico
+            const valStr = document.getElementById('avulsoAgenteValor').value.replace(/\./g, '').replace(',', '.');
+            const val = parseFloat(valStr) || 0;
             
             if(val > 0 && desc.trim() === "") {
-                alert("Por favor, informe uma descrição (ex: Multa) para este valor.");
+                alert("Informe uma descrição (ex: Multa) para este valor.");
                 return;
             }
 
@@ -251,6 +303,7 @@
             document.getElementById('modalAvulsoAgente').classList.add('hidden');
         };
 
+        // CÁLCULO E ATUALIZAÇÃO DA TELA
         window.calcularTotalCard = (id) => {
             const ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0;
             const atuStr = document.getElementById(`atu-${id}`).value;
@@ -272,19 +325,31 @@
             const total = vAgua + avulsoVal + taxaBanco;
             document.getElementById(`total-${id}`).innerText = "R$ " + total.toFixed(2).replace('.', ',');
             
-            document.getElementById(`card-${id}`).dataset.valoragua = vAgua;
-            document.getElementById(`card-${id}`).dataset.valortotal = total;
-            document.getElementById(`card-${id}`).dataset.consumo = consumo;
+            const cardEl = document.getElementById(`card-${id}`);
+            cardEl.dataset.valoragua = vAgua;
+            cardEl.dataset.valortotal = total;
+            cardEl.dataset.consumo = consumo;
 
-            const btnAvulso = document.getElementById(`btn-avulso-${id}`);
-            if(avulsoVal > 0) {
-                btnAvulso.innerHTML = `<span class="truncate max-w-[80px]">${document.getElementById(`avulso-desc-${id}`).value}</span> <span>+ R$ ${avulsoVal.toFixed(2).replace('.',',')}</span>`;
-                btnAvulso.className = "w-full bg-orange-500 text-white border border-orange-600 p-2 text-center font-bold rounded-xl outline-none text-[11px] md:text-xs transition shadow-md flex justify-between items-center";
+            // Muda cor do card para dar feedback visual Forte ao Agente
+            if (atuStr !== "" || avulsoVal > 0) {
+                cardEl.classList.add('card-preenchido');
+                cardEl.classList.remove('border-slate-300', 'bg-white');
             } else {
-                btnAvulso.innerHTML = `<i class="fa-solid fa-plus mr-1"></i> Adicionar Extra/Multa`;
-                btnAvulso.className = "w-full bg-orange-50 text-orange-600 border border-orange-200 hover:bg-orange-100 p-2 text-center font-bold rounded-xl outline-none text-[11px] md:text-xs transition shadow-sm flex justify-center items-center";
+                cardEl.classList.remove('card-preenchido');
+                cardEl.classList.add('border-slate-300', 'bg-white');
             }
 
+            // Atualiza Botão Avulso
+            const btnAvulso = document.getElementById(`btn-avulso-${id}`);
+            if(avulsoVal > 0) {
+                btnAvulso.innerHTML = `<span class="truncate max-w-[90px]">${document.getElementById(`avulso-desc-${id}`).value}</span> <span>+ R$ ${avulsoVal.toFixed(2).replace('.',',')}</span>`;
+                btnAvulso.className = "w-full bg-orange-500 text-white border-b-4 border-orange-700 p-3 text-center font-black rounded-xl outline-none text-sm transition shadow-md flex justify-between items-center active:translate-y-1 active:border-b-0 mt-1";
+            } else {
+                btnAvulso.innerHTML = `<i class="fa-solid fa-plus mr-1"></i> Taxa/Multa`;
+                btnAvulso.className = "w-full bg-orange-50 text-orange-600 border-2 border-orange-200 hover:bg-orange-100 p-3 text-center font-black rounded-xl outline-none text-sm transition shadow-sm flex justify-center items-center mt-1";
+            }
+
+            // Auto-Save Offline
             let rascunhos = JSON.parse(localStorage.getItem('rascunhos_coleta') || '{}');
             if (atuStr !== "" || avulsoVal > 0) { 
                 rascunhos[id] = { atu: atuStr, avulsoVal: avulsoVal, avulsoDesc: document.getElementById(`avulso-desc-${id}`).value }; 
@@ -292,7 +357,10 @@
                 delete rascunhos[id]; 
             }
             localStorage.setItem('rascunhos_coleta', JSON.stringify(rascunhos));
-            document.getElementById("contadorLeituras").innerText = `${Object.keys(rascunhos).length} digitadas`;
+            
+            // Atualiza Contador do Topo
+            const totalDigitadas = Object.keys(rascunhos).length;
+            document.getElementById("contadorLeituras").innerText = `${totalDigitadas} / ${window.moradoresGlobal.length}`;
         };
 
         window.carregarListaColeta = async () => {
@@ -304,7 +372,7 @@
                 window.moradoresGlobal.sort((a,b) => (a.nome || "").localeCompare(b.nome || "", 'pt-BR'));
                 window.renderizarCards(window.moradoresGlobal);
             } catch(e) {
-                document.getElementById("listaCards").innerHTML = "<p class='text-red-500 text-center font-bold'>Erro ao carregar dados. Conecte à internet pelo menos uma vez para baixar a base de dados.</p>";
+                document.getElementById("listaCards").innerHTML = "<p class='text-red-600 text-center font-black text-xl p-6 bg-red-50 rounded-2xl border-2 border-red-200'>Erro ao carregar dados. <br><span class='text-sm font-bold'>Conecte à internet pelo menos uma vez para baixar a base de dados.</span></p>";
             }
             document.getElementById("loading").style.display = "none";
         };
@@ -324,39 +392,43 @@
                 const avulsoVal = rascunho.avulsoVal || 0;
                 const avulsoDesc = rascunho.avulsoDesc || "";
 
-                const cardAtivoClass = (atuVal !== "" || avulsoVal > 0) ? "border-blue-400 bg-blue-50 shadow-md" : "border-gray-200 bg-white";
-
                 html += `
-                <div class="card-morador border p-4 rounded-2xl mb-4 transition-all ${cardAtivoClass}" id="card-${f.id}" data-nome="${f.nome.toLowerCase()}" data-cpf="${f.cpf}" data-telefone="${f.telefone}" data-taxa="${taxaBanco}" data-desc="${taxaBancoDesc}">
-                    <div class="flex justify-between items-start border-b border-gray-200 pb-3 mb-3">
-                        <div>
-                            <h3 class="font-black text-slate-800 leading-tight">${f.nome}</h3>
-                            <p class="text-[10px] text-gray-500 font-mono mt-1">${f.lote_endereco || "Sem endereço"}</p>
-                            ${taxaBanco > 0 ? `<span class="bg-amber-100 text-amber-700 text-[9px] font-black px-2 py-0.5 rounded-full mt-1 inline-block uppercase">Agendado Admin: R$ ${taxaBanco}</span>` : ''}
+                <div class="card-morador bg-white border-2 border-slate-300 p-5 rounded-3xl mb-5 transition-all" id="card-${f.id}" data-nome="${f.nome.toLowerCase()}" data-cpf="${f.cpf}" data-telefone="${f.telefone}" data-taxa="${taxaBanco}" data-desc="${taxaBancoDesc}">
+                    
+                    <div class="flex justify-between items-start border-b-2 border-slate-100 pb-4 mb-4">
+                        <div class="pr-2">
+                            <h3 class="font-black text-slate-900 text-xl leading-tight mb-1">${f.nome}</h3>
+                            <p class="text-xs text-slate-500 font-bold"><i class="fa-solid fa-location-dot text-blue-500 mr-1"></i> ${f.lote_endereco || "Sem endereço"}</p>
+                            ${taxaBanco > 0 ? `<span class="bg-amber-100 text-amber-800 border border-amber-200 text-[10px] font-black px-2.5 py-1 rounded-lg mt-2 inline-block shadow-sm">Agendado (Admin): R$ ${taxaBanco.toFixed(2).replace('.',',')}</span>` : ''}
+                        </div>
+                        <button onclick="window.limparLeitura('${f.id}')" class="bg-red-50 text-red-500 hover:bg-red-100 border-2 border-red-100 w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm shrink-0" title="Limpar Cartão">
+                            <i class="fa-solid fa-trash-can text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-5 gap-3 mb-4">
+                        <div class="col-span-2 bg-slate-100 p-3 rounded-2xl text-center border-2 border-slate-200 flex flex-col justify-center">
+                            <span class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Ant.</span>
+                            <input type="number" id="ant-${f.id}" value="${f.ultima_leitura || 0}" readonly class="w-full bg-transparent text-center font-black text-slate-600 text-xl outline-none pointer-events-none">
+                        </div>
+                        <div class="col-span-3 bg-white p-2 rounded-2xl text-center border-4 border-slate-300 focus-within:border-blue-600 focus-within:bg-blue-50 transition shadow-inner">
+                            <span class="block text-[11px] font-black text-blue-600 uppercase tracking-widest mb-1">Atual</span>
+                            <input type="number" inputmode="numeric" id="atu-${f.id}" value="${atuVal}" 
+                                oninput="window.calcularTotalCard('${f.id}')" 
+                                onkeydown="window.pularParaProximo(event, '${f.id}')" 
+                                placeholder="DIGITE" 
+                                class="w-full bg-transparent text-center font-black text-slate-900 text-4xl outline-none placeholder:text-2xl placeholder:font-bold placeholder:text-slate-300" style="height: 48px;">
                         </div>
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-3 mb-3">
-                        <div class="bg-gray-50/50 p-2 rounded-xl text-center border border-gray-100">
-                            <span class="block text-[9px] font-bold text-gray-400 uppercase mb-1">Anterior</span>
-                            <input type="number" id="ant-${f.id}" value="${f.ultima_leitura || 0}" readonly class="w-full bg-transparent text-center font-bold text-gray-600 outline-none">
+                    <div class="flex items-center gap-4 bg-slate-50 p-3.5 rounded-2xl border-2 border-slate-200 mb-4">
+                        <div class="flex-1 text-center border-r-2 border-slate-200 pr-2">
+                            <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">M³ Consumo</label>
+                            <span id="cons-${f.id}" class="font-black text-blue-600 text-xl">0 m³</span>
                         </div>
-                        <div class="bg-white p-2 rounded-xl text-center border-2 border-blue-200 focus-within:border-blue-500 transition">
-                            <span class="block text-[9px] font-black text-blue-600 uppercase mb-1">Atual</span>
-                            <input type="number" inputmode="numeric" id="atu-${f.id}" value="${atuVal}" oninput="window.calcularTotalCard('${f.id}')" placeholder="Digitar" class="w-full bg-transparent text-center font-black text-blue-800 text-lg outline-none">
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-gray-100 mb-3">
-                        <div class="flex-[0.8]">
-                            <label class="block text-[9px] font-bold text-gray-500 uppercase mb-1">Consumo</label>
-                            <span id="cons-${f.id}" class="font-black text-blue-600">0 m³</span>
-                        </div>
-                        <div class="flex-[1.2] border-l pl-3 border-gray-100">
-                            <label class="block text-[9px] font-bold text-orange-500 uppercase mb-1">Serviços / Multa</label>
-                            <button onclick="window.abrirModalAvulso('${f.id}')" id="btn-avulso-${f.id}" class="w-full bg-orange-50 text-orange-600 border border-orange-200 p-2 text-center font-bold rounded-xl outline-none text-[11px] md:text-xs transition shadow-sm">
-                                <i class="fa-solid fa-plus mr-1"></i> Adicionar
-                            </button>
+                        <div class="flex-[1.5]">
+                            <button onclick="window.abrirModalAvulso('${f.id}')" id="btn-avulso-${f.id}">
+                                </button>
                             <input type="hidden" id="avulso-val-${f.id}" value="${avulsoVal}">
                             <input type="hidden" id="avulso-desc-${f.id}" value="${avulsoDesc}">
                             <input type="hidden" id="taxa-banco-${f.id}" value="${taxaBanco}">
@@ -364,15 +436,15 @@
                         </div>
                     </div>
                     
-                    <div class="flex justify-between items-center bg-slate-900 text-white p-3 rounded-xl shadow-inner">
-                        <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Total a Pagar</span>
-                        <span id="total-${f.id}" class="font-black text-lg text-green-400">R$ 0,00</span>
+                    <div class="flex justify-between items-center bg-slate-900 text-white p-4 rounded-2xl shadow-md border-b-4 border-emerald-500">
+                        <span class="text-xs font-black uppercase tracking-widest text-slate-300">A PAGAR</span>
+                        <span id="total-${f.id}" class="font-black text-2xl text-emerald-400 tracking-tight">R$ 0,00</span>
                     </div>
                 </div>
                 `;
             });
             document.getElementById("listaCards").innerHTML = html;
-            document.getElementById("contadorLeituras").innerText = `${Object.keys(rascunhos).length} digitadas`;
+            document.getElementById("contadorLeituras").innerText = `${Object.keys(rascunhos).length} / ${lista.length}`;
             lista.forEach(f => window.calcularTotalCard(f.id));
         };
 
@@ -384,7 +456,7 @@
         };
 
         window.sincronizarEGerarLote = async () => {
-            if(!navigator.onLine) return alert("Precisa de estar conectado à internet para gerar o PIX e sincronizar.");
+            if(!navigator.onLine) return alert("❌ Conecte à internet para gerar o PIX e sincronizar com o Servidor Central.");
 
             const cards = document.querySelectorAll(".card-morador");
             let faturasParaGerar = [];
@@ -474,10 +546,10 @@
                             taxa_pendente_desc: "" 
                         });
                         
-                        // NOVO LOG DETALHADO DO AGENTE
+                        // LOG DETALHADO DO AGENTE
                         await addDoc(collection(db, "logs_agente"), {
                             data: new Date().toISOString(),
-                            acao: 'Gerada (Agente)',
+                            acao: 'Gerada (Rua)',
                             cliente: fat.nome,
                             valor: fat.valor_total
                         });
@@ -489,7 +561,7 @@
 
             document.getElementById("loading").style.display = "none";
             localStorage.removeItem('rascunhos_coleta'); 
-            alert(`✅ Sincronização concluída! ${sucessoCont} faturas enviadas para a fila do robô.`);
+            alert(`✅ Sucesso Absoluto!\n${sucessoCont} faturas enviadas para o Robô.`);
             window.carregarListaColeta();
         };
     </script>
