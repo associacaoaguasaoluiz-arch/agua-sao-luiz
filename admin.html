@@ -44,41 +44,6 @@
         }, 1000);
     </script>
     ```
-
----
-
-### PASSO 2: Inserir a Marca (Copyright) no Painel do Agente (`agente.html`)
-
-No ficheiro `agente.html`, procure a linha onde está o cabeçalho principal: `<header class="bg-slate-900 text-white p-4...`
-
-Altere esse bloco para que fique assim (adicionei a marca de água discreta mas legível):
-
-```html
-        <header class="bg-slate-900 text-white p-4 flex justify-between items-center shadow-lg z-40 border-b-4 border-blue-600 relative">
-            <span class="absolute top-1 left-2 text-[8px] font-black text-white/30 tracking-widest pointer-events-none select-none z-50">© SIEKLICKI</span>
-            
-            <div class="pt-2">
-                <h1 class="font-black text-xl tracking-tight leading-none mb-1">São Luiz <span class="text-blue-400">Coleta</span></h1>
-                <div id="statusConexao" class="flex items-center gap-1.5 text-emerald-400 text-xs font-bold uppercase tracking-wider">
-                    <span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span></span> Online
-                </div>
-            </div>
-            ```
-
----
-
-### PASSO 3: Inserir a Marca no Painel Admin (`admin.html`)
-
-Como o Admin tem versão Computador (Barra lateral) e versão Telemóvel (Barra no topo), precisamos de colocar a marca em dois sítios rápidos:
-
-**1. No Telemóvel:** Procure a linha `<div class="md:hidden bg-slate-900 text-white p-4...` e altere para isto:
-```html
-            <div class="md:hidden bg-slate-900 text-white p-4 text-center sticky top-0 z-40 shadow-md font-bold flex justify-between px-4 items-center relative">
-                <span class="absolute top-0.5 left-2 text-[7px] font-black text-white/30 tracking-widest pointer-events-none select-none">© SIEKLICKI</span>
-                
-                <span class="mt-1">💧 São Luiz</span>
-                <button onclick="window.sairAdmin()" class="text-red-400 bg-slate-800 px-3 py-1 rounded-lg text-xs"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
-            </div>
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; -webkit-tap-highlight-color: transparent; max-width: 100vw; overflow-x: hidden; }
         .tela-oculta { display: none !important; }
         .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
@@ -136,8 +101,10 @@ Como o Admin tem versão Computador (Barra lateral) e versão Telemóvel (Barra 
         </aside>
 
         <main class="flex-1 overflow-y-auto bg-gray-100 conteudo-principal w-full">
-            <div class="md:hidden bg-slate-900 text-white p-4 text-center sticky top-0 z-40 shadow-md font-bold flex justify-between px-4 items-center">
-                <span>💧 São Luiz</span>
+            <div class="md:hidden bg-slate-900 text-white p-4 text-center sticky top-0 z-40 shadow-md font-bold flex justify-between px-4 items-center relative">
+                <span class="absolute top-0.5 left-2 text-[7px] font-black text-white/30 tracking-widest pointer-events-none select-none">© SIEKLICKI</span>
+                
+                <span class="mt-1">💧 São Luiz</span>
                 <button onclick="window.sairAdmin()" class="text-red-400 bg-slate-800 px-3 py-1 rounded-lg text-xs"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
             </div>
             
