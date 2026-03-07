@@ -3,11 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>App Gestão 22.0 - Água São Luiz</title>
+    <title>App Gestão 22.0 - Água Distrito de São Luiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; -webkit-tap-highlight-color: transparent; max-width: 100vw; overflow-x: hidden; }
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+    </style>
+    <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123) return false; 
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false; 
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false; 
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false; 
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false; 
+            if(e.ctrlKey && e.keyCode == 'S'.charCodeAt(0)) return false; 
+            if(e.ctrlKey && e.keyCode == 'P'.charCodeAt(0)) return false; 
+        };
+        setInterval(function() {
+            var before = new Date().getTime();
+            debugger; 
+            var after = new Date().getTime();
+            if (after - before > 100) {
+                document.body.innerHTML = "<div style='background:#0f172a; color:#ef4444; height:100vh; display:flex; justify-content:center; align-items:center; font-family:sans-serif;'><h1>⛔ ACESSO NEGADO - © SIEKLICKI</h1></div>";
+                window.location.reload();
+            }
+        }, 1000);
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; max-width: 100vw; overflow-x: hidden; }
         .tela-oculta { display: none !important; }
         .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
@@ -29,42 +60,6 @@
             .print-area { width: 100% !important; border: none !important; box-shadow: none !important; }
         }
     </style>
-     <style>
-        /* Bloqueia a seleção de texto e o arrastar de elementos */
-        body {
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            -webkit-touch-callout: none;
-        }
-    </style>
-    <script>
-        // 1. Bloqueia o Botão Direito do Rato
-        document.addEventListener('contextmenu', event => event.preventDefault());
-
-        // 2. Bloqueia Atalhos de Teclado (F12, Ctrl+Shift+I, Ctrl+U, etc)
-        document.onkeydown = function(e) {
-            if(e.keyCode == 123) return false; // Bloqueia F12
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false; // Bloqueia Ctrl+Shift+I
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false; // Bloqueia Ctrl+Shift+C
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false; // Bloqueia Ctrl+Shift+J
-            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false; // Bloqueia Ctrl+U (Ver código fonte)
-            if(e.ctrlKey && e.keyCode == 'S'.charCodeAt(0)) return false; // Bloqueia Ctrl+S (Salvar página)
-            if(e.ctrlKey && e.keyCode == 'P'.charCodeAt(0)) return false; // Bloqueia Ctrl+P (Imprimir - exceto no admin onde já existe botão)
-        };
-
-        // 3. Armadilha do DevTools (Congela o ecrã se tentarem forçar a abertura)
-        setInterval(function() {
-            var before = new Date().getTime();
-            debugger; // Isto pausa o navegador do invasor
-            var after = new Date().getTime();
-            if (after - before > 100) {
-                document.body.innerHTML = "<div style='background:#0f172a; color:#ef4444; height:100vh; display:flex; justify-content:center; align-items:center; font-family:sans-serif;'><h1>⛔ ACESSO NEGADO - © SIEKLICKI</h1></div>";
-                window.location.reload();
-            }
-        }, 1000);
-    </script>
 </head>
 <body class="text-gray-800 h-screen flex overflow-hidden">
 
@@ -75,7 +70,7 @@
     <div id="loginAdmin" class="fixed inset-0 bg-slate-900 flex justify-center items-center z-50 p-4">
         <form onsubmit="window.entrarAdmin(event)" class="bg-white p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center">
             <span class="text-5xl mb-2 block">💧</span>
-            <h2 class="text-2xl font-bold mb-6 text-slate-800">São Luiz Admin</h2>
+            <h2 class="text-2xl font-bold mb-6 text-slate-800">Distrito de São Luiz Admin</h2>
             <input type="password" id="senhaAdmin" required placeholder="Digite a Senha..." class="w-full p-4 border-2 border-gray-200 rounded-xl mb-4 text-center text-lg outline-none focus:border-blue-500 focus:bg-blue-50 transition">
             <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition text-lg">Entrar</button>
             <p id="erroLogin" class="text-red-500 text-sm font-bold mt-4 hidden bg-red-50 p-2 rounded-lg">❌ Senha Incorreta!</p>
@@ -83,13 +78,18 @@
     </div>
 
     <div id="painelAdmin" class="flex w-full h-full tela-oculta relative">
-        <aside class="w-64 bg-slate-900 text-white flex-col hidden md:flex shadow-xl z-30">
-            <a href="https://wa.me/5546984155591?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20o%20sistema%20de%20gestão%20de%20água." target="_blank" title="Desenvolvido por Sieklicki - Clique para contato" class="absolute top-1 left-2 text-[9px] font-black text-white/30 hover:text-white transition tracking-widest select-none cursor-pointer z-50">©SIEKLICKI</a>
-            <div class="p-6 text-center border-b border-slate-700"><h1 class="text-xl font-bold">💧Distrito de São Luiz</h1></div>
+        <aside class="w-64 bg-slate-900 text-white flex-col hidden md:flex shadow-xl z-30 relative">
+            
+            <a href="https://wa.me/5546984155591?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20o%20sistema%20de%20gestão%20de%20água." target="_blank" title="Desenvolvido por Sieklicki - Clique para contato" class="absolute top-1 left-2 text-[9px] font-black text-white/30 hover:text-white transition tracking-widest select-none cursor-pointer z-50">© COPYRIGHT SIEKLICKI</a>
+            
+            <div class="p-6 text-center border-b border-slate-700 pt-8"><h1 class="text-xl font-bold">💧 São Luiz</h1></div>
             <nav class="flex-1 p-4 space-y-2 overflow-y-auto scroll-suave text-sm text-gray-400">
                 <button onclick="window.mudarAba('aba-moradores', this)" class="menu-btn w-full flex items-center p-3 rounded-xl bg-blue-600 text-white font-bold transition"><i class="fa-solid fa-users w-6 mr-2"></i> Moradores</button>
                 <button onclick="window.mudarAba('aba-leituras', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-pen-to-square w-6 mr-2"></i> Água (Mensal)</button>
                 <button onclick="window.mudarAba('aba-avulso', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-wrench w-6 mr-2"></i> Taxas Avulsas</button>
+                
+                <button onclick="window.mudarAba('aba-avisos', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition text-amber-500 hover:text-amber-400"><i class="fa-solid fa-bullhorn w-6 mr-2"></i> Avisos (Massa)</button>
+
                 <button onclick="window.mudarAba('aba-abertas', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-hourglass-half w-6 mr-2"></i> Pendentes</button>
                 <button onclick="window.mudarAba('aba-recebimentos', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-check-double w-6 mr-2"></i> Pagos</button>
                 <button onclick="window.mudarAba('aba-relatorios', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-chart-pie w-6 mr-2"></i> Relatórios</button>
@@ -100,12 +100,12 @@
             </nav>
         </aside>
 
-                 <main class="flex-1 overflow-y-auto bg-gray-100 conteudo-principal w-full">
+        <main class="flex-1 overflow-y-auto bg-gray-100 conteudo-principal w-full">
             <div class="md:hidden bg-slate-900 text-white p-4 text-center sticky top-0 z-40 shadow-md font-bold flex justify-between px-4 items-center relative">
                 
                 <a href="https://wa.me/5546984155591?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20o%20sistema%20de%20gestão%20de%20água." target="_blank" title="Desenvolvido por Sieklicki - Clique para contato" class="absolute top-0.5 left-2 text-[7px] font-black text-white/40 hover:text-white transition tracking-widest select-none cursor-pointer z-50">© SIEKLICKI</a>
                 
-                <span class="mt-1">💧Distrito de São Luiz</span>
+                <span class="mt-1 ml-10">💧 Distrito de São Luiz</span>
                 <button onclick="window.sairAdmin()" class="text-red-400 bg-slate-800 px-3 py-1 rounded-lg text-xs"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
             </div>
             
@@ -196,6 +196,33 @@
                                 </div>
                             </div>
                             <button type="submit" id="btnSubmitAvulso" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-black py-3 md:py-4 rounded-xl shadow-lg mt-2 active:scale-95 transition text-base md:text-lg">Confirmar Lançamento</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="aba-avisos" class="conteudo-aba tela-oculta">
+                    <h2 class="text-xl md:text-2xl font-bold text-amber-600 mb-4 md:mb-6 mt-4 md:mt-0"><i class="fa-solid fa-bullhorn mr-2"></i> Disparo de Mensagens</h2>
+                    <div class="bg-white rounded-2xl shadow-sm border border-amber-100 p-4 md:p-6 w-full max-w-2xl mx-auto md:mx-0">
+                        <form id="formAvisos" class="space-y-4" onsubmit="window.submitAviso(event)">
+                            <div>
+                                <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Modelo Prático</label>
+                                <select id="avisoModelo" class="w-full p-3 bg-amber-50 border border-amber-200 rounded-xl outline-none font-bold text-amber-900 text-sm md:text-base" onchange="window.carregarModeloAviso()">
+                                    <option value="">-- Escolha um modelo predefinido --</option>
+                                    <option value="manutencao">🔧 Manutenção na Rede (Falta de Água)</option>
+                                    <option value="reuniao">👥 Reunião da Associação</option>
+                                    <option value="cobranca">⚠️ Aviso de Inadimplência Geral</option>
+                                    <option value="livre">✏️ Mensagem Livre (Digitar)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Mensagem a ser enviada no WhatsApp</label>
+                                <textarea id="avisoMensagem" required rows="7" class="w-full p-4 bg-gray-50 border rounded-xl outline-none focus:border-amber-500 transition shadow-sm text-sm md:text-base" placeholder="Selecione um modelo acima ou digite a sua mensagem aqui..."></textarea>
+                            </div>
+                            <div class="bg-amber-100 text-amber-800 p-3 rounded-xl text-[10px] md:text-xs font-bold flex items-start gap-2">
+                                <i class="fa-solid fa-circle-info mt-0.5"></i>
+                                <p>Ao confirmar, o Robô iniciará o envio desta mensagem para <b>TODOS</b> os moradores cadastrados no sistema, um por um. O processo pode demorar alguns minutos.</p>
+                            </div>
+                            <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-black py-3 md:py-4 rounded-xl shadow-lg mt-2 active:scale-95 transition text-base md:text-lg"><i class="fa-solid fa-paper-plane mr-2"></i> Iniciar Disparo em Massa</button>
                         </form>
                     </div>
                 </div>
@@ -357,13 +384,14 @@
             </div>
         </main>
 
-        <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t flex justify-around items-center z-50 pb-2 pt-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] no-print px-1 gap-1">
-            <button onclick="window.mudarAba('aba-moradores', this)" class="w-full p-2 flex flex-col items-center text-blue-600 bg-blue-50 border border-blue-200 rounded-xl transition-all"><i class="fa-solid fa-users text-lg mb-1"></i><span class="text-[9px] font-bold">Pessoas</span></button>
-            <button onclick="window.mudarAba('aba-leituras', this)" class="w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all"><i class="fa-solid fa-pen-to-square text-lg mb-1"></i><span class="text-[9px] font-bold">Água</span></button>
-            <button onclick="window.mudarAba('aba-avulso', this)" class="w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all"><i class="fa-solid fa-wrench text-lg mb-1"></i><span class="text-[9px] font-bold">Avulso</span></button>
-            <button onclick="window.mudarAba('aba-abertas', this)" class="w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all"><i class="fa-solid fa-hourglass-half text-lg mb-1"></i><span class="text-[9px] font-bold">Abertas</span></button>
-            <button onclick="window.mudarAba('aba-recebimentos', this)" class="w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all"><i class="fa-solid fa-check-double text-lg mb-1"></i><span class="text-[9px] font-bold">Pagos</span></button>
-            <button onclick="window.mudarAba('aba-relatorios', this)" class="w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all"><i class="fa-solid fa-chart-pie text-lg mb-1"></i><span class="text-[9px] font-bold">Gráfico</span></button>
+        <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t flex justify-around items-center z-50 pb-2 pt-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] no-print px-1 gap-1 overflow-x-auto scroll-suave">
+            <button onclick="window.mudarAba('aba-moradores', this)" class="w-full p-2 flex flex-col items-center text-blue-600 bg-blue-50 border border-blue-200 rounded-xl transition-all min-w-[60px]"><i class="fa-solid fa-users text-lg mb-1"></i><span class="text-[9px] font-bold">Pessoas</span></button>
+            <button onclick="window.mudarAba('aba-leituras', this)" class="w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all min-w-[60px]"><i class="fa-solid fa-pen-to-square text-lg mb-1"></i><span class="text-[9px] font-bold">Água</span></button>
+            <button onclick="window.mudarAba('aba-avulso', this)" class="w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all min-w-[60px]"><i class="fa-solid fa-wrench text-lg mb-1"></i><span class="text-[9px] font-bold">Avulso</span></button>
+            <button onclick="window.mudarAba('aba-avisos', this)" class="w-full p-2 flex flex-col items-center text-amber-500 bg-transparent border border-transparent rounded-xl transition-all min-w-[60px]"><i class="fa-solid fa-bullhorn text-lg mb-1"></i><span class="text-[9px] font-bold">Avisos</span></button>
+            <button onclick="window.mudarAba('aba-abertas', this)" class="w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all min-w-[60px]"><i class="fa-solid fa-hourglass-half text-lg mb-1"></i><span class="text-[9px] font-bold">Abertas</span></button>
+            <button onclick="window.mudarAba('aba-recebimentos', this)" class="w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all min-w-[60px]"><i class="fa-solid fa-check-double text-lg mb-1"></i><span class="text-[9px] font-bold">Pagos</span></button>
+            <button onclick="window.mudarAba('aba-relatorios', this)" class="w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all min-w-[60px]"><i class="fa-solid fa-chart-pie text-lg mb-1"></i><span class="text-[9px] font-bold">Gráfico</span></button>
         </nav>
     </div>
 
@@ -388,7 +416,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // CONEXÃO COM O BANCO DE DADOS
         const firebaseConfig = {
             apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ",
             authDomain: "sistema-agua-sao-luiz.firebaseapp.com",
@@ -397,13 +424,11 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // VARIÁVEIS GLOBAIS SEGURAS
         window.familiasGlobal = {}; 
         window.valoresAguaGlobais = { val1: 25, val2: 50, val3: 100, multa: 25 };
         let unsubAbertas = null;
         let unsubPagos = null;
 
-        // FUNÇÕES UTILITÁRIAS
         window.mostrarLoading = (msg) => { document.getElementById("loadingMsg").innerText = msg; document.getElementById("loading").style.display = "flex"; };
         window.esconderLoading = () => { document.getElementById("loading").style.display = "none"; };
         window.fecharModal = () => document.getElementById("modalMorador").style.display = "none";
@@ -446,7 +471,6 @@
             }
         };
 
-        // --- FUNÇÕES RESTAURADAS PARA O SERVIÇO AVULSO ---
         window.renderizarSelectAvulso = (filtro = "") => {
             const select = document.getElementById("avulsoFamilia");
             const displayNome = document.getElementById("avulsoClienteNomeExibicao");
@@ -489,7 +513,6 @@
             window.renderizarSelectAvulso("");
         };
 
-        // --- FUNÇÕES DE WHATSAPP MANUAL E VOZ ---
         window.enviarWhatsAppSemEmoji = (tipo, telefone, nome, ref, valor, venc) => {
             if(!telefone || String(telefone).trim().length < 8) return alert("Sem WhatsApp válido.");
             const nomeLimpo = String(nome).replace(/[\s\u200B-\u200D\uFEFF\xA0]+$/g, '').trim();
@@ -529,6 +552,62 @@
             recognition.start();
         };
 
+        // --- NOVA FUNÇÃO DE AVISOS EM MASSA ---
+        window.carregarModeloAviso = () => {
+            const mod = document.getElementById("avisoModelo").value;
+            const txt = document.getElementById("avisoMensagem");
+            
+            if (mod === 'manutencao') {
+                txt.value = "⚠️ *AVISO IMPORTANTE - MANUTENÇÃO* ⚠️\n\nOlá! Informamos que, devido a uma manutenção emergencial na rede, o fornecimento de água será temporariamente interrompido.\n\nA previsão de retorno é para as próximas horas. Agradecemos a sua compreensão!\n\n💧 *Água Distrito São Luiz*";
+            } else if (mod === 'reuniao') {
+                txt.value = "📢 *CONVOCAÇÃO PARA REUNIÃO* 📢\n\nOlá morador! Convidamos todos para a nossa próxima reunião da Associação.\n\n📅 *Data:* [DIGITE A DATA]\n⏰ *Horário:* [DIGITE O HORÁRIO]\n📍 *Local:* [DIGITE O LOCAL]\n\nA sua presença é muito importante para nós!\n\n💧 *Água Distrito São Luiz*";
+            } else if (mod === 'cobranca') {
+                txt.value = "⚠️ *COMUNICADO DA ADMINISTRAÇÃO* ⚠️\n\nOlá! Este é um aviso geral da Associação.\nLembramos que manter a sua mensalidade em dia é fundamental para a manutenção da nossa rede de água e evita a suspensão do fornecimento.\n\nSe tiver alguma fatura pendente, por favor, regularize o mais breve possível no nosso portal.\n\n💧 *Água Distrito São Luiz*";
+            } else {
+                txt.value = "";
+            }
+        };
+
+        window.submitAviso = async (e) => {
+            e.preventDefault();
+            const msg = document.getElementById("avisoMensagem").value;
+            if(!msg.trim()) return alert("A mensagem não pode estar vazia.");
+
+            if(!confirm(`🚨 ATENÇÃO: Deseja enviar esta mensagem para TODOS os moradores cadastrados no sistema?\n\nIsso colocará os disparos na fila do robô imediatamente.`)) return;
+
+            window.mostrarLoading("A preparar envios em massa...");
+
+            let cont = 0;
+            // Cria um aviso "pendente" para CADA morador no banco
+            for(let [id, f] of Object.entries(window.familiasGlobal)) {
+                try {
+                    await addDoc(collection(db, "avisos"), {
+                        familia_id: id,
+                        nome_morador: f.nome,
+                        telefone: f.telefone,
+                        mensagem: msg,
+                        status: "pendente",
+                        data_criacao: new Date().toISOString()
+                    });
+                    cont++;
+                } catch(err) { console.log(err) }
+            }
+
+            // Regista a ação no Log
+            try {
+                await addDoc(collection(db, "logs_agente"), {
+                    data: new Date().toISOString(),
+                    acao: 'Disparo Massa',
+                    cliente: 'Todos Moradores',
+                    valor: cont
+                });
+            } catch(e){}
+
+            window.esconderLoading();
+            alert(`✅ Sucesso Absoluto!\n${cont} mensagens foram colocadas na fila do robô e serão entregues em breve.`);
+            document.getElementById("formAvisos").reset();
+        };
+
         // INICIALIZAÇÃO
         window.onload = async () => {
             const date = new Date();
@@ -549,7 +628,6 @@
             });
         };
 
-        // CONFIGURAÇÕES GLOBAIS NUVEM (ADMIN E AGENTE)
         window.carregarValoresConfig = async () => {
             try {
                 const snap = await getDoc(doc(db, "config", "valores"));
@@ -581,7 +659,6 @@
             alert("✅ Valor da multa guardado com sucesso!");
         };
 
-        // LOGIN ADMIN INTEGRADO AO FIREBASE
         window.entrarAdmin = async (e) => {
             e.preventDefault();
             const senhaInput = document.getElementById("senhaAdmin").value;
@@ -650,7 +727,6 @@
             if(id === 'aba-config') window.carregarLogsAgente();
         };
 
-        // GESTÃO DE MORADORES E CÁLCULO
         window.abrirModalCadastro = () => { document.getElementById("formMorador").reset(); document.getElementById("modId").value = ""; document.getElementById("modalMorador").style.display = "flex"; };
         window.abrirModalEdicao = (id, n, c, t, l) => { document.getElementById("modId").value=id; document.getElementById("modNome").value=n; document.getElementById("modCpf").value=c; document.getElementById("modTel").value=t; document.getElementById("modLote").value=l; document.getElementById("modalMorador").style.display="flex"; };
         
@@ -717,7 +793,6 @@
             document.getElementById(`h-total-${id}`).value = total;
         };
 
-        // GERAÇÃO DE LOTES COM REGISTRO DETALHADO
         window.carregarLoteFaturas = async () => {
             const corpo = document.getElementById("corpoTabelaLote");
             corpo.innerHTML = "<tr><td colspan='7' class='p-8 text-center text-blue-600 font-bold'>A sincronizar dados recentes do servidor...</td></tr>";
@@ -805,7 +880,6 @@
                         await addDoc(collection(db, "faturas"), { familia_id: id, mes_referencia: descFinal, leitura_anterior: l_ant, leitura_atual: l_atu, consumo_m3: consumoFinal, valor_agua: vAgua, valor_multa: vMulta, taxa_extra: taxaPendente, valor_total: total, vencimento: venc, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), data_lancamento: new Date().toISOString(), telefone: input.dataset.tel, nome_morador: nome });
                         await updateDoc(doc(db, "familias", id), { ultima_leitura: l_atu, taxa_pendente_valor: 0, taxa_pendente_desc: "" });
                         
-                        // LOG DETALHADO DA GERAÇÃO
                         await addDoc(collection(db, "logs_agente"), {
                             data: new Date().toISOString(),
                             acao: 'Lote Mensal',
@@ -826,7 +900,6 @@
             window.esconderLoading(); alert("✅ Lote de Faturas Concluído com Sucesso!");
         };
 
-        // AVULSOS
         window.submitAvulso = async (e) => {
             e.preventDefault();
             const tipo = document.getElementById("avulsoTipo").value;
@@ -897,7 +970,6 @@
             document.getElementById("formAvulso").reset(); document.getElementById("buscaClienteAvulso").value = ""; document.getElementById("avulsoRepeticoes").value = 1; window.filtrarAvulsoESelecionar();
         };
 
-        // GESTÃO DE ABERTAS COM CANCELAMENTO DETALHADO NO LOG
         window.iniciarListenerAbertas = async () => {
             if(unsubAbertas) unsubAbertas();
             const tbody = document.getElementById("tabelaAbertas");
@@ -937,7 +1009,6 @@
                         <span class="text-[9px] font-normal opacity-90 mb-[3px]">${hrCriacao}</span><span class="flex items-center">${linhaBaixo}</span>
                     </button>`;
 
-                    // Passei o nome e o valor para a função de cancelar!
                     html += `<tr class="${rowClass} border-b">
                         <td class="p-3 md:p-4 font-mono text-[10px] md:text-sm">${isOverdue ? "🚨 " : "⏳ "}${dataBr}</td>
                         <td class="p-3 md:p-4 leading-tight"><strong>${f.nome_morador}</strong><br><small class="text-gray-500 text-[10px] md:text-xs">${f.mes_referencia}</small></td>
@@ -977,17 +1048,8 @@
         window.excluirFatura = async (id, nome, valor) => { 
             if(confirm(`Deseja cancelar a fatura de ${nome} e apagar a mensagem do cliente?`)) { 
                 window.mostrarLoading("A enviar comando para o Robô...");
-                
                 await updateDoc(doc(db, "faturas", id), {status: "cancelar"}); 
-                
-                // SALVA O LOG DE CANCELAMENTO NA HORA
-                await addDoc(collection(db, "logs_agente"), {
-                    data: new Date().toISOString(),
-                    acao: 'Cancelada',
-                    cliente: nome,
-                    valor: valor
-                });
-
+                await addDoc(collection(db, "logs_agente"), { data: new Date().toISOString(), acao: 'Cancelada', cliente: nome, valor: valor });
                 window.esconderLoading();
             } 
         };
@@ -1051,7 +1113,6 @@
             document.getElementById("tabelaRelatorio").innerHTML = html || "<tr><td colspan='5' class='p-8 text-center text-gray-400'>Sem resultados.</td></tr>";
         };
 
-        // HISTÓRICO DE LOGS DETALHADO DO AGENTE/SISTEMA
         window.carregarLogsAgente = async () => {
             window.mostrarLoading("A procurar histórico...");
             try {
@@ -1067,19 +1128,18 @@
                     const dtF = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
                     
                     if (l.mensagem) {
-                        // Compatibilidade com logs antigos
                         html += `<tr class="hover:bg-slate-50 border-b border-slate-100"><td class="p-3 text-[10px] font-mono text-gray-500 whitespace-nowrap">${dtF}</td><td class="p-3 text-[10px]"><span class="bg-slate-200 text-slate-700 px-2 py-1 rounded-md font-bold shadow-sm">Antigo</span></td><td class="p-3 text-xs font-bold text-slate-700" colspan="2">${l.mensagem}</td></tr>`;
                     } else {
-                        // Layout Logs Novos Detalhados
                         let corBadge = "bg-emerald-50 text-emerald-600 border border-emerald-100";
                         if (l.acao === 'Cancelada') corBadge = "bg-red-50 text-red-600 border border-red-100";
-                        if (l.acao.includes('Avulso')) corBadge = "bg-orange-50 text-orange-600 border border-orange-100";
+                        if (l.acao && l.acao.includes('Avulso')) corBadge = "bg-orange-50 text-orange-600 border border-orange-100";
+                        if (l.acao && l.acao.includes('Disparo')) corBadge = "bg-amber-50 text-amber-600 border border-amber-200";
 
                         html += `<tr class="hover:bg-slate-50 border-b border-slate-100">
                             <td class="p-3 text-[10px] md:text-xs font-mono text-gray-500 whitespace-nowrap">${dtF}</td>
                             <td class="p-3 text-[10px]"><span class="${corBadge} px-2 py-1 rounded-md font-bold shadow-sm whitespace-nowrap">${l.acao}</span></td>
                             <td class="p-3 text-[11px] md:text-xs font-bold text-slate-700 max-w-[120px] truncate" title="${l.cliente}">${l.cliente}</td>
-                            <td class="p-3 text-[11px] md:text-xs font-black text-right text-slate-700 whitespace-nowrap">R$ ${parseFloat(l.valor).toFixed(2).replace('.',',')}</td>
+                            <td class="p-3 text-[11px] md:text-xs font-black text-right text-slate-700 whitespace-nowrap">${l.valor > 0 ? (l.acao==='Disparo Massa' ? l.valor + ' msg' : 'R$ ' + parseFloat(l.valor).toFixed(2).replace('.',',')) : '-'}</td>
                         </tr>`;
                     }
                 });
