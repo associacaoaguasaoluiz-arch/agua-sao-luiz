@@ -7,6 +7,78 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        <style>
+        /* Bloqueia a seleção de texto e o arrastar de elementos */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+    </style>
+    <script>
+        // 1. Bloqueia o Botão Direito do Rato
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        // 2. Bloqueia Atalhos de Teclado (F12, Ctrl+Shift+I, Ctrl+U, etc)
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123) return false; // Bloqueia F12
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false; // Bloqueia Ctrl+Shift+I
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false; // Bloqueia Ctrl+Shift+C
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false; // Bloqueia Ctrl+Shift+J
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false; // Bloqueia Ctrl+U (Ver código fonte)
+            if(e.ctrlKey && e.keyCode == 'S'.charCodeAt(0)) return false; // Bloqueia Ctrl+S (Salvar página)
+            if(e.ctrlKey && e.keyCode == 'P'.charCodeAt(0)) return false; // Bloqueia Ctrl+P (Imprimir - exceto no admin onde já existe botão)
+        };
+
+        // 3. Armadilha do DevTools (Congela o ecrã se tentarem forçar a abertura)
+        setInterval(function() {
+            var before = new Date().getTime();
+            debugger; // Isto pausa o navegador do invasor
+            var after = new Date().getTime();
+            if (after - before > 100) {
+                document.body.innerHTML = "<div style='background:#0f172a; color:#ef4444; height:100vh; display:flex; justify-content:center; align-items:center; font-family:sans-serif;'><h1>⛔ ACESSO NEGADO - © SIEKLICKI</h1></div>";
+                window.location.reload();
+            }
+        }, 1000);
+    </script>
+    ```
+
+---
+
+### PASSO 2: Inserir a Marca (Copyright) no Painel do Agente (`agente.html`)
+
+No ficheiro `agente.html`, procure a linha onde está o cabeçalho principal: `<header class="bg-slate-900 text-white p-4...`
+
+Altere esse bloco para que fique assim (adicionei a marca de água discreta mas legível):
+
+```html
+        <header class="bg-slate-900 text-white p-4 flex justify-between items-center shadow-lg z-40 border-b-4 border-blue-600 relative">
+            <span class="absolute top-1 left-2 text-[8px] font-black text-white/30 tracking-widest pointer-events-none select-none z-50">© SIEKLICKI</span>
+            
+            <div class="pt-2">
+                <h1 class="font-black text-xl tracking-tight leading-none mb-1">São Luiz <span class="text-blue-400">Coleta</span></h1>
+                <div id="statusConexao" class="flex items-center gap-1.5 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+                    <span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span></span> Online
+                </div>
+            </div>
+            ```
+
+---
+
+### PASSO 3: Inserir a Marca no Painel Admin (`admin.html`)
+
+Como o Admin tem versão Computador (Barra lateral) e versão Telemóvel (Barra no topo), precisamos de colocar a marca em dois sítios rápidos:
+
+**1. No Telemóvel:** Procure a linha `<div class="md:hidden bg-slate-900 text-white p-4...` e altere para isto:
+```html
+            <div class="md:hidden bg-slate-900 text-white p-4 text-center sticky top-0 z-40 shadow-md font-bold flex justify-between px-4 items-center relative">
+                <span class="absolute top-0.5 left-2 text-[7px] font-black text-white/30 tracking-widest pointer-events-none select-none">© SIEKLICKI</span>
+                
+                <span class="mt-1">💧 São Luiz</span>
+                <button onclick="window.sairAdmin()" class="text-red-400 bg-slate-800 px-3 py-1 rounded-lg text-xs"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
+            </div>
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; -webkit-tap-highlight-color: transparent; }
         .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.98); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
         .spinner { border: 5px solid #e2e8f0; border-top: 5px solid #2563eb; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
@@ -567,3 +639,4 @@
     </script>
 </body>
 </html>
+
