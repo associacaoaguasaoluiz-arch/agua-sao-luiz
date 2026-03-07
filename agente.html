@@ -3,25 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Coleta - Água São Luiz</title>
+    <title>Coleta - Água Distrito de São Luiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; -webkit-tap-highlight-color: transparent; }
-        .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.98); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
-        .spinner { border: 5px solid #e2e8f0; border-top: 5px solid #2563eb; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .animate-slide-up { animation: slideUp 0.3s ease-out forwards; }
-        .scroll-suave::-webkit-scrollbar { display: none; }
-        
-        /* Melhorias para digitação no Sol */
-        input::placeholder { color: #94a3b8; opacity: 1; }
-        .card-preenchido { border-color: #3b82f6 !important; background-color: #eff6ff !important; box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2) !important; }
-        .btn-gigante { min-height: 56px; } /* Área de toque maior para dedos */
-    </style>
-     /* Bloqueia a seleção de texto e o arrastar de elementos */
+        /* Bloqueia a seleção de texto e o arrastar de elementos */
         body {
             -webkit-user-select: none;
             -moz-user-select: none;
@@ -56,6 +42,20 @@
             }
         }, 1000);
     </script>
+        <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; -webkit-tap-highlight-color: transparent; }
+        .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.98); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
+        .spinner { border: 5px solid #e2e8f0; border-top: 5px solid #2563eb; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .animate-slide-up { animation: slideUp 0.3s ease-out forwards; }
+        .scroll-suave::-webkit-scrollbar { display: none; }
+        
+        /* Melhorias para digitação no Sol */
+        input::placeholder { color: #94a3b8; opacity: 1; }
+        .card-preenchido { border-color: #3b82f6 !important; background-color: #eff6ff !important; box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2) !important; }
+        .btn-gigante { min-height: 56px; } /* Área de toque maior para dedos */
+        
 </head>
 <body class="text-slate-900 h-screen flex flex-col overflow-hidden">
 
@@ -607,6 +607,7 @@
     </script>
 </body>
 </html>
+
 
 
 
