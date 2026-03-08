@@ -3,18 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>App Gestão 22.0 - Água Distrito de São Luiz</title>
+    <title>App Gestão 22.0 - Água São Luiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        body {
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            -webkit-touch-callout: none;
-        }
+        body { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; -webkit-touch-callout: none; }
     </style>
     <script>
         document.addEventListener('contextmenu', event => event.preventDefault());
@@ -54,23 +48,18 @@
         .modal-fundo { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; justify-content: center; align-items: center; padding: 1rem; }
         .mic-ativo { animation: pulse-red 1.5s infinite; background-color: #ef4444 !important; color: white !important; }
         @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
-        @media print {
-            aside, nav, .md\:hidden, header, .no-print, button, details { display: none !important; }
-            #painelAdmin, main, #aba-relatorios { display: block !important; padding: 0 !important; margin: 0 !important; background: white; }
-            .print-area { width: 100% !important; border: none !important; box-shadow: none !important; }
-        }
+        @media print { aside, nav, .md\:hidden, header, .no-print, button, details { display: none !important; } #painelAdmin, main, #aba-relatorios { display: block !important; padding: 0 !important; margin: 0 !important; background: white; } .print-area { width: 100% !important; border: none !important; box-shadow: none !important; } }
     </style>
 </head>
 <body class="text-gray-800 h-screen flex overflow-hidden">
 
     <div id="loading" class="loading-overlay"><div class="spinner"></div><p id="loadingMsg" class="mt-4 font-bold text-gray-700 font-mono text-center px-4">A processar...</p></div>
-    
     <div id="toastVoz" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full font-bold shadow-2xl transition-opacity duration-300 opacity-0 z-[110] flex items-center gap-2 pointer-events-none"><i class="fa-solid fa-microphone"></i> <span id="txtToastVoz">Comando</span></div>
 
     <div id="loginAdmin" class="fixed inset-0 bg-slate-900 flex justify-center items-center z-50 p-4">
         <form onsubmit="window.entrarAdmin(event)" class="bg-white p-6 md:p-8 rounded-2xl shadow-2xl w-full max-w-sm text-center">
             <span class="text-5xl mb-2 block">💧</span>
-            <h2 class="text-2xl font-bold mb-6 text-slate-800">Distrito de São Luiz Admin</h2>
+            <h2 class="text-2xl font-bold mb-6 text-slate-800">São Luiz Admin</h2>
             <input type="password" id="senhaAdmin" required placeholder="Digite a Senha..." class="w-full p-4 border-2 border-gray-200 rounded-xl mb-4 text-center text-lg outline-none focus:border-blue-500 focus:bg-blue-50 transition">
             <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition text-lg">Entrar</button>
             <p id="erroLogin" class="text-red-500 text-sm font-bold mt-4 hidden bg-red-50 p-2 rounded-lg">❌ Senha Incorreta!</p>
@@ -79,33 +68,25 @@
 
     <div id="painelAdmin" class="flex w-full h-full tela-oculta relative">
         <aside class="w-64 bg-slate-900 text-white flex-col hidden md:flex shadow-xl z-30 relative">
-            
-            <a href="https://wa.me/5546984155591?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20o%20sistema%20de%20gestão%20de%20água." target="_blank" title="Desenvolvido por Sieklicki - Clique para contato" class="absolute top-1 left-2 text-[9px] font-black text-white/30 hover:text-white transition tracking-widest select-none cursor-pointer z-50">© COPYRIGHT SIEKLICKI</a>
-            
+            <a href="https://wa.me/5546984155591?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20o%20sistema%20de%20gestão%20de%20água." target="_blank" title="Desenvolvido por Sieklicki" class="absolute top-1 left-2 text-[9px] font-black text-white/30 hover:text-white transition tracking-widest select-none cursor-pointer z-50">© COPYRIGHT SIEKLICKI</a>
             <div class="p-6 text-center border-b border-slate-700 pt-8"><h1 class="text-xl font-bold">💧 São Luiz</h1></div>
             <nav class="flex-1 p-4 space-y-2 overflow-y-auto scroll-suave text-sm text-gray-400">
                 <button onclick="window.mudarAba('aba-moradores', this)" class="menu-btn w-full flex items-center p-3 rounded-xl bg-blue-600 text-white font-bold transition"><i class="fa-solid fa-users w-6 mr-2"></i> Moradores</button>
                 <button onclick="window.mudarAba('aba-leituras', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-pen-to-square w-6 mr-2"></i> Água (Mensal)</button>
                 <button onclick="window.mudarAba('aba-avulso', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-wrench w-6 mr-2"></i> Taxas Avulsas</button>
-                
                 <button onclick="window.mudarAba('aba-avisos', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition text-amber-500 hover:text-amber-400"><i class="fa-solid fa-bullhorn w-6 mr-2"></i> Avisos (Massa)</button>
-
                 <button onclick="window.mudarAba('aba-abertas', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-hourglass-half w-6 mr-2"></i> Pendentes</button>
                 <button onclick="window.mudarAba('aba-recebimentos', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-check-double w-6 mr-2"></i> Pagos</button>
                 <button onclick="window.mudarAba('aba-relatorios', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-chart-pie w-6 mr-2"></i> Relatórios</button>
                 <button onclick="window.mudarAba('aba-config', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-gear w-6 mr-2"></i> Configuração</button>
-                <div class="pt-6 mt-6 border-t border-slate-700">
-                    <button onclick="window.sairAdmin()" class="w-full flex items-center justify-center p-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold transition">Sair do Painel</button>
-                </div>
+                <div class="pt-6 mt-6 border-t border-slate-700"><button onclick="window.sairAdmin()" class="w-full flex items-center justify-center p-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold transition">Sair do Painel</button></div>
             </nav>
         </aside>
 
         <main class="flex-1 overflow-y-auto bg-gray-100 conteudo-principal w-full">
             <div class="md:hidden bg-slate-900 text-white p-4 text-center sticky top-0 z-40 shadow-md font-bold flex justify-between px-4 items-center relative">
-                
-                <a href="https://wa.me/5546984155591?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20o%20sistema%20de%20gestão%20de%20água." target="_blank" title="Desenvolvido por Sieklicki - Clique para contato" class="absolute top-0.5 left-2 text-[7px] font-black text-white/40 hover:text-white transition tracking-widest select-none cursor-pointer z-50">© SIEKLICKI</a>
-                
-                <span class="mt-1 ml-10">💧 Distrito de São Luiz</span>
+                <a href="https://wa.me/5546984155591?text=Olá!" target="_blank" class="absolute top-0.5 left-2 text-[7px] font-black text-white/40 hover:text-white transition tracking-widest select-none cursor-pointer z-50">© SIEKLICKI</a>
+                <span class="mt-1 ml-10">💧 São Luiz</span>
                 <button onclick="window.sairAdmin()" class="text-red-400 bg-slate-800 px-3 py-1 rounded-lg text-xs"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
             </div>
             
@@ -118,40 +99,23 @@
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
                         <input type="text" id="buscaMorador" onkeyup="window.filtrarTabela('buscaMorador', 'tabelaMoradores')" placeholder="🔍 Buscar morador ou lote..." class="w-full p-4 bg-gray-50 border-b outline-none text-sm md:text-base">
-                        <div class="overflow-x-auto scroll-suave w-full">
-                            <table class="w-full text-left whitespace-nowrap min-w-[550px]">
-                                <tbody id="tabelaMoradores" class="divide-y text-sm"></tbody>
-                            </table>
-                        </div>
+                        <div class="overflow-x-auto scroll-suave w-full"><table class="w-full text-left whitespace-nowrap min-w-[550px]"><tbody id="tabelaMoradores" class="divide-y text-sm"></tbody></table></div>
                     </div>
                 </div>
 
                 <div id="aba-leituras" class="conteudo-aba tela-oculta">
                     <div class="mb-4 flex flex-col md:flex-row justify-between items-start md:items-end gap-3">
-                        <div>
-                            <h2 class="text-xl md:text-2xl font-bold flex items-center gap-2 text-slate-800">📝 Consumo <button id="btnVoz" onclick="window.alternarVoz()" class="bg-slate-200 text-slate-600 w-8 h-8 md:w-10 md:h-10 rounded-full flex justify-center items-center shadow-sm"><i class="fa-solid fa-microphone text-xs md:text-base"></i></button></h2>
-                        </div>
+                        <div><h2 class="text-xl md:text-2xl font-bold flex items-center gap-2 text-slate-800">📝 Consumo <button id="btnVoz" onclick="window.alternarVoz()" class="bg-slate-200 text-slate-600 w-8 h-8 md:w-10 md:h-10 rounded-full flex justify-center items-center shadow-sm"><i class="fa-solid fa-microphone text-xs md:text-base"></i></button></h2></div>
                         <div class="flex gap-2 text-xs w-full md:w-auto">
                             <input type="text" id="mesReferencia" value="04/2026" class="p-2 border rounded-lg font-bold text-center flex-1 md:w-24 outline-none">
                             <input type="date" id="dataVencimento" class="p-2 border rounded-lg font-bold text-center flex-1 outline-none">
                         </div>
                     </div>
                     <button onclick="window.gerarFaturasEmLote()" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 md:py-4 rounded-2xl font-black text-base md:text-xl shadow-xl active:scale-95 transition mb-6">🚀 GERAR E SALVAR LOTES</button>
-                    
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden relative">
                         <div class="overflow-x-auto scroll-suave w-full pb-4">
                             <table class="w-full text-left border-collapse whitespace-nowrap min-w-[850px]">
-                                <thead>
-                                    <tr class="bg-slate-100 text-[10px] uppercase font-bold text-slate-500 border-b">
-                                        <th class="p-2 md:p-3 coluna-fixa">Morador / CPF</th>
-                                        <th class="p-2 md:p-3 text-center">Hodóm. Ant.</th>
-                                        <th class="p-2 md:p-3 text-center">Hodóm. Atual</th>
-                                        <th class="p-2 md:p-3 text-center">Gasto m³</th>
-                                        <th class="p-2 md:p-3 text-center text-red-600">Multa (R$)</th>
-                                        <th class="p-2 md:p-3 text-right text-green-700 font-black">Total R$</th>
-                                        <th class="p-2 md:p-3 text-center">Status</th>
-                                    </tr>
-                                </thead>
+                                <thead><tr class="bg-slate-100 text-[10px] uppercase font-bold text-slate-500 border-b"><th class="p-2 md:p-3 coluna-fixa">Morador / CPF</th><th class="p-2 md:p-3 text-center">Hodóm. Ant.</th><th class="p-2 md:p-3 text-center">Hodóm. Atual</th><th class="p-2 md:p-3 text-center">Gasto m³</th><th class="p-2 md:p-3 text-center text-red-600">Multa (R$)</th><th class="p-2 md:p-3 text-right text-green-700 font-black">Total R$</th><th class="p-2 md:p-3 text-center">Status</th></tr></thead>
                                 <tbody id="corpoTabelaLote" class="divide-y text-sm"></tbody>
                             </table>
                         </div>
@@ -169,14 +133,12 @@
                                     <option value="pix_agora">⚡ Gerar um PIX Separado Agora</option>
                                 </select>
                             </div>
-                            
                             <div class="bg-slate-50 p-3 md:p-4 rounded-xl border border-slate-200 shadow-inner relative">
                                 <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-2">Busque por Nome ou CPF</label>
                                 <input type="text" id="buscaClienteAvulso" oninput="window.filtrarAvulsoESelecionar()" onkeydown="window.focarProximo(event, 'avulsoDescricao')" placeholder="🔍 Digite para buscar..." class="w-full p-3 mb-2 bg-white border-2 border-blue-100 rounded-xl outline-none focus:border-blue-500 text-sm shadow-sm font-bold text-blue-800">
                                 <div id="avulsoClienteNomeExibicao" class="text-[11px] md:text-sm font-bold text-green-700 bg-green-50 p-2 rounded hidden">Nenhum selecionado</div>
-                                <select id="avulsoFamilia" class="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none font-bold text-gray-700 shadow-sm mt-2 hidden"></select>
+                                <select id="avulsoFamilia" required class="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none font-bold text-gray-700 shadow-sm mt-2 hidden"></select>
                             </div>
-
                             <div>
                                 <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Título do Serviço</label>
                                 <input type="text" id="avulsoDescricao" required placeholder="Ex: Conserto do encanamento" class="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500 transition shadow-sm text-sm md:text-base" onkeydown="window.focarProximo(event, 'avulsoValor')">
@@ -201,29 +163,35 @@
                 </div>
 
                 <div id="aba-avisos" class="conteudo-aba tela-oculta">
-                    <h2 class="text-xl md:text-2xl font-bold text-amber-600 mb-4 md:mb-6 mt-4 md:mt-0"><i class="fa-solid fa-bullhorn mr-2"></i> Disparo de Mensagens</h2>
-                    <div class="bg-white rounded-2xl shadow-sm border border-amber-100 p-4 md:p-6 w-full max-w-2xl mx-auto md:mx-0">
-                        <form id="formAvisos" class="space-y-4" onsubmit="window.submitAviso(event)">
-                            <div>
-                                <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Modelo Prático</label>
-                                <select id="avisoModelo" class="w-full p-3 bg-amber-50 border border-amber-200 rounded-xl outline-none font-bold text-amber-900 text-sm md:text-base" onchange="window.carregarModeloAviso()">
-                                    <option value="">-- Escolha um modelo predefinido --</option>
-                                    <option value="manutencao">🔧 Manutenção na Rede (Falta de Água)</option>
-                                    <option value="reuniao">👥 Reunião da Associação</option>
-                                    <option value="cobranca">⚠️ Aviso de Inadimplência Geral</option>
-                                    <option value="livre">✏️ Mensagem Livre (Digitar)</option>
-                                </select>
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-end mb-4 md:mb-6 gap-2 mt-4 md:mt-0">
+                        <h2 class="text-xl md:text-2xl font-bold text-amber-600"><i class="fa-solid fa-bullhorn mr-2"></i> Central de Avisos</h2>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white rounded-2xl shadow-sm border border-amber-200 p-4 md:p-6">
+                            <h3 class="font-black text-slate-700 mb-4 uppercase tracking-tight text-sm">Criar Novo Disparo</h3>
+                            <form id="formAvisos" class="space-y-4" onsubmit="window.submitAviso(event)">
+                                <div>
+                                    <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Modelos Prontos</label>
+                                    <select id="avisoModelo" class="w-full p-3 bg-amber-50 border border-amber-200 rounded-xl outline-none font-bold text-amber-900 text-sm md:text-base cursor-pointer" onchange="window.carregarModeloAviso()">
+                                        <option value="">-- Escolha um modelo --</option>
+                                        <option value="manutencao">🔧 Manutenção na Rede</option>
+                                        <option value="reuniao">👥 Aviso de Reunião</option>
+                                        <option value="livre">✏️ Mensagem Livre (Digitar)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Texto a Enviar no WhatsApp</label>
+                                    <textarea id="avisoMensagem" required rows="7" class="w-full p-4 bg-gray-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition shadow-inner text-sm md:text-base" placeholder="Selecione um modelo acima ou digite a sua mensagem..."></textarea>
+                                </div>
+                                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-black py-4 rounded-xl shadow-lg mt-2 active:scale-95 transition text-base"><i class="fa-solid fa-paper-plane mr-2"></i> Iniciar Disparo para Todos</button>
+                            </form>
+                        </div>
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-6 flex flex-col h-full">
+                            <div class="flex justify-between items-center mb-4"><h3 class="font-black text-slate-700 uppercase tracking-tight text-sm">Histórico e Progresso</h3></div>
+                            <div id="listaAvisosArea" class="flex-1 overflow-y-auto pr-2 scroll-suave space-y-4 max-h-[400px]">
+                                <p class="text-center text-slate-400 text-sm mt-10"><i class="fa-solid fa-spinner fa-spin mb-2 text-2xl"></i><br>A carregar monitoramento...</p>
                             </div>
-                            <div>
-                                <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Mensagem a ser enviada no WhatsApp</label>
-                                <textarea id="avisoMensagem" required rows="7" class="w-full p-4 bg-gray-50 border rounded-xl outline-none focus:border-amber-500 transition shadow-sm text-sm md:text-base" placeholder="Selecione um modelo acima ou digite a sua mensagem aqui..."></textarea>
-                            </div>
-                            <div class="bg-amber-100 text-amber-800 p-3 rounded-xl text-[10px] md:text-xs font-bold flex items-start gap-2">
-                                <i class="fa-solid fa-circle-info mt-0.5"></i>
-                                <p>Ao confirmar, o Robô iniciará o envio desta mensagem para <b>TODOS</b> os moradores cadastrados no sistema, um por um. O processo pode demorar alguns minutos.</p>
-                            </div>
-                            <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-black py-3 md:py-4 rounded-xl shadow-lg mt-2 active:scale-95 transition text-base md:text-lg"><i class="fa-solid fa-paper-plane mr-2"></i> Iniciar Disparo em Massa</button>
-                        </form>
+                        </div>
                     </div>
                 </div>
 
@@ -232,9 +200,7 @@
                         <h2 class="text-xl md:text-2xl font-bold text-amber-600 flex items-center gap-2">⏳ Pendentes</h2>
                         <span class="text-[9px] md:text-xs font-bold text-slate-400 uppercase bg-slate-100 px-3 py-1 rounded-full w-fit"><span class="flex h-2 w-2 relative inline-block mr-1"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span></span> Tempo Real</span>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
-                        <div class="overflow-x-auto w-full"><table class="w-full text-left whitespace-nowrap min-w-[650px]"><tbody id="tabelaAbertas" class="divide-y text-sm"></tbody></table></div>
-                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden"><div class="overflow-x-auto w-full"><table class="w-full text-left whitespace-nowrap min-w-[650px]"><tbody id="tabelaAbertas" class="divide-y text-sm"></tbody></table></div></div>
                 </div>
 
                 <div id="aba-recebimentos" class="conteudo-aba tela-oculta">
@@ -242,9 +208,7 @@
                         <h2 class="text-xl md:text-2xl font-bold text-green-700 flex items-center gap-2">✅ Recebidos</h2>
                         <span class="text-[9px] md:text-xs font-bold text-slate-400 uppercase bg-slate-100 px-3 py-1 rounded-full w-fit"><span class="flex h-2 w-2 relative inline-block mr-1"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span> Tempo Real</span>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
-                        <div class="overflow-x-auto w-full"><table class="w-full text-left whitespace-nowrap min-w-[500px]"><tbody id="tabelaPagos" class="divide-y text-sm"></tbody></table></div>
-                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden"><div class="overflow-x-auto w-full"><table class="w-full text-left whitespace-nowrap min-w-[500px]"><tbody id="tabelaPagos" class="divide-y text-sm"></tbody></table></div></div>
                 </div>
 
                 <div id="aba-relatorios" class="conteudo-aba tela-oculta">
@@ -253,12 +217,10 @@
                         <h1 class="text-lg md:text-3xl font-black text-blue-900 tracking-tight">ASSOCIAÇÃO DE ÁGUA DISTRITO SÃO LUIZ</h1>
                         <p class="text-slate-500 font-bold uppercase text-[9px] md:text-xs tracking-widest mt-1 md:mt-2">Relatório Oficial de Gestão Financeira</p>
                     </div>
-
                     <div class="flex justify-between items-center mb-4 md:mb-6 no-print flex-wrap gap-2">
                         <h2 class="text-lg md:text-2xl font-bold text-slate-800">📊 Visão Geral</h2>
                         <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-900 transition text-white px-4 py-2 rounded-lg font-bold shadow-md text-xs md:text-sm"><i class="fa-solid fa-print"></i> Imprimir PDF</button>
                     </div>
-                    
                     <div class="bg-white p-3 md:p-4 rounded-2xl shadow-sm border mb-4 md:mb-6 no-print flex flex-col md:flex-row flex-wrap gap-3 items-end text-xs md:text-sm">
                         <div class="w-full md:flex-1"><label class="block font-bold text-gray-500 mb-1 uppercase text-[10px] md:text-xs">De</label><input type="date" id="relDataInicio" class="w-full p-2 border rounded-lg outline-none"></div>
                         <div class="w-full md:flex-1"><label class="block font-bold text-gray-500 mb-1 uppercase text-[10px] md:text-xs">Até</label><input type="date" id="relDataFim" class="w-full p-2 border rounded-lg outline-none"></div>
@@ -266,7 +228,6 @@
                         <div class="w-full md:flex-[2]"><label class="block font-bold text-gray-500 mb-1 uppercase text-[10px] md:text-xs">Buscar Cliente</label><input type="text" id="relBusca" class="w-full p-2 border rounded-lg outline-none" placeholder="Ex: João..."></div>
                         <button onclick="window.gerarRelatorioFiltrado()" class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 transition text-white px-6 py-2 rounded-lg font-bold shadow h-[36px] md:h-[40px]">Filtrar</button>
                     </div>
-                    
                    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-4 md:mb-6">
                         <div class="bg-white p-3 md:p-4 rounded-xl border shadow-sm text-center"><p class="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase">Vol (m³)</p><p class="text-lg md:text-xl font-black text-blue-600" id="relCardM3">0</p></div>
                         <div class="bg-white p-3 md:p-4 rounded-xl border shadow-sm text-center"><p class="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase">Contas</p><p class="text-lg md:text-xl font-black" id="relCardQtd">0</p></div>
@@ -274,22 +235,11 @@
                         <div class="bg-white p-3 md:p-4 rounded-xl border shadow-sm text-center border-red-100"><p class="text-[9px] md:text-[10px] text-red-500 font-bold uppercase">Inadimplentes</p><p class="text-lg md:text-xl font-black text-red-600" id="relCardInadimplente">R$ 0,00</p></div>
                         <div class="bg-white p-3 md:p-4 rounded-xl border shadow-sm text-center border-green-100 col-span-2 md:col-span-1"><p class="text-[9px] md:text-[10px] text-green-600 font-bold uppercase">Recebido</p><p class="text-lg md:text-xl font-black text-green-600" id="relCardPago">R$ 0,00</p></div>
                     </div>
-                    
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
                         <div class="overflow-x-auto w-full">
                             <table class="w-full text-left whitespace-nowrap min-w-[650px] text-sm">
-                                <thead>
-                                    <tr class="bg-slate-50 text-slate-500 uppercase text-[10px] font-bold border-b border-slate-200">
-                                        <th class="p-4 pl-6">Cliente</th>
-                                        <th class="p-4">Referência</th>
-                                        <th class="p-4 text-center">Consumo M³</th>
-                                        <th class="p-4 text-center">Status</th>
-                                        <th class="p-4 text-right pr-6">Valor Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tabelaRelatorio" class="divide-y divide-slate-100">
-                                    <tr><td colspan="5" class="p-8 text-center text-gray-400">Filtre para carregar...</td></tr>
-                                </tbody>
+                                <thead><tr class="bg-slate-50 text-slate-500 uppercase text-[10px] font-bold border-b border-slate-200"><th class="p-4 pl-6">Cliente</th><th class="p-4">Referência</th><th class="p-4 text-center">Consumo M³</th><th class="p-4 text-center">Status</th><th class="p-4 text-right pr-6">Valor Total</th></tr></thead>
+                                <tbody id="tabelaRelatorio" class="divide-y divide-slate-100"><tr><td colspan="5" class="p-8 text-center text-gray-400">Filtre para carregar...</td></tr></tbody>
                             </table>
                         </div>
                     </div>
@@ -298,65 +248,33 @@
                 <div id="aba-config" class="conteudo-aba tela-oculta">
                     <h2 class="text-xl md:text-2xl font-bold text-slate-700 mb-4 md:mb-6 mt-4 md:mt-0">⚙️ Configurações do Sistema</h2>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-                        
                         <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200 lg:col-span-2">
                             <h3 class="font-bold text-base md:text-lg text-slate-700 mb-3 md:mb-4">🔐 Alterar Senha do Administrador</h3>
                             <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                                <div class="w-full sm:w-1/2">
-                                    <label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1 uppercase">Nova Senha de Acesso</label>
-                                    <input type="password" id="cfgSenhaAdmin" placeholder="Digite a nova senha..." class="w-full p-3 border rounded-xl font-bold text-slate-700 outline-none text-sm md:text-base">
-                                </div>
-                                <div class="w-full sm:w-1/2 text-[10px] md:text-xs text-gray-500 leading-relaxed">
-                                    A senha padrão inicial é <strong>admin123</strong>. Pode alterar esta palavra-passe para aumentar a segurança do painel.
-                                </div>
+                                <div class="w-full sm:w-1/2"><label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1 uppercase">Nova Senha de Acesso</label><input type="password" id="cfgSenhaAdmin" placeholder="Digite a nova senha..." class="w-full p-3 border rounded-xl font-bold text-slate-700 outline-none text-sm md:text-base"></div>
+                                <div class="w-full sm:w-1/2 text-[10px] md:text-xs text-gray-500 leading-relaxed">A senha padrão inicial é <strong>admin123</strong>. Pode alterar esta palavra-passe para aumentar a segurança do painel.</div>
                             </div>
                             <button onclick="window.salvarSenhaAdmin()" class="mt-4 w-full sm:w-auto bg-slate-800 hover:bg-slate-900 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">💾 Guardar Nova Senha</button>
                         </div>
-
                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200 lg:col-span-2 mt-2">
                             <h3 class="font-bold text-base md:text-lg text-slate-700 mb-3 md:mb-4">📱 Controle do Agente (Leiturista)</h3>
                             <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center mb-6">
-                                <div class="w-full sm:w-1/2">
-                                    <label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1 uppercase">Nova Senha do App Agente</label>
-                                    <input type="password" id="cfgSenhaAgente" placeholder="Forçar nova senha..." class="w-full p-3 border rounded-xl font-bold text-slate-700 outline-none text-sm md:text-base">
-                                </div>
+                                <div class="w-full sm:w-1/2"><label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1 uppercase">Nova Senha do App Agente</label><input type="password" id="cfgSenhaAgente" placeholder="Forçar nova senha..." class="w-full p-3 border rounded-xl font-bold text-slate-700 outline-none text-sm md:text-base"></div>
                                 <button onclick="window.salvarSenhaAgente()" class="mt-4 sm:mt-5 w-full sm:w-auto bg-slate-800 hover:bg-slate-900 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">💾 Salvar Senha Agente</button>
                             </div>
-                            
                             <details class="group border border-slate-200 rounded-xl mt-6 bg-slate-50 overflow-hidden cursor-pointer shadow-sm">
-                                <summary class="flex justify-between items-center p-4 font-bold text-sm text-blue-800 list-none outline-none">
-                                    <div class="flex items-center gap-2">
-                                        <i class="fa-solid fa-list-check text-blue-600"></i> Histórico de Atividades (Logs)
-                                    </div>
-                                    <div class="flex items-center gap-4">
-                                        <span class="text-xs text-gray-500 font-normal">Clique para expandir</span>
-                                        <i class="fa-solid fa-chevron-down transition duration-300 group-open:rotate-180 text-blue-500"></i>
-                                    </div>
-                                </summary>
+                                <summary class="flex justify-between items-center p-4 font-bold text-sm text-blue-800 list-none outline-none"><div class="flex items-center gap-2"><i class="fa-solid fa-list-check text-blue-600"></i> Histórico de Atividades (Logs)</div><div class="flex items-center gap-4"><span class="text-xs text-gray-500 font-normal">Clique para expandir</span><i class="fa-solid fa-chevron-down transition duration-300 group-open:rotate-180 text-blue-500"></i></div></summary>
                                 <div class="p-4 border-t border-slate-200 bg-white cursor-default">
-                                    <div class="flex justify-end mb-3">
-                                        <button onclick="window.carregarLogsAgente()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold px-4 py-2 rounded-lg text-xs transition shadow-sm"><i class="fa-solid fa-rotate-right mr-1"></i> Atualizar Logs Agora</button>
-                                    </div>
+                                    <div class="flex justify-end mb-3"><button onclick="window.carregarLogsAgente()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold px-4 py-2 rounded-lg text-xs transition shadow-sm"><i class="fa-solid fa-rotate-right mr-1"></i> Atualizar Logs Agora</button></div>
                                     <div class="overflow-x-auto w-full max-h-80 overflow-y-auto scroll-suave border border-slate-100 rounded-xl">
                                         <table class="w-full text-left text-sm whitespace-nowrap">
-                                            <thead class="bg-slate-50 sticky top-0 z-10">
-                                                <tr class="text-gray-500 text-[10px] uppercase border-b border-slate-200">
-                                                    <th class="p-3 font-bold">Data / Hora</th>
-                                                    <th class="p-3 font-bold">Ação</th>
-                                                    <th class="p-3 font-bold">Cliente</th>
-                                                    <th class="p-3 font-bold text-right">Valor (R$)</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="tabelaLogsAgente" class="divide-y divide-slate-100">
-                                                <tr><td colspan="4" class="p-6 text-center text-gray-400 text-xs">Clique em 'Atualizar Logs' para carregar a lista...</td></tr>
-                                            </tbody>
+                                            <thead class="bg-slate-50 sticky top-0 z-10"><tr class="text-gray-500 text-[10px] uppercase border-b border-slate-200"><th class="p-3 font-bold">Data / Hora</th><th class="p-3 font-bold">Ação</th><th class="p-3 font-bold">Cliente</th><th class="p-3 font-bold text-right">Valor (R$)</th></tr></thead>
+                                            <tbody id="tabelaLogsAgente" class="divide-y divide-slate-100"><tr><td colspan="4" class="p-6 text-center text-gray-400 text-xs">Clique em 'Atualizar Logs' para carregar a lista...</td></tr></tbody>
                                         </table>
                                     </div>
                                 </div>
                             </details>
-
                         </div>
-
                         <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-blue-100 lg:col-span-2">
                             <h3 class="font-bold text-base md:text-lg text-blue-700 mb-3 md:mb-4">💰 Valores da Mensalidade (Água)</h3>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
@@ -366,7 +284,6 @@
                             </div>
                             <button onclick="window.salvarConfigAgua()" class="mt-4 w-full sm:w-auto bg-blue-500 hover:bg-blue-600 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">💾 Guardar Valores</button>
                         </div>
-
                         <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-red-100 lg:col-span-2">
                             <h3 class="font-bold text-base md:text-lg text-red-700 mb-3 md:mb-4">🚨 Multa Padrão (Atraso)</h3>
                             <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
@@ -375,7 +292,6 @@
                             </div>
                             <button onclick="window.salvarConfigMulta()" class="mt-4 w-full sm:w-auto bg-red-500 hover:bg-red-600 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">💾 Guardar Multa</button>
                         </div>
-                        
                         <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-blue-100"><h3 class="font-bold text-base md:text-lg text-blue-700 mb-2">💾 Backup</h3><button onclick="window.exportarBase()" class="w-full bg-blue-100 hover:bg-blue-200 transition text-blue-700 font-bold py-3 rounded-xl mt-2 text-sm md:text-base">Exportar JSON</button></div>
                         <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-emerald-100"><h3 class="font-bold text-base md:text-lg text-emerald-700 mb-2">📂 Importar</h3><input type="file" id="fileImport" accept=".json" class="mb-3 w-full text-xs md:text-sm"><button onclick="window.importarBase()" class="w-full bg-emerald-100 hover:bg-emerald-200 transition text-emerald-700 font-bold py-3 rounded-xl text-sm md:text-base">Importar JSON</button></div>
                         <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-red-100 lg:col-span-2"><h3 class="font-bold text-base md:text-lg text-red-600 mb-2">🗑️ Limpeza Absoluta</h3><button onclick="window.limparFaturas()" class="w-full bg-red-600 hover:bg-red-700 transition text-white font-bold py-3 rounded-xl shadow-md text-sm md:text-base">Apagar TODAS as Faturas</button></div>
@@ -404,10 +320,7 @@
                 <input type="tel" id="modCpf" required placeholder="CPF (Apenas números)" class="w-full p-3 md:p-4 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 text-sm md:text-base">
                 <input type="tel" id="modTel" required placeholder="WhatsApp (DDD+Número)" class="w-full p-3 md:p-4 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 text-sm md:text-base">
                 <input type="text" id="modLote" required placeholder="Lote / Morada" class="w-full p-3 md:p-4 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 text-sm md:text-base">
-                <div class="flex gap-2 pt-2 md:pt-4">
-                    <button type="button" onclick="window.fecharModal()" class="flex-1 bg-gray-200 py-3 md:py-4 rounded-xl font-bold hover:bg-gray-300 transition text-sm md:text-base">Cancelar</button>
-                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 transition text-white py-3 md:py-4 rounded-xl font-bold text-sm md:text-base">Salvar</button>
-                </div>
+                <div class="flex gap-2 pt-2 md:pt-4"><button type="button" onclick="window.fecharModal()" class="flex-1 bg-gray-200 py-3 md:py-4 rounded-xl font-bold hover:bg-gray-300 transition text-sm md:text-base">Cancelar</button><button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 transition text-white py-3 md:py-4 rounded-xl font-bold text-sm md:text-base">Salvar</button></div>
             </form>
         </div>
     </div>
@@ -416,18 +329,13 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ",
-            authDomain: "sistema-agua-sao-luiz.firebaseapp.com",
-            projectId: "sistema-agua-sao-luiz"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ", authDomain: "sistema-agua-sao-luiz.firebaseapp.com", projectId: "sistema-agua-sao-luiz" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
         window.familiasGlobal = {}; 
         window.valoresAguaGlobais = { val1: 25, val2: 50, val3: 100, multa: 25 };
-        let unsubAbertas = null;
-        let unsubPagos = null;
+        let unsubAbertas = null; let unsubPagos = null; let unsubAvisos = null;
 
         window.mostrarLoading = (msg) => { document.getElementById("loadingMsg").innerText = msg; document.getElementById("loading").style.display = "flex"; };
         window.esconderLoading = () => { document.getElementById("loading").style.display = "none"; };
@@ -452,32 +360,14 @@
             event.target.value = v.replace('.', ',');
         };
 
-        window.focarProximo = (event, nextId) => {
-            if (event.key === "Enter") {
-                event.preventDefault(); 
-                const nextEl = document.getElementById(nextId);
-                if(nextEl) { nextEl.focus(); if(nextEl.tagName === 'INPUT') nextEl.select(); }
-            }
-        };
-
-        window.pularLinhaGrelha = (event, atualInput) => {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                const nextRow = atualInput.closest('tr').nextElementSibling;
-                if(nextRow) {
-                    const nextInput = nextRow.querySelector('input[id^="atu-"]');
-                    if(nextInput) { nextInput.focus(); nextInput.select(); }
-                }
-            }
-        };
+        window.focarProximo = (event, nextId) => { if (event.key === "Enter") { event.preventDefault(); const nextEl = document.getElementById(nextId); if(nextEl) { nextEl.focus(); if(nextEl.tagName === 'INPUT') nextEl.select(); } } };
+        window.pularLinhaGrelha = (event, atualInput) => { if (event.key === "Enter") { event.preventDefault(); const nextRow = atualInput.closest('tr').nextElementSibling; if(nextRow) { const nextInput = nextRow.querySelector('input[id^="atu-"]'); if(nextInput) { nextInput.focus(); nextInput.select(); } } } };
 
         window.renderizarSelectAvulso = (filtro = "") => {
             const select = document.getElementById("avulsoFamilia");
             const displayNome = document.getElementById("avulsoClienteNomeExibicao");
-            
             let html = "<option value='TODOS'>🌟 RATEIO: COBRAR TODOS</option>";
             let matchCount = 0; let firstMatchId = null; let firstMatchName = null;
-
             const termoBuscado = filtro.toLowerCase().trim();
             const moradoresAvulso = Object.entries(window.familiasGlobal).map(([id, f]) => ({id, ...f}));
             moradoresAvulso.sort((a,b) => (a.nome || "").localeCompare(b.nome || "", 'pt-BR'));
@@ -507,11 +397,7 @@
         };
 
         window.filtrarAvulsoESelecionar = () => { window.renderizarSelectAvulso(document.getElementById("buscaClienteAvulso").value); };
-        
-        window.carregarSelectAvulso = () => {
-            document.getElementById("buscaClienteAvulso").value = "";
-            window.renderizarSelectAvulso("");
-        };
+        window.carregarSelectAvulso = () => { document.getElementById("buscaClienteAvulso").value = ""; window.renderizarSelectAvulso(""); };
 
         window.enviarWhatsAppSemEmoji = (tipo, telefone, nome, ref, valor, venc) => {
             if(!telefone || String(telefone).trim().length < 8) return alert("Sem WhatsApp válido.");
@@ -521,6 +407,7 @@
             window.open(`https://wa.me/${telLimpo}?text=${encodeURIComponent(msg)}`, '_blank');
         };
 
+        // ROTINAS DE INTELIGÊNCIA ARTIFICIAL E SCRIPT DE VOZ (MANTIDAS)
         window.vozAtiva = false;
         let recognition;
         window.alternarVoz = () => {
@@ -552,19 +439,31 @@
             recognition.start();
         };
 
-        // --- NOVA FUNÇÃO DE AVISOS EM MASSA ---
+        // ==========================================
+        // GESTÃO DOS NOVOS AVISOS (COM FRASES E EMOJIS)
+        // ==========================================
         window.carregarModeloAviso = () => {
             const mod = document.getElementById("avisoModelo").value;
             const txt = document.getElementById("avisoMensagem");
             
+            // Banco de Frases de Racionamento
+            const dicasRacionamento = [
+                "💧 Dica: Economizar água para um futuro melhor!",
+                "💧 Lembre-se: Cada gota conta. Evite o desperdício!",
+                "💧 Dica: Água é vida. Pequenas atitudes fazem a diferença na nossa comunidade!",
+                "💧 Consciente: Racionar água é dever de todos nós. Cuide do nosso bem maior!"
+            ];
+            // Sorteia uma frase diferente cada vez que clica
+            const dicaSorteada = dicasRacionamento[Math.floor(Math.random() * dicasRacionamento.length)];
+
             if (mod === 'manutencao') {
-                txt.value = "⚠️ *AVISO IMPORTANTE - MANUTENÇÃO* ⚠️\n\nOlá! Informamos que, devido a uma manutenção emergencial na rede, o fornecimento de água será temporariamente interrompido.\n\nA previsão de retorno é para as próximas horas. Agradecemos a sua compreensão!\n\n💧 *Água Distrito São Luiz*";
+                txt.value = "⚠️ *Aviso*\n\nEsta e uma mensagem automatica, programacao de manutenção na rede, possível falta de agua.\n\n" + dicaSorteada;
             } else if (mod === 'reuniao') {
-                txt.value = "📢 *CONVOCAÇÃO PARA REUNIÃO* 📢\n\nOlá morador! Convidamos todos para a nossa próxima reunião da Associação.\n\n📅 *Data:* [DIGITE A DATA]\n⏰ *Horário:* [DIGITE O HORÁRIO]\n📍 *Local:* [DIGITE O LOCAL]\n\nA sua presença é muito importante para nós!\n\n💧 *Água Distrito São Luiz*";
-            } else if (mod === 'cobranca') {
-                txt.value = "⚠️ *COMUNICADO DA ADMINISTRAÇÃO* ⚠️\n\nOlá! Este é um aviso geral da Associação.\nLembramos que manter a sua mensalidade em dia é fundamental para a manutenção da nossa rede de água e evita a suspensão do fornecimento.\n\nSe tiver alguma fatura pendente, por favor, regularize o mais breve possível no nosso portal.\n\n💧 *Água Distrito São Luiz*";
-            } else {
-                txt.value = "";
+                txt.value = "📢 *Aviso*\n\nEsta e uma mensagem automatica:\nReuniao para a todos os usuarios de agua na proxima semana data a ser definida e repassada.\n\n" + dicaSorteada;
+            } else if (mod === 'livre') {
+                txt.value = "\n\n" + dicaSorteada; // Mantém a dica de água no final para mensagem livre
+            } else { 
+                txt.value = ""; 
             }
         };
 
@@ -572,40 +471,80 @@
             e.preventDefault();
             const msg = document.getElementById("avisoMensagem").value;
             if(!msg.trim()) return alert("A mensagem não pode estar vazia.");
+            if(!confirm(`🚨 ATENÇÃO: Deseja enviar esta mensagem para TODOS os moradores?\nIsto colocará os disparos na fila do robô imediatamente.`)) return;
 
-            if(!confirm(`🚨 ATENÇÃO: Deseja enviar esta mensagem para TODOS os moradores cadastrados no sistema?\n\nIsso colocará os disparos na fila do robô imediatamente.`)) return;
-
-            window.mostrarLoading("A preparar envios em massa...");
-
+            window.mostrarLoading("A preparar envios...");
+            const loteId = Date.now().toString(); 
             let cont = 0;
-            // Cria um aviso "pendente" para CADA morador no banco
+
             for(let [id, f] of Object.entries(window.familiasGlobal)) {
                 try {
-                    await addDoc(collection(db, "avisos"), {
-                        familia_id: id,
-                        nome_morador: f.nome,
-                        telefone: f.telefone,
-                        mensagem: msg,
-                        status: "pendente",
-                        data_criacao: new Date().toISOString()
-                    });
+                    await addDoc(collection(db, "avisos"), { lote_id: loteId, familia_id: id, nome_morador: f.nome, telefone: f.telefone, mensagem: msg, status: "pendente", data_criacao: new Date().toISOString() });
                     cont++;
-                } catch(err) { console.log(err) }
+                } catch(err) {}
             }
 
-            // Regista a ação no Log
-            try {
-                await addDoc(collection(db, "logs_agente"), {
-                    data: new Date().toISOString(),
-                    acao: 'Disparo Massa',
-                    cliente: 'Todos Moradores',
-                    valor: cont
-                });
-            } catch(e){}
+            try { await addDoc(collection(db, "logs_agente"), { data: new Date().toISOString(), acao: 'Disparo Massa', cliente: 'Todos Moradores', valor: cont }); } catch(e){}
 
             window.esconderLoading();
-            alert(`✅ Sucesso Absoluto!\n${cont} mensagens foram colocadas na fila do robô e serão entregues em breve.`);
+            alert(`✅ ${cont} mensagens foram colocadas na fila! Acompanhe o progresso na barra lateral.`);
             document.getElementById("formAvisos").reset();
+        };
+
+        window.iniciarListenerAvisos = async () => {
+            if(unsubAvisos) unsubAvisos();
+            const container = document.getElementById("listaAvisosArea");
+            container.innerHTML = "<p class='text-center p-4 text-slate-400 font-bold'>A analisar fila de envios...</p>";
+
+            const q = query(collection(db, "avisos"));
+            unsubAvisos = onSnapshot(q, (snap) => {
+                const lotes = {};
+                snap.forEach(d => {
+                    const av = d.data();
+                    const id = av.lote_id;
+                    if(!id) return;
+                    if(!lotes[id]) lotes[id] = { msg: av.mensagem, data: av.data_criacao, total: 0, enviados: 0, erro: 0, docs: [] };
+                    lotes[id].total++;
+                    if(av.status === 'enviado') lotes[id].enviados++;
+                    if(av.status === 'erro' || av.status === 'cancelar') lotes[id].erro++; 
+                    lotes[id].docs.push(d.id);
+                });
+
+                let html = "";
+                const sortedIds = Object.keys(lotes).sort((a,b) => b - a); 
+
+                for(let id of sortedIds) {
+                    const lote = lotes[id];
+                    const pendentes = lote.total - lote.enviados - lote.erro;
+                    let statusBadge = pendentes > 0 ? `<span class="bg-amber-100 text-amber-700 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest animate-pulse shadow-sm"><i class="fa-solid fa-satellite-dish mr-1"></i> Enviando...</span>` : `<span class="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-sm"><i class="fa-solid fa-check-double mr-1"></i> Concluído</span>`;
+                    const percent = Math.round(((lote.enviados + lote.erro) / lote.total) * 100) || 0;
+
+                    html += `
+                    <div class="border-2 border-slate-200 rounded-2xl p-4 bg-slate-50 relative overflow-hidden">
+                        <div class="absolute bottom-0 left-0 h-1 bg-emerald-500 transition-all duration-1000" style="width: ${percent}%;"></div>
+                        <div class="flex justify-between items-start mb-3"><span class="text-[10px] font-black text-slate-400 uppercase tracking-widest"><i class="fa-regular fa-clock"></i> ${new Date(lote.data).toLocaleString('pt-BR')}</span>${statusBadge}</div>
+                        <p class="text-xs text-slate-700 mb-4 line-clamp-3 font-medium bg-white p-2 rounded-lg border border-slate-100">${lote.msg.replace(/\\n/g, '<br>')}</p>
+                        <div class="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-200 mb-3 shadow-inner">
+                            <div class="text-center flex-1 border-r border-slate-100"><div class="text-[9px] text-slate-400 uppercase font-black tracking-widest mb-0.5">Total</div><div class="font-black text-slate-700 text-lg leading-none">${lote.total}</div></div>
+                            <div class="text-center flex-1 border-r border-slate-100"><div class="text-[9px] text-emerald-500 uppercase font-black tracking-widest mb-0.5">Entregues</div><div class="font-black text-emerald-600 text-lg leading-none">${lote.enviados}</div></div>
+                            <div class="text-center flex-1"><div class="text-[9px] text-amber-500 uppercase font-black tracking-widest mb-0.5">Na Fila</div><div class="font-black text-amber-600 text-lg leading-none">${pendentes}</div></div>
+                        </div>
+                        <button onclick="window.cancelarLoteAviso('${id}')" class="w-full bg-red-50 text-red-500 hover:bg-red-500 hover:text-white border border-red-200 hover:border-red-600 transition-all py-2.5 rounded-xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-sm"><i class="fa-solid fa-trash-can"></i> Abortar / Apagar para Todos</button>
+                    </div>`;
+                }
+                container.innerHTML = html || "<p class='text-center p-6 text-slate-400 text-xs font-bold uppercase tracking-widest border-2 border-dashed border-slate-200 rounded-2xl'>Nenhum disparo ativo no momento</p>";
+            });
+        };
+
+        window.cancelarLoteAviso = async (loteId) => {
+            if(confirm("🚨 ALERTA VERMELHO!\n\nDeseja cancelar este disparo e mandar o robô APAGAR (Para Todos) as mensagens que já chegaram no WhatsApp dos moradores?")) {
+                window.mostrarLoading("A mandar comando de destruição para o robô...");
+                const snap = await getDocs(query(collection(db, "avisos"), where("lote_id", "==", loteId)));
+                const promessas = [];
+                snap.forEach(d => { promessas.push(updateDoc(doc(db, "avisos", d.id), { status: "cancelar" })); });
+                await Promise.all(promessas);
+                window.esconderLoading();
+            }
         };
 
         // INICIALIZAÇÃO
@@ -721,6 +660,7 @@
 
             if(id === 'aba-leituras') window.carregarLoteFaturas();
             if(id === 'aba-avulso') window.carregarSelectAvulso();
+            if(id === 'aba-avisos') window.iniciarListenerAvisos();
             if(id === 'aba-relatorios') window.carregarRelatorio();
             if(id === 'aba-abertas') window.iniciarListenerAbertas();
             if(id === 'aba-recebimentos') window.iniciarListenerPagos();
@@ -879,14 +819,7 @@
                     if(pix.sucesso) {
                         await addDoc(collection(db, "faturas"), { familia_id: id, mes_referencia: descFinal, leitura_anterior: l_ant, leitura_atual: l_atu, consumo_m3: consumoFinal, valor_agua: vAgua, valor_multa: vMulta, taxa_extra: taxaPendente, valor_total: total, vencimento: venc, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), data_lancamento: new Date().toISOString(), telefone: input.dataset.tel, nome_morador: nome });
                         await updateDoc(doc(db, "familias", id), { ultima_leitura: l_atu, taxa_pendente_valor: 0, taxa_pendente_desc: "" });
-                        
-                        await addDoc(collection(db, "logs_agente"), {
-                            data: new Date().toISOString(),
-                            acao: 'Lote Mensal',
-                            cliente: nome,
-                            valor: total
-                        });
-
+                        await addDoc(collection(db, "logs_agente"), { data: new Date().toISOString(), acao: 'Lote Mensal', cliente: nome, valor: total });
                         const nomePZ = nome.replace(/'/g, "\\'"); 
                         const dataBr = venc.split('-').reverse().join('/');
                         const statusElement = document.getElementById(`status-${id}`);
@@ -933,13 +866,7 @@
                         const pix = await res.json();
                         if(pix.sucesso) { 
                             await addDoc(collection(db, "faturas"), { familia_id: id, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: f.telefone, nome_morador: f.nome, data_lancamento: new Date().toISOString() }); 
-                            
-                            await addDoc(collection(db, "logs_agente"), {
-                                data: new Date().toISOString(),
-                                acao: 'Avulso (Massa)',
-                                cliente: f.nome,
-                                valor: valor
-                            });
+                            await addDoc(collection(db, "logs_agente"), { data: new Date().toISOString(), acao: 'Avulso (Massa)', cliente: f.nome, valor: valor });
                         }
                     } catch(err) {}
                 }
@@ -949,20 +876,13 @@
                     const nome = opt.dataset.nome;
                     const res = await fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: nome, cpf: opt.dataset.cpf.replace(/\D/g, '')}) });
                     const pix = await res.json();
-                    
                     if(pix.sucesso) { 
                         for(let i = 0; i < repeticoes; i++) {
                             let descFinal = repeticoes > 1 ? `${descricao} (Cópia ${i+1}/${repeticoes})` : descricao;
                             await addDoc(collection(db, "faturas"), { familia_id: familiaId, mes_referencia: descFinal, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: opt.dataset.tel, nome_morador: opt.dataset.nome, data_lancamento: new Date().toISOString() });
-                            
-                            await addDoc(collection(db, "logs_agente"), {
-                                data: new Date().toISOString(),
-                                acao: 'Avulso (Unidade)',
-                                cliente: nome,
-                                valor: valor
-                            });
+                            await addDoc(collection(db, "logs_agente"), { data: new Date().toISOString(), acao: 'Avulso (Unidade)', cliente: nome, valor: valor });
                         }
-                        window.esconderLoading(); alert(`✅ ${repeticoes} serviço(s) gerado(s) com sucesso na fila do robô!`);
+                        window.esconderLoading(); alert(`✅ ${repeticoes} serviço(s) gerado(s) com sucesso!`);
                         document.getElementById("formAvulso").reset(); document.getElementById("avulsoRepeticoes").value = 1;
                     }
                 } catch(e) { window.esconderLoading(); alert("Erro na geração da fatura."); }
@@ -990,7 +910,6 @@
                     const nomePZ = String(f.nome_morador || "Morador").replace(/'/g, "\\'");
                     const dataBr = f.vencimento.split('-').reverse().join('/');
                     const valorForm = f.valor_total.toFixed(2);
-                    
                     let dtLanc = new Date(f.data_lancamento);
                     let hrCriacao = !isNaN(dtLanc) ? dtLanc.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit', second:'2-digit'}) : '--:--:--';
                     let corZap = 'bg-red-500 hover:bg-red-600';
@@ -1005,21 +924,13 @@
                         } else { linhaBaixo = `<i class="fa-solid fa-triangle-exclamation"></i> ERRO ZAP`; }
                     }
 
-                    const btnZap = `<button onclick="window.enviarWhatsAppSemEmoji('normal', '${tel}', '${nomePZ}', '${f.mes_referencia}', '${valorForm}', '${dataBr}')" class="${corZap} text-white rounded-lg text-[10px] md:text-[11px] font-bold shadow transition flex flex-col items-center justify-center min-w-[75px] h-[36px] md:h-[40px] leading-none px-2">
-                        <span class="text-[9px] font-normal opacity-90 mb-[3px]">${hrCriacao}</span><span class="flex items-center">${linhaBaixo}</span>
-                    </button>`;
+                    const btnZap = `<button onclick="window.enviarWhatsAppSemEmoji('normal', '${tel}', '${nomePZ}', '${f.mes_referencia}', '${valorForm}', '${dataBr}')" class="${corZap} text-white rounded-lg text-[10px] md:text-[11px] font-bold shadow transition flex flex-col items-center justify-center min-w-[75px] h-[36px] md:h-[40px] leading-none px-2"><span class="text-[9px] font-normal opacity-90 mb-[3px]">${hrCriacao}</span><span class="flex items-center">${linhaBaixo}</span></button>`;
 
                     html += `<tr class="${rowClass} border-b">
                         <td class="p-3 md:p-4 font-mono text-[10px] md:text-sm">${isOverdue ? "🚨 " : "⏳ "}${dataBr}</td>
                         <td class="p-3 md:p-4 leading-tight"><strong>${f.nome_morador}</strong><br><small class="text-gray-500 text-[10px] md:text-xs">${f.mes_referencia}</small></td>
                         <td class="p-3 md:p-4 text-right font-bold text-amber-700 text-sm md:text-base">R$ ${valorForm}</td>
-                        <td class="p-2 md:p-4">
-                            <div class="flex items-center justify-end gap-1 md:gap-2">
-                                ${btnZap}
-                                <button onclick="window.marcarPago('${f.id}')" class="bg-blue-600 text-white px-3 md:px-4 rounded-lg text-[10px] md:text-xs font-bold transition hover:bg-blue-700 h-[36px] md:h-[40px] flex items-center justify-center">Baixa</button>
-                                <button onclick="window.excluirFatura('${f.id}', '${nomePZ}', ${f.valor_total})" class="bg-red-100 text-red-600 px-3 md:px-4 rounded-lg text-[10px] md:text-xs font-bold transition hover:bg-red-200 h-[36px] md:h-[40px] flex items-center justify-center">🗑️</button>
-                            </div>
-                        </td>
+                        <td class="p-2 md:p-4"><div class="flex items-center justify-end gap-1 md:gap-2">${btnZap}<button onclick="window.marcarPago('${f.id}')" class="bg-blue-600 text-white px-3 md:px-4 rounded-lg text-[10px] md:text-xs font-bold transition hover:bg-blue-700 h-[36px] md:h-[40px] flex items-center justify-center">Baixa</button><button onclick="window.excluirFatura('${f.id}', '${nomePZ}', ${f.valor_total})" class="bg-red-100 text-red-600 px-3 md:px-4 rounded-lg text-[10px] md:text-xs font-bold transition hover:bg-red-200 h-[36px] md:h-[40px] flex items-center justify-center">🗑️</button></div></td>
                     </tr>`;
                 }
                 tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center text-green-600 font-bold'>Tudo Pago!</td></tr>";
