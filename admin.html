@@ -451,15 +451,15 @@
                 "💧 Dica: Economizar água para um futuro melhor!",
                 "💧 Lembre-se: Cada gota conta. Evite o desperdício!",
                 "💧 Dica: Água é vida. Pequenas atitudes fazem a diferença na nossa comunidade!",
-                "💧 Consciente: Racionar água é dever de todos nós. Cuide do nosso bem maior!"
+                "💧 Consciente: Racionar água é dever de todos nós. Cuide do nosso bem maior a *Água!*"
             ];
             // Sorteia uma frase diferente cada vez que clica
             const dicaSorteada = dicasRacionamento[Math.floor(Math.random() * dicasRacionamento.length)];
 
             if (mod === 'manutencao') {
-                txt.value = "⚠️ *Aviso*\n\nEsta é uma mensagem automática. Programação de manutenção na rede. Possível falta d'água..\n\n" + dicaSorteada;
+                txt.value = "⚠️ *Aviso*\n\n*Esta é uma mensagem automática:* Programação de manutenção na rede. Possível falta d'água..\n\n" + dicaSorteada;
             } else if (mod === 'reuniao') {
-                txt.value = "📢 *Aviso*\n\nEsta é uma mensagem automática:\nReunião para a todos os usuários de água na próxima semana data a ser definida e repassada.\n\n" + dicaSorteada;
+                txt.value = "📢 *Aviso*\n\n*Esta é uma mensagem automática:*\nReunião para a todos os usuários, você está convidado (a) a participar, na próxima semana data a ser definida e repassada.\n\n" + dicaSorteada;
             } else if (mod === 'livre') {
                 txt.value = "\n\n" + dicaSorteada; // Mantém a dica de água no final para mensagem livre
             } else { 
