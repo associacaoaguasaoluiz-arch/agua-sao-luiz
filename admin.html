@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>App Gestão 22.0 - Água São Luiz</title>
+    <title>App Gestão v22.2 - Água São Luiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -24,9 +24,6 @@
         .input-leitura { width: 100%; min-width: 80px; max-width: 120px; font-size: 1rem; transition: all 0.2s; }
         .input-leitura:focus { background-color: #fffbeb; border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2); }
         .modal-fundo { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; justify-content: center; align-items: center; padding: 1rem; }
-        .mic-ativo { animation: pulse-red 1.5s infinite; background-color: #ef4444 !important; color: white !important; }
-        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
-        @media print { aside, nav, .md\:hidden, header, .no-print, button, details { display: none !important; } #painelAdmin, main, #aba-relatorios { display: block !important; padding: 0 !important; margin: 0 !important; background: white; } .print-area { width: 100% !important; border: none !important; box-shadow: none !important; } }
     </style>
 </head>
 <body class="text-gray-800 h-screen flex overflow-hidden">
@@ -49,7 +46,8 @@
 
     <div id="painelAdmin" class="flex w-full h-full tela-oculta relative">
         <aside class="w-64 bg-slate-900 text-white flex-col hidden md:flex shadow-xl z-30 relative">
-            <div class="p-6 text-center border-b border-slate-700 pt-8"><h1 class="text-xl font-bold">💧 São Luiz</h1></div>
+            <a href="https://wa.me/5546984155591" target="_blank" title="Desenvolvido por Sieklicki" class="absolute top-1 left-2 text-[9px] font-black text-white/30 hover:text-white transition tracking-widest select-none cursor-pointer z-50">© COPYRIGHT SIEKLICKI</a>
+            <div class="p-6 text-center border-b border-slate-700 pt-8"><h1 class="text-xl font-bold">💧 São Luiz <span class="text-[10px] text-blue-400 align-top">v22.2</span></h1></div>
             <nav class="flex-1 p-4 space-y-2 overflow-y-auto scroll-suave text-sm text-gray-400">
                 <button onclick="window.mudarAba('aba-moradores', this)" class="menu-btn w-full flex items-center p-3 rounded-xl bg-blue-600 text-white font-bold transition"><i class="fa-solid fa-users w-6 mr-2"></i> Moradores</button>
                 <button onclick="window.mudarAba('aba-leituras', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-pen-to-square w-6 mr-2"></i> Água (Mensal)</button>
@@ -65,6 +63,7 @@
 
         <main class="flex-1 overflow-y-auto bg-gray-100 conteudo-principal w-full">
             <div class="md:hidden bg-slate-900 text-white p-4 text-center sticky top-0 z-40 shadow-md font-bold flex justify-between px-4 items-center relative">
+                <a href="https://wa.me/5546984155591" target="_blank" class="absolute top-0.5 left-2 text-[7px] font-black text-white/40 hover:text-white transition tracking-widest select-none cursor-pointer z-50">© SIEKLICKI v22.2</a>
                 <span class="mt-1 ml-10">💧 São Luiz</span>
                 <button onclick="window.sairAdmin()" class="text-red-400 bg-slate-800 px-3 py-1 rounded-lg text-xs"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
             </div>
@@ -300,16 +299,13 @@
             </form>
         </div>
     </div>
-
-    <script type="module">
+	<script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 
         const firebaseConfig = { apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ", authDomain: "sistema-agua-sao-luiz.firebaseapp.com", projectId: "sistema-agua-sao-luiz", storageBucket: "sistema-agua-sao-luiz.appspot.com" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const storage = getStorage(app); 
 
         window.familiasGlobal = {}; 
         window.valoresAguaGlobais = { val1: 25, val2: 50, val3: 100, multa: 25 };
@@ -323,44 +319,48 @@
         window.fecharModal = () => document.getElementById("modalMorador").style.display = "none";
         
         // ==========================================
-        // MOTOR DE GERAÇÃO DE PDF (BLINDADO)
+        // MOTOR DE PDF EM TEXTO (NÃO TRAVA E TEM LAYOUT PROFISSIONAL)
         // ==========================================
-        window.gerarEUploadPDF = async (nome, cpfOriginal, cpfLimpo, refDesc, venc, valorTotal, pixCopia, consumo) => {
+        window.gerarFaturaPDFBase64 = (nome, cpfOriginal, refDesc, venc, valorTotal, pixCopia, consumo) => {
             try {
                 const { jsPDF } = window.jspdf;
-                if (!jsPDF) throw new Error("A biblioteca jsPDF não foi encontrada.");
+                const doc = new jsPDF();
                 
-                const docPdf = new jsPDF();
-                docPdf.setFontSize(16);
-                docPdf.text("ASSOCIAÇÃO DE ÁGUA SÃO LUIZ", 105, 20, null, null, "center");
-                docPdf.setFontSize(12);
-                docPdf.text("----------------------------------------------------------------", 20, 30);
-                docPdf.text(`MORADOR: ${nome || 'Não informado'}`, 20, 40);
-                docPdf.text(`CPF: ${cpfOriginal || 'Não informado'}`, 20, 50);
-                docPdf.text(`REFERÊNCIA: ${refDesc}`, 20, 60);
-                docPdf.text(`VENCIMENTO: ${venc.split('-').reverse().join('/')}`, 20, 70);
-                if (consumo) docPdf.text(`CONSUMO REGISTRADO: ${consumo}`, 20, 80);
-                else docPdf.text(`TIPO: SERVIÇO AVULSO`, 20, 80);
-                docPdf.text(`VALOR TOTAL: R$ ${parseFloat(valorTotal).toFixed(2).replace('.', ',')}`, 20, 90);
-                docPdf.text("----------------------------------------------------------------", 20, 100);
-                docPdf.text("CHAVE PIX (Copia e Cola):", 20, 110);
-                docPdf.setFontSize(9);
-                docPdf.text(pixCopia || '', 20, 120, { maxWidth: 170 });
+                doc.setDrawColor(41, 128, 185); doc.setLineWidth(1); doc.rect(10, 10, 190, 135);
+                doc.setFillColor(41, 128, 185); doc.rect(10, 10, 190, 20, 'F');
+                doc.setTextColor(255, 255, 255); doc.setFontSize(16); doc.setFont("helvetica", "bold");
+                doc.text("ASSOCIAÇÃO DE ÁGUA DISTRITO SÃO LUIZ", 105, 23, null, null, "center");
                 
-                const pdfBlob = docPdf.output('blob');
-                const cpfSeguro = cpfLimpo || 'sem-cpf';
-                const pdfRef = ref(storage, `faturas/doc_${cpfSeguro}_${Date.now()}.pdf`);
+                doc.setTextColor(50, 50, 50); doc.setFontSize(14);
+                doc.text("RECIBO / FATURA OFICIAL", 105, 40, null, null, "center");
+                doc.setLineWidth(0.5); doc.line(20, 45, 190, 45);
                 
-                // TIMEOUT PARA NÃO TRAVAR SE O FIREBASE STORAGE NÃO ESTIVER CONFIGURADO
-                const uploadPromise = uploadBytes(pdfRef, pdfBlob);
-                const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout Nuvem PDF")), 8000));
-                await Promise.race([uploadPromise, timeoutPromise]);
+                doc.setFontSize(11); doc.setFont("helvetica", "normal");
+                doc.text(`NOME DO CLIENTE:`, 20, 55); doc.setFont("helvetica", "bold"); doc.text(`${nome || 'Não informado'}`, 70, 55);
+                doc.setFont("helvetica", "normal");
+                doc.text(`CPF / DOCUMENTO:`, 20, 65); doc.setFont("helvetica", "bold"); doc.text(`${cpfOriginal || 'Não informado'}`, 70, 65);
+                doc.setFont("helvetica", "normal");
+                doc.text(`MÊS REFERÊNCIA:`, 20, 75); doc.setFont("helvetica", "bold"); doc.text(`${refDesc}`, 70, 75);
+                doc.setFont("helvetica", "normal");
+                doc.text(`VENCIMENTO:`, 20, 85); doc.setFont("helvetica", "bold"); doc.setTextColor(200, 0, 0); 
+                doc.text(`${venc.split('-').reverse().join('/')}`, 70, 85); doc.setTextColor(50, 50, 50);
                 
-                return await getDownloadURL(pdfRef);
-            } catch (errPdf) {
-                console.error("Erro ao gerar PDF", errPdf);
-                return ""; // Se falhar, retorna vazio e a vida segue!
-            }
+                if (consumo) {
+                    doc.setFont("helvetica", "normal"); doc.text(`CONSUMO REGISTRADO:`, 20, 95); doc.setFont("helvetica", "bold"); doc.text(`${consumo}`, 75, 95);
+                } else {
+                    doc.setFont("helvetica", "normal"); doc.text(`TIPO DE COBRANÇA:`, 20, 95); doc.setFont("helvetica", "bold"); doc.text(`SERVIÇO AVULSO`, 70, 95);
+                }
+                
+                doc.setFillColor(240, 248, 255); doc.rect(20, 105, 170, 15, 'F');
+                doc.setFontSize(14); doc.setFont("helvetica", "bold");
+                doc.text(`VALOR TOTAL A PAGAR: R$ ${parseFloat(valorTotal).toFixed(2).replace('.', ',')}`, 105, 115, null, null, "center");
+                
+                doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.text("CHAVE PIX (COPIA E COLA):", 20, 130);
+                doc.setFontSize(8); doc.setFont("courier", "normal");
+                const splitPix = doc.splitTextToSize(pixCopia || 'PIX indisponível', 170); doc.text(splitPix, 20, 138);
+
+                return doc.output('datauristring').split(',')[1];
+            } catch (errPdf) { return null; }
         };
 
         window.formatarNomeParaBanco = (texto) => {
@@ -520,7 +520,6 @@
             }
         };
 
-        // INICIALIZAÇÃO
         window.onload = async () => {
             const date = new Date();
             document.getElementById("relDataInicio").value = new Date(date.getFullYear(), date.getMonth(), 1).toISOString().split('T')[0];
@@ -557,15 +556,15 @@
             window.valoresAguaGlobais.val1 = parseFloat(document.getElementById('cfgVal1').value) || 25;
             window.valoresAguaGlobais.val2 = parseFloat(document.getElementById('cfgVal2').value) || 50;
             window.valoresAguaGlobais.val3 = parseFloat(document.getElementById('cfgVal3').value) || 100;
-            window.mostrarLoading("A salvar na nuvem...");
+            window.mostrarLoading("A salvar no banco...");
             await setDoc(doc(db, "config", "valores"), window.valoresAguaGlobais);
             window.esconderLoading();
-            alert("✅ Valores da água guardados com sucesso! O App do agente já foi atualizado.");
+            alert("✅ Valores da água guardados com sucesso!");
         };
 
         window.salvarConfigMulta = async () => {
             window.valoresAguaGlobais.multa = parseFloat(document.getElementById('cfgMulta').value) || 25;
-            window.mostrarLoading("A salvar na nuvem...");
+            window.mostrarLoading("A salvar no banco...");
             await setDoc(doc(db, "config", "valores"), window.valoresAguaGlobais);
             window.esconderLoading();
             alert("✅ Valor da multa guardado com sucesso!");
@@ -748,7 +747,7 @@
         };
 
         // ==========================================
-        // GERAÇÃO DE LOTE MENSAL (BLINDADA CONTRA TRAVAMENTOS)
+        // LOTE MENSAL (BASE 64 - SEM TRAVAMENTOS)
         // ==========================================
         window.gerarFaturasEmLote = async () => {
             const inputs = document.querySelectorAll('input[id^="h-total-"]');
@@ -761,7 +760,7 @@
                 return total > 0 && (atuVal !== "" || taxa > 0 || multa > 0);
             });
 
-            if(linhas.length === 0) return alert("Preencha as leituras, multas ou agende taxas para faturar!");
+            if(linhas.length === 0) return alert("Preencha as leituras ou taxas para faturar!");
             const totalLinhas = linhas.length;
             window.mostrarLoading(`A preparar ${totalLinhas} faturas...`);
             
@@ -772,7 +771,7 @@
             for(let input of linhas) {
                 contadorProcessado++;
                 const nome = input.dataset.nome || "Morador";
-                document.getElementById("loadingMsg").innerText = `A comunicar com o banco...\nGerando PIX e PDF ${contadorProcessado} de ${totalLinhas}\n(${nome})`;
+                document.getElementById("loadingMsg").innerText = `A comunicar com o banco...\nProgresso: ${contadorProcessado} de ${totalLinhas}\n(${nome})`;
                 
                 const total = parseFloat(input.value);
                 const id = input.id.replace('h-total-', '');
@@ -781,7 +780,6 @@
                 const taxaPendente = parseFloat(document.getElementById(`h-taxa-${id}`).value);
                 const descTaxa = document.getElementById(`h-taxa-${id}`).dataset.desc;
                 
-                // TRAVA: Se não existir CPF na grelha, assumimos em branco para não bugar a leitura
                 const cpfOriginal = input.dataset.cpf && input.dataset.cpf !== "undefined" ? input.dataset.cpf : "";
                 const cpfLimpo = cpfOriginal.replace(/\D/g, '');
                 
@@ -792,55 +790,44 @@
                 let descFinal = `Água ${mes}`;
                 if(taxaPendente > 0) descFinal += ` + ${descTaxa}`;
 
+                let pixData = { sucesso: false, copiaECola: "" };
                 try {
-                    // MUDANÇA CRUCIAL: Removemos o envio do "cpf" para o seu PIX. 
-                    // Algumas APIs travam a conexão se receberem um CPF vazio. Vamos enviar apenas o Nome.
-                    const pixReq = fetch("/api/gerar-pix", { 
-                        method: "POST", 
-                        headers: { "Content-Type": "application/json" }, 
-                        body: JSON.stringify({ valor: total, descricao: descFinal, nome: nome }) 
-                    });
-                    
-                    // TIMEOUT: Se a API PIX não responder em 15s, gera um erro forçado para não travar
-                    const timeoutPix = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout PIX")), 15000));
-                    const res = await Promise.race([pixReq, timeoutPix]);
-                    const pix = await res.json();
-                    
-                    if(pix.sucesso) {
-                        const url_pdf_nuvem = await window.gerarEUploadPDF(nome, cpfOriginal, cpfLimpo, descFinal, venc, total, pix.copiaECola, consumoFinal + " m³");
-
-                        await addDoc(collection(db, "faturas"), { 
-                            familia_id: id, mes_referencia: descFinal, leitura_anterior: l_ant, leitura_atual: l_atu, 
-                            consumo_m3: consumoFinal, consumo: consumoFinal + " m³", url_pdf: url_pdf_nuvem,
-                            valor_agua: vAgua, valor_multa: vMulta, taxa_extra: taxaPendente, valor_total: total, 
-                            vencimento: venc, status: "pendente", whatsapp_enviado: false, 
-                            pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), 
-                            data_lancamento: new Date().toISOString(), telefone: input.dataset.tel, nome_morador: nome, cpf: cpfLimpo 
-                        });
-
-                        await updateDoc(doc(db, "familias", id), { ultima_leitura: l_atu, taxa_pendente_valor: 0, taxa_pendente_desc: "" });
-                        await addDoc(collection(db, "logs_agente"), { data: new Date().toISOString(), acao: 'Lote Mensal', cliente: nome, valor: total });
-                        
-                        const nomePZ = nome.replace(/'/g, "\\'"); 
-                        const dataBr = venc.split('-').reverse().join('/');
-                        const statusElement = document.getElementById(`status-${id}`);
-                        if(statusElement) statusElement.innerHTML = `<button onclick="window.enviarWhatsAppSemEmoji('normal', '${input.dataset.tel}', '${nomePZ}', '${mes}', '${total.toFixed(2)}', '${dataBr}')" class="bg-green-500 text-white font-bold px-3 py-1.5 rounded-xl text-[10px] md:text-xs shadow-sm transition hover:bg-green-600">📲 ZAP</button>`;
-                        
-                        document.getElementById(`atu-${id}`).disabled = true; document.getElementById(`multa-${id}`).disabled = true;
-                    }
-                } catch(e) {
-                    console.error("Erro fatal ao gerar para:", nome, e);
-                    document.getElementById("loadingMsg").innerText = `⚠️ Falha ao gerar para ${nome}. A saltar...`;
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-                }
+                    const pixReq = fetch("/api/gerar-pix", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ valor: total, descricao: descFinal, nome: nome }) });
+                    const res = await Promise.race([pixReq, new Promise((_, r) => setTimeout(() => r(new Error("Timeout PIX")), 12000))]);
+                    if(res.ok) pixData = await res.json();
+                } catch(e) { console.warn("Falha no PIX para:", nome); }
                 
-                if (contadorProcessado < totalLinhas) { await new Promise(resolve => setTimeout(resolve, 1500)); }
+                try {
+                    // PDF VAI PARA O BANCO DE DADOS (Não trava mais na nuvem)
+                    const pdfEmBase64 = window.gerarFaturaPDFBase64(nome, cpfOriginal, descFinal, venc, total, pixData.copiaECola, consumoFinal + " m³");
+
+                    await addDoc(collection(db, "faturas"), { 
+                        familia_id: id, mes_referencia: descFinal, leitura_anterior: l_ant, leitura_atual: l_atu, 
+                        consumo_m3: consumoFinal, consumo: consumoFinal + " m³", 
+                        pdf_base64: pdfEmBase64, // 👈 MÁGICA AQUI
+                        valor_agua: vAgua, valor_multa: vMulta, taxa_extra: taxaPendente, valor_total: total, 
+                        vencimento: venc, status: "pendente", whatsapp_enviado: false, 
+                        pix_copia_cola: pixData.copiaECola || "", qr_code_base64: pixData.qrCodeBase64 || "", pix_txid: String(pixData.txid || ""), 
+                        data_lancamento: new Date().toISOString(), telefone: input.dataset.tel, nome_morador: nome, cpf: cpfLimpo 
+                    });
+
+                    await updateDoc(doc(db, "familias", id), { ultima_leitura: l_atu, taxa_pendente_valor: 0, taxa_pendente_desc: "" });
+                    
+                    const nomePZ = nome.replace(/'/g, "\\'"); 
+                    const dataBr = venc.split('-').reverse().join('/');
+                    const statusElement = document.getElementById(`status-${id}`);
+                    if(statusElement) statusElement.innerHTML = `<button onclick="window.enviarWhatsAppSemEmoji('normal', '${input.dataset.tel}', '${nomePZ}', '${mes}', '${total.toFixed(2)}', '${dataBr}')" class="bg-green-500 text-white font-bold px-3 py-1.5 rounded-xl text-[10px] md:text-xs shadow-sm transition hover:bg-green-600">📲 ZAP</button>`;
+                    
+                    document.getElementById(`atu-${id}`).disabled = true; document.getElementById(`multa-${id}`).disabled = true;
+                } catch(err) { console.error("Erro ao salvar no banco", err); }
+                
+                if (contadorProcessado < totalLinhas) { await new Promise(resolve => setTimeout(resolve, 800)); }
             }
-            window.esconderLoading(); alert("✅ Concluído! Se algum cliente falhou, repita a ação apenas para esse cliente.");
+            window.esconderLoading(); alert("✅ Lote Mensal Gerado! (PDFs Salvos com Sucesso)");
         };
 
         // ==========================================
-        // GERAÇÃO DE TAXAS AVULSAS (BLINDADA CONTRA TRAVAMENTOS)
+        // TAXAS AVULSAS (BASE 64 - SEM TRAVAMENTOS)
         // ==========================================
         window.submitAvulso = async (e) => {
             e.preventDefault();
@@ -855,7 +842,7 @@
             
             if(isNaN(valor) || valor <= 0) return alert("Digite um valor válido.");
             const vencimento = document.getElementById("avulsoVencimento").value;
-            window.mostrarLoading(repeticoes > 1 ? `A clonar ${repeticoes} faturas...` : "A processar PDF e PIX...");
+            window.mostrarLoading(repeticoes > 1 ? `A clonar faturas...` : "A processar Fatura Oficial e PIX...");
             
             if(tipo === 'somar_proxima') {
                 if(familiaId === 'TODOS') {
@@ -868,50 +855,43 @@
             }
             
             if(familiaId === 'TODOS') {
-                if(!confirm(`Gerar PIX e PDF para TODOS?`)) { window.esconderLoading(); return; }
+                if(!confirm(`Gerar PIX e Faturas Oficiais para TODOS?`)) { window.esconderLoading(); return; }
                 for(let [id, f] of Object.entries(window.familiasGlobal)) {
+                    const cpfOriginal = f.cpf && f.cpf !== "undefined" ? f.cpf : ""; 
+                    const cpfLimpo = cpfOriginal.replace(/\D/g, ''); 
+                    let pixData = { sucesso: false, copiaECola: "" };
                     try {
-                        const cpfOriginal = f.cpf && f.cpf !== "undefined" ? f.cpf : ""; 
-                        const cpfLimpo = cpfOriginal.replace(/\D/g, ''); 
-                        
-                        // Usa apenas o Nome para não quebrar a API PIX
                         const pixReq = fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: f.nome}) });
-                        const res = await Promise.race([pixReq, new Promise((_, r) => setTimeout(() => r(new Error("Timeout")), 15000))]);
-                        const pix = await res.json();
-                        
-                        if(pix.sucesso) { 
-                            const url_pdf_nuvem = await window.gerarEUploadPDF(f.nome, cpfOriginal, cpfLimpo, descricao, vencimento, valor, pix.copiaECola, null);
-                            await addDoc(collection(db, "faturas"), { familia_id: id, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, consumo: "N/A", valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: f.telefone, nome_morador: f.nome, cpf: cpfLimpo, url_pdf: url_pdf_nuvem, data_lancamento: new Date().toISOString() }); 
-                            await addDoc(collection(db, "logs_agente"), { data: new Date().toISOString(), acao: 'Avulso (Massa)', cliente: f.nome, valor: valor });
-                        }
-                    } catch(err) { console.error("Erro na massa", err); }
+                        const res = await Promise.race([pixReq, new Promise((_, r) => setTimeout(() => r(new Error("Timeout")), 12000))]);
+                        if(res.ok) pixData = await res.json();
+                    } catch(err) {}
+
+                    try {
+                        const pdfEmBase64 = window.gerarFaturaPDFBase64(f.nome, cpfOriginal, descricao, vencimento, valor, pixData.copiaECola, null);
+                        await addDoc(collection(db, "faturas"), { familia_id: id, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, consumo: "N/A", pdf_base64: pdfEmBase64, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pixData.copiaECola || "", qr_code_base64: pixData.qrCodeBase64 || "", pix_txid: String(pixData.txid || ""), telefone: f.telefone, nome_morador: f.nome, cpf: cpfLimpo, data_lancamento: new Date().toISOString() }); 
+                    } catch(err) {}
                 }
                 window.esconderLoading(); alert(`✅ Faturas avulsas geradas.`);
             } else {
+                const nome = opt.dataset.nome;
+                const cpfOriginal = opt.dataset.cpf && opt.dataset.cpf !== "undefined" ? opt.dataset.cpf : ""; 
+                const cpfLimpo = cpfOriginal.replace(/\D/g, ''); 
+                
+                let pixData = { sucesso: false, copiaECola: "" };
                 try {
-                    const nome = opt.dataset.nome;
-                    const cpfOriginal = opt.dataset.cpf && opt.dataset.cpf !== "undefined" ? opt.dataset.cpf : ""; 
-                    const cpfLimpo = cpfOriginal.replace(/\D/g, ''); 
-                    
-                    // Usa apenas o Nome para não quebrar a API PIX
                     const pixReq = fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: nome}) });
                     const res = await Promise.race([pixReq, new Promise((_, r) => setTimeout(() => r(new Error("Timeout")), 15000))]);
-                    const pix = await res.json();
-                    
-                    if(pix.sucesso) { 
-                        for(let i = 0; i < repeticoes; i++) {
-                            let descFinal = repeticoes > 1 ? `${descricao} (Cópia ${i+1}/${repeticoes})` : descricao;
-                            const url_pdf_nuvem = await window.gerarEUploadPDF(nome, cpfOriginal, cpfLimpo, descFinal, vencimento, valor, pix.copiaECola, null);
-                            await addDoc(collection(db, "faturas"), { familia_id: familiaId, mes_referencia: descFinal, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, consumo: "N/A", valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), telefone: opt.dataset.tel, nome_morador: opt.dataset.nome, cpf: cpfLimpo, url_pdf: url_pdf_nuvem, data_lancamento: new Date().toISOString() }); 
-                            await addDoc(collection(db, "logs_agente"), { data: new Date().toISOString(), acao: 'Avulso (Unidade)', cliente: nome, valor: valor });
-                        }
-                        window.esconderLoading(); alert(`✅ Serviço(s) avulso(s) gerado(s) com sucesso! (PDF Salvo)`);
-                        document.getElementById("formAvulso").reset(); document.getElementById("avulsoRepeticoes").value = 1;
+                    if(res.ok) pixData = await res.json();
+                } catch(e) {}
+
+                try {
+                    for(let i = 0; i < repeticoes; i++) {
+                        let descFinal = repeticoes > 1 ? `${descricao} (Cópia ${i+1}/${repeticoes})` : descricao;
+                        const pdfEmBase64 = window.gerarFaturaPDFBase64(nome, cpfOriginal, descFinal, vencimento, valor, pixData.copiaECola, null);
+                        await addDoc(collection(db, "faturas"), { familia_id: familiaId, mes_referencia: descFinal, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, consumo: "N/A", pdf_base64: pdfEmBase64, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pixData.copiaECola || "", qr_code_base64: pixData.qrCodeBase64 || "", pix_txid: String(pixData.txid || ""), telefone: opt.dataset.tel, nome_morador: opt.dataset.nome, cpf: cpfLimpo, data_lancamento: new Date().toISOString() }); 
                     }
-                } catch(e) { 
-                    window.esconderLoading(); 
-                    alert("Erro na geração da fatura ou tempo esgotado. Tente de novo."); 
-                }
+                    window.esconderLoading(); alert(`✅ Serviço avulso gerado com sucesso! (PDF Salvo)`);
+                } catch(e) { window.esconderLoading(); alert("Erro ao salvar fatura."); }
             }
             document.getElementById("formAvulso").reset(); document.getElementById("buscaClienteAvulso").value = ""; document.getElementById("avulsoRepeticoes").value = 1; window.filtrarAvulsoESelecionar();
         };
@@ -1082,10 +1062,7 @@
                 });
                 
                 document.getElementById("tabelaLogsAgente").innerHTML = html || "<tr><td colspan='4' class='p-6 text-center text-gray-400'>Nenhum histórico encontrado.</td></tr>";
-            } catch(e) { 
-                console.error(e);
-                document.getElementById("tabelaLogsAgente").innerHTML = "<tr><td colspan='4' class='p-4 text-center text-red-500'>Erro ao carregar histórico.</td></tr>";
-            }
+            } catch(e) { document.getElementById("tabelaLogsAgente").innerHTML = "<tr><td colspan='4' class='p-4 text-center text-red-500'>Erro ao carregar histórico.</td></tr>"; }
             window.esconderLoading();
         };
 
