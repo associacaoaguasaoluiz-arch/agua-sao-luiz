@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>App Gestão v22.2 - Água São Luiz</title>
+    <title>App Gestão v22.9 - Água São Luiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -47,7 +47,7 @@
     <div id="painelAdmin" class="flex w-full h-full tela-oculta relative">
         <aside class="w-64 bg-slate-900 text-white flex-col hidden md:flex shadow-xl z-30 relative">
             <a href="https://wa.me/5546984155591" target="_blank" title="Desenvolvido por Sieklicki" class="absolute top-1 left-2 text-[9px] font-black text-white/30 hover:text-white transition tracking-widest select-none cursor-pointer z-50">© COPYRIGHT SIEKLICKI</a>
-            <div class="p-6 text-center border-b border-slate-700 pt-8"><h1 class="text-xl font-bold">💧 São Luiz <span class="text-[10px] text-blue-400 align-top">v22.2</span></h1></div>
+            <div class="p-6 text-center border-b border-slate-700 pt-8"><h1 class="text-xl font-bold">💧 São Luiz <span class="text-[10px] text-blue-400 align-top">v22.9</span></h1></div>
             <nav class="flex-1 p-4 space-y-2 overflow-y-auto scroll-suave text-sm text-gray-400">
                 <button onclick="window.mudarAba('aba-moradores', this)" class="menu-btn w-full flex items-center p-3 rounded-xl bg-blue-600 text-white font-bold transition"><i class="fa-solid fa-users w-6 mr-2"></i> Moradores</button>
                 <button onclick="window.mudarAba('aba-leituras', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-pen-to-square w-6 mr-2"></i> Água (Mensal)</button>
@@ -63,7 +63,7 @@
 
         <main class="flex-1 overflow-y-auto bg-gray-100 conteudo-principal w-full">
             <div class="md:hidden bg-slate-900 text-white p-4 text-center sticky top-0 z-40 shadow-md font-bold flex justify-between px-4 items-center relative">
-                <a href="https://wa.me/5546984155591" target="_blank" class="absolute top-0.5 left-2 text-[7px] font-black text-white/40 hover:text-white transition tracking-widest select-none cursor-pointer z-50">© SIEKLICKI v22.2</a>
+                <a href="https://wa.me/5546984155591" target="_blank" class="absolute top-0.5 left-2 text-[7px] font-black text-white/40 hover:text-white transition tracking-widest select-none cursor-pointer z-50">© SIEKLICKI v22.9</a>
                 <span class="mt-1 ml-10">💧 São Luiz</span>
                 <button onclick="window.sairAdmin()" class="text-red-400 bg-slate-800 px-3 py-1 rounded-lg text-xs"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
             </div>
@@ -299,8 +299,7 @@
             </form>
         </div>
     </div>
-<script type="module">
-       <script type="module">
+    <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
@@ -320,7 +319,7 @@
         window.fecharModal = () => document.getElementById("modalMorador").style.display = "none";
         
         // ==========================================
-        // MOTOR DE PDF: FATURA PREMIUM (V22.8)
+        // MOTOR DE PDF: FATURA PREMIUM (V22.9)
         // ==========================================
         window.gerarFaturaPDFBase64 = (nome, cpfOriginal, endereco, refDesc, venc, valorTotal, pixCopia, qrCodeBase64, consumo) => {
             try {
@@ -801,26 +800,34 @@
             const familiaId = select.value;
             const descricao = document.getElementById("avulsoDescricao").value;
             const repeticoes = parseInt(document.getElementById("avulsoRepeticoes").value) || 1;
-            const valor = parseFloat(document.getElementById("avulsoValor").value.replace(/\./g, '').replace(',', '.'));
+            const valorStr = document.getElementById("avulsoValor").value;
+            const valor = parseFloat(valorStr.replace(/\./g, '').replace(',', '.'));
+            
+            if(isNaN(valor) || valor <= 0) return alert("Digite um valor válido.");
             const vencimento = document.getElementById("avulsoVencimento").value;
-
-            if(isNaN(valor) || valor <= 0) return alert("Valor inválido.");
-            window.mostrarLoading("A processar Fatura Oficial...");
+            window.mostrarLoading(repeticoes > 1 ? `A clonar faturas...` : "A processar Fatura Oficial e PIX...");
             
             if(tipo === 'somar_proxima') {
                 if(familiaId === 'TODOS') {
+                    if(!confirm(`Somar R$ ${valor.toFixed(2).replace('.',',')} na conta de TODOS?`)) { window.esconderLoading(); return; }
                     for(let id of Object.keys(window.familiasGlobal)) { await updateDoc(doc(db, "familias", id), { taxa_pendente_valor: valor, taxa_pendente_desc: descricao }); }
                 } else { await updateDoc(doc(db, "familias", familiaId), { taxa_pendente_valor: valor, taxa_pendente_desc: descricao }); }
-                window.esconderLoading(); alert("✅ Agendado para a próxima fatura!"); 
-                document.getElementById("formAvulso").reset(); window.filtrarAvulsoESelecionar(); return;
+                window.esconderLoading(); alert("✅ Serviço agendado para a próxima fatura de água!"); 
+                document.getElementById("formAvulso").reset(); document.getElementById("buscaClienteAvulso").value = ""; document.getElementById("avulsoRepeticoes").value = 1; window.filtrarAvulsoESelecionar();
+                return;
             }
             
             if(familiaId === 'TODOS') {
+                if(!confirm(`Gerar PIX e Faturas Oficiais para TODOS?`)) { window.esconderLoading(); return; }
                 for(let [id, f] of Object.entries(window.familiasGlobal)) {
                     const cpfOriginal = f.cpf && f.cpf !== "undefined" ? f.cpf : ""; 
                     const cpfLimpo = cpfOriginal.replace(/\D/g, ''); 
-                    let pixData = { copiaECola: "", qrCodeBase64: "" };
-                    try { const res = await fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: f.nome}) }); if(res.ok) pixData = await res.json(); } catch(err) {}
+                    let pixData = { sucesso: false, copiaECola: "", qrCodeBase64: "" };
+                    try {
+                        const pixReq = fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: f.nome}) });
+                        const res = await Promise.race([pixReq, new Promise((_, r) => setTimeout(() => r(new Error("Timeout")), 12000))]);
+                        if(res.ok) pixData = await res.json();
+                    } catch(err) {}
 
                     try {
                         const pdfEmBase64 = window.gerarFaturaPDFBase64(f.nome, cpfOriginal, f.lote_endereco, descricao, vencimento, valor, pixData.copiaECola, pixData.qrCodeBase64, null);
@@ -835,12 +842,16 @@
                 const telCliente = opt.dataset.tel || "";
                 const endCliente = opt.dataset.endereco || "";
                 
-                let pixData = { copiaECola: "", qrCodeBase64: "" };
-                try { const res = await fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome}) }); if(res.ok) pixData = await res.json(); } catch(e) {}
+                let pixData = { sucesso: false, copiaECola: "", qrCodeBase64: "" };
+                try {
+                    const pixReq = fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: nome}) });
+                    const res = await Promise.race([pixReq, new Promise((_, r) => setTimeout(() => r(new Error("Timeout")), 15000))]);
+                    if(res.ok) pixData = await res.json();
+                } catch(e) {}
 
                 try {
                     for(let i = 0; i < repeticoes; i++) {
-                        let descFinal = repeticoes > 1 ? `${descricao} (${i+1}/${repeticoes})` : descricao;
+                        let descFinal = repeticoes > 1 ? `${descricao} (Cópia ${i+1}/${repeticoes})` : descricao;
                         const pdfEmBase64 = window.gerarFaturaPDFBase64(nome, cpfOriginal, endCliente, descFinal, vencimento, valor, pixData.copiaECola, pixData.qrCodeBase64, null);
                         await addDoc(collection(db, "faturas"), { familia_id: familiaId, mes_referencia: descFinal, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, consumo: "N/A", pdf_base64: pdfEmBase64, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento: vencimento, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pixData.copiaECola || "", qr_code_base64: pixData.qrCodeBase64 || "", pix_txid: String(pixData.txid || ""), telefone: telCliente, nome_morador: nome, cpf: cpfLimpo, data_lancamento: new Date().toISOString() }); 
                     }
