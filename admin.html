@@ -747,7 +747,7 @@
         };
 
         // ==========================================
-        // LOTE MENSAL (BASE 64 - SEM TRAVAMENTOS)
+        // LOTE MENSAL (COMPLETO)
         // ==========================================
         window.gerarFaturasEmLote = async () => {
             const inputs = document.querySelectorAll('input[id^="h-total-"]');
@@ -779,6 +779,7 @@
                 const vMulta = parseFloat(document.getElementById(`multa-${id}`).value) || 0;
                 const taxaPendente = parseFloat(document.getElementById(`h-taxa-${id}`).value);
                 const descTaxa = document.getElementById(`h-taxa-${id}`).dataset.desc;
+                const telCliente = input.dataset.tel || "";
                 
                 const cpfOriginal = input.dataset.cpf && input.dataset.cpf !== "undefined" ? input.dataset.cpf : "";
                 const cpfLimpo = cpfOriginal.replace(/\D/g, '');
@@ -790,44 +791,59 @@
                 let descFinal = `Água ${mes}`;
                 if(taxaPendente > 0) descFinal += ` + ${descTaxa}`;
 
-                let pixData = { sucesso: false, copiaECola: "" };
+                let pixData = { sucesso: false, copiaECola: "", qrCodeBase64: "", txid: "" };
                 try {
                     const pixReq = fetch("/api/gerar-pix", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ valor: total, descricao: descFinal, nome: nome }) });
                     const res = await Promise.race([pixReq, new Promise((_, r) => setTimeout(() => r(new Error("Timeout PIX")), 12000))]);
                     if(res.ok) pixData = await res.json();
-                } catch(e) { console.warn("Falha no PIX para:", nome); }
+                } catch(e) {}
                 
                 try {
-                    // PDF VAI PARA O BANCO DE DADOS (Não trava mais na nuvem)
                     const pdfEmBase64 = window.gerarFaturaPDFBase64(nome, cpfOriginal, descFinal, venc, total, pixData.copiaECola, consumoFinal + " m³");
 
+                    // 🚨 SALVANDO TODOS OS CAMPOS NECESSÁRIOS PARA O ROBÔ
                     await addDoc(collection(db, "faturas"), { 
-                        familia_id: id, mes_referencia: descFinal, leitura_anterior: l_ant, leitura_atual: l_atu, 
-                        consumo_m3: consumoFinal, consumo: consumoFinal + " m³", 
-                        pdf_base64: pdfEmBase64, // 👈 MÁGICA AQUI
-                        valor_agua: vAgua, valor_multa: vMulta, taxa_extra: taxaPendente, valor_total: total, 
-                        vencimento: venc, status: "pendente", whatsapp_enviado: false, 
-                        pix_copia_cola: pixData.copiaECola || "", qr_code_base64: pixData.qrCodeBase64 || "", pix_txid: String(pixData.txid || ""), 
-                        data_lancamento: new Date().toISOString(), telefone: input.dataset.tel, nome_morador: nome, cpf: cpfLimpo 
+                        familia_id: id, 
+                        mes_referencia: descFinal, 
+                        leitura_anterior: l_ant, 
+                        leitura_atual: l_atu, 
+                        consumo_m3: consumoFinal, 
+                        consumo: consumoFinal + " m³", 
+                        pdf_base64: pdfEmBase64,
+                        valor_agua: vAgua, 
+                        valor_multa: vMulta, 
+                        taxa_extra: taxaPendente, 
+                        valor_total: total, 
+                        vencimento: venc, 
+                        status: "pendente", 
+                        whatsapp_enviado: false, 
+                        pix_copia_cola: pixData.copiaECola || "", 
+                        qr_code_base64: pixData.qrCodeBase64 || "", 
+                        pix_txid: String(pixData.txid || ""), 
+                        data_lancamento: new Date().toISOString(), 
+                        telefone: telCliente, 
+                        nome_morador: nome, 
+                        cpf: cpfLimpo 
                     });
 
                     await updateDoc(doc(db, "familias", id), { ultima_leitura: l_atu, taxa_pendente_valor: 0, taxa_pendente_desc: "" });
+                    await addDoc(collection(db, "logs_agente"), { data: new Date().toISOString(), acao: 'Lote Mensal', cliente: nome, valor: total });
                     
                     const nomePZ = nome.replace(/'/g, "\\'"); 
                     const dataBr = venc.split('-').reverse().join('/');
-                    const statusElement = document.getElementById(`status-${id}`);
-                    if(statusElement) statusElement.innerHTML = `<button onclick="window.enviarWhatsAppSemEmoji('normal', '${input.dataset.tel}', '${nomePZ}', '${mes}', '${total.toFixed(2)}', '${dataBr}')" class="bg-green-500 text-white font-bold px-3 py-1.5 rounded-xl text-[10px] md:text-xs shadow-sm transition hover:bg-green-600">📲 ZAP</button>`;
+                    const st = document.getElementById(`status-${id}`);
+                    if(st) st.innerHTML = `<button onclick="window.enviarWhatsAppSemEmoji('normal', '${telCliente}', '${nomePZ}', '${mes}', '${total.toFixed(2)}', '${dataBr}')" class="bg-green-500 text-white font-bold px-3 py-1.5 rounded-xl text-[10px] md:text-xs shadow-sm transition hover:bg-green-600">📲 ZAP</button>`;
                     
                     document.getElementById(`atu-${id}`).disabled = true; document.getElementById(`multa-${id}`).disabled = true;
-                } catch(err) { console.error("Erro ao salvar no banco", err); }
+                } catch(err) { console.error(err); }
                 
                 if (contadorProcessado < totalLinhas) { await new Promise(resolve => setTimeout(resolve, 800)); }
             }
-            window.esconderLoading(); alert("✅ Lote Mensal Gerado! (PDFs Salvos com Sucesso)");
+            window.esconderLoading(); alert("✅ Lote Mensal Gerado com Sucesso!");
         };
 
         // ==========================================
-        // TAXAS AVULSAS (BASE 64 - SEM TRAVAMENTOS)
+        // TAXAS AVULSAS (COMPLETO)
         // ==========================================
         window.submitAvulso = async (e) => {
             e.preventDefault();
@@ -859,7 +875,7 @@
                 for(let [id, f] of Object.entries(window.familiasGlobal)) {
                     const cpfOriginal = f.cpf && f.cpf !== "undefined" ? f.cpf : ""; 
                     const cpfLimpo = cpfOriginal.replace(/\D/g, ''); 
-                    let pixData = { sucesso: false, copiaECola: "" };
+                    let pixData = { sucesso: false, copiaECola: "", qrCodeBase64: "", txid: "" };
                     try {
                         const pixReq = fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: f.nome}) });
                         const res = await Promise.race([pixReq, new Promise((_, r) => setTimeout(() => r(new Error("Timeout")), 12000))]);
@@ -868,7 +884,16 @@
 
                     try {
                         const pdfEmBase64 = window.gerarFaturaPDFBase64(f.nome, cpfOriginal, descricao, vencimento, valor, pixData.copiaECola, null);
-                        await addDoc(collection(db, "faturas"), { familia_id: id, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, consumo: "N/A", pdf_base64: pdfEmBase64, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pixData.copiaECola || "", qr_code_base64: pixData.qrCodeBase64 || "", pix_txid: String(pixData.txid || ""), telefone: f.telefone, nome_morador: f.nome, cpf: cpfLimpo, data_lancamento: new Date().toISOString() }); 
+                        
+                        // 🚨 SALVANDO TODOS OS CAMPOS
+                        await addDoc(collection(db, "faturas"), { 
+                            familia_id: id, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, 
+                            consumo_m3: 0, consumo: "N/A", pdf_base64: pdfEmBase64, valor_agua: 0, valor_multa: 0, 
+                            taxa_extra: valor, valor_total: valor, vencimento: vencimento, status: "pendente", 
+                            whatsapp_enviado: false, pix_copia_cola: pixData.copiaECola || "", qr_code_base64: pixData.qrCodeBase64 || "", 
+                            pix_txid: String(pixData.txid || ""), telefone: f.telefone || "", nome_morador: f.nome, cpf: cpfLimpo, 
+                            data_lancamento: new Date().toISOString() 
+                        }); 
                     } catch(err) {}
                 }
                 window.esconderLoading(); alert(`✅ Faturas avulsas geradas.`);
@@ -876,8 +901,9 @@
                 const nome = opt.dataset.nome;
                 const cpfOriginal = opt.dataset.cpf && opt.dataset.cpf !== "undefined" ? opt.dataset.cpf : ""; 
                 const cpfLimpo = cpfOriginal.replace(/\D/g, ''); 
+                const telCliente = opt.dataset.tel || "";
                 
-                let pixData = { sucesso: false, copiaECola: "" };
+                let pixData = { sucesso: false, copiaECola: "", qrCodeBase64: "", txid: "" };
                 try {
                     const pixReq = fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: nome}) });
                     const res = await Promise.race([pixReq, new Promise((_, r) => setTimeout(() => r(new Error("Timeout")), 15000))]);
@@ -888,9 +914,18 @@
                     for(let i = 0; i < repeticoes; i++) {
                         let descFinal = repeticoes > 1 ? `${descricao} (Cópia ${i+1}/${repeticoes})` : descricao;
                         const pdfEmBase64 = window.gerarFaturaPDFBase64(nome, cpfOriginal, descFinal, vencimento, valor, pixData.copiaECola, null);
-                        await addDoc(collection(db, "faturas"), { familia_id: familiaId, mes_referencia: descFinal, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, consumo: "N/A", pdf_base64: pdfEmBase64, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pixData.copiaECola || "", qr_code_base64: pixData.qrCodeBase64 || "", pix_txid: String(pixData.txid || ""), telefone: opt.dataset.tel, nome_morador: opt.dataset.nome, cpf: cpfLimpo, data_lancamento: new Date().toISOString() }); 
+                        
+                        // 🚨 SALVANDO TODOS OS CAMPOS
+                        await addDoc(collection(db, "faturas"), { 
+                            familia_id: familiaId, mes_referencia: descFinal, leitura_anterior: 0, leitura_atual: 0, 
+                            consumo_m3: 0, consumo: "N/A", pdf_base64: pdfEmBase64, valor_agua: 0, valor_multa: 0, 
+                            taxa_extra: valor, valor_total: valor, vencimento: vencimento, status: "pendente", 
+                            whatsapp_enviado: false, pix_copia_cola: pixData.copiaECola || "", qr_code_base64: pixData.qrCodeBase64 || "", 
+                            pix_txid: String(pixData.txid || ""), telefone: telCliente, nome_morador: opt.dataset.nome, cpf: cpfLimpo, 
+                            data_lancamento: new Date().toISOString() 
+                        }); 
                     }
-                    window.esconderLoading(); alert(`✅ Serviço avulso gerado com sucesso! (PDF Salvo)`);
+                    window.esconderLoading(); alert(`✅ Serviço avulso gerado com sucesso!`);
                 } catch(e) { window.esconderLoading(); alert("Erro ao salvar fatura."); }
             }
             document.getElementById("formAvulso").reset(); document.getElementById("buscaClienteAvulso").value = ""; document.getElementById("avulsoRepeticoes").value = 1; window.filtrarAvulsoESelecionar();
@@ -923,7 +958,7 @@
                     
                     if (f.whatsapp_enviado) {
                         corZap = 'bg-green-500 hover:bg-green-600';
-                        if (f.data_envio_whatsapp && !f.data_envio_whatsapp.includes("ERRO")) {
+                        if (f.data_envio_whatsapp && !f.data_envio_whatsapp.includes("ERRO") && !f.data_envio_whatsapp.includes("INVALIDO")) {
                             let dtEnv = new Date(f.data_envio_whatsapp);
                             let hrEnvio = dtEnv.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit', second:'2-digit'});
                             linhaBaixo = `<i class="fa-brands fa-whatsapp mr-1"></i> ${hrEnvio}`;
