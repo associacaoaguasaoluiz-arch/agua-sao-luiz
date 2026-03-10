@@ -299,7 +299,7 @@
             </form>
         </div>
     </div>
-	<script type="module">
+<script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
@@ -319,45 +319,105 @@
         window.fecharModal = () => document.getElementById("modalMorador").style.display = "none";
         
         // ==========================================
-        // MOTOR DE PDF EM TEXTO (NÃO TRAVA E TEM LAYOUT PROFISSIONAL)
+        // NOVO MOTOR DE PDF (LAYOUT PREMIUM V22.6)
         // ==========================================
-        window.gerarFaturaPDFBase64 = (nome, cpfOriginal, refDesc, venc, valorTotal, pixCopia, consumo) => {
+        window.gerarFaturaPDFBase64 = (nome, cpfOriginal, endereco, refDesc, venc, valorTotal, pixCopia, qrCodeBase64, consumo) => {
             try {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
                 
-                doc.setDrawColor(41, 128, 185); doc.setLineWidth(1); doc.rect(10, 10, 190, 135);
+                // Bordas do Documento
+                doc.setDrawColor(41, 128, 185); doc.setLineWidth(1); doc.rect(10, 10, 190, 260);
+                
+                // Cabeçalho Azul
                 doc.setFillColor(41, 128, 185); doc.rect(10, 10, 190, 20, 'F');
                 doc.setTextColor(255, 255, 255); doc.setFontSize(16); doc.setFont("helvetica", "bold");
                 doc.text("ASSOCIAÇÃO DE ÁGUA DISTRITO SÃO LUIZ", 105, 23, null, null, "center");
                 
+                // Título Dinâmico
                 doc.setTextColor(50, 50, 50); doc.setFontSize(14);
-                doc.text("RECIBO / FATURA OFICIAL", 105, 40, null, null, "center");
-                doc.setLineWidth(0.5); doc.line(20, 45, 190, 45);
+                const titulo = `FATURA DE GASTO MENSAL (${refDesc.toUpperCase()})`;
+                doc.text(titulo, 105, 45, null, null, "center");
+                doc.setLineWidth(0.5); doc.line(20, 50, 190, 50);
                 
-                doc.setFontSize(11); doc.setFont("helvetica", "normal");
-                doc.text(`NOME DO CLIENTE:`, 20, 55); doc.setFont("helvetica", "bold"); doc.text(`${nome || 'Não informado'}`, 70, 55);
-                doc.setFont("helvetica", "normal");
-                doc.text(`CPF / DOCUMENTO:`, 20, 65); doc.setFont("helvetica", "bold"); doc.text(`${cpfOriginal || 'Não informado'}`, 70, 65);
-                doc.setFont("helvetica", "normal");
-                doc.text(`MÊS REFERÊNCIA:`, 20, 75); doc.setFont("helvetica", "bold"); doc.text(`${refDesc}`, 70, 75);
-                doc.setFont("helvetica", "normal");
-                doc.text(`VENCIMENTO:`, 20, 85); doc.setFont("helvetica", "bold"); doc.setTextColor(200, 0, 0); 
-                doc.text(`${venc.split('-').reverse().join('/')}`, 70, 85); doc.setTextColor(50, 50, 50);
+                // ✨ NOVO: Selo de Autenticidade (Gota de Água)
+                doc.setFillColor(240, 248, 255); doc.setDrawColor(41, 128, 185); doc.setLineWidth(0.5);
+                doc.circle(170, 45, 14, 'FD'); // Círculo
+                doc.setFontSize(5); doc.setTextColor(41, 128, 185);
+                doc.text("SELO DE", 170, 38, null, null, "center");
+                doc.text("AUTENTICIDADE", 170, 41, null, null, "center");
+                // Desenhar a Gotinha
+                doc.setFillColor(41, 128, 185);
+                doc.triangle(170, 45, 167, 52, 173, 52, 'F'); // Topo da gota
+                doc.circle(170, 52, 3, 'F'); // Base da gota
+                
+                // Dados do Cliente
+                doc.setTextColor(50, 50, 50); doc.setFontSize(11); 
+                doc.setFont("helvetica", "normal"); doc.text(`NOME DO CLIENTE:`, 20, 60); 
+                doc.setFont("helvetica", "bold"); doc.text(`${nome || 'Não informado'}`, 70, 60);
+                
+                doc.setFont("helvetica", "normal"); doc.text(`CPF / DOCUMENTO:`, 20, 70); 
+                doc.setFont("helvetica", "bold"); doc.text(`${cpfOriginal || 'Não informado'}`, 70, 70);
+                
+                // ✨ NOVO: Endereço Puxado do Banco
+                doc.setFont("helvetica", "normal"); doc.text(`ENDEREÇO / LOTE:`, 20, 80); 
+                doc.setFont("helvetica", "bold"); doc.text(`${endereco || 'Não informado'}`, 70, 80);
+                
+                doc.setFont("helvetica", "normal"); doc.text(`VENCIMENTO:`, 20, 90); 
+                doc.setFont("helvetica", "bold"); doc.setTextColor(200, 0, 0); 
+                doc.text(`${venc.split('-').reverse().join('/')}`, 70, 90); doc.setTextColor(50, 50, 50);
                 
                 if (consumo) {
-                    doc.setFont("helvetica", "normal"); doc.text(`CONSUMO REGISTRADO:`, 20, 95); doc.setFont("helvetica", "bold"); doc.text(`${consumo}`, 75, 95);
+                    doc.setFont("helvetica", "normal"); doc.text(`CONSUMO REGISTRADO:`, 20, 100); 
+                    doc.setFont("helvetica", "bold"); doc.text(`${consumo}`, 75, 100);
                 } else {
-                    doc.setFont("helvetica", "normal"); doc.text(`TIPO DE COBRANÇA:`, 20, 95); doc.setFont("helvetica", "bold"); doc.text(`SERVIÇO AVULSO`, 70, 95);
+                    doc.setFont("helvetica", "normal"); doc.text(`TIPO DE COBRANÇA:`, 20, 100); 
+                    doc.setFont("helvetica", "bold"); doc.text(`SERVIÇO AVULSO`, 75, 100);
                 }
                 
-                doc.setFillColor(240, 248, 255); doc.rect(20, 105, 170, 15, 'F');
+                // Quadro de Valor
+                doc.setFillColor(240, 248, 255); doc.rect(20, 110, 170, 15, 'F');
                 doc.setFontSize(14); doc.setFont("helvetica", "bold");
-                doc.text(`VALOR TOTAL A PAGAR: R$ ${parseFloat(valorTotal).toFixed(2).replace('.', ',')}`, 105, 115, null, null, "center");
+                doc.text(`VALOR TOTAL A PAGAR: R$ ${parseFloat(valorTotal).toFixed(2).replace('.', ',')}`, 105, 120, null, null, "center");
                 
-                doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.text("CHAVE PIX (COPIA E COLA):", 20, 130);
+                let yOffset = 140;
+
+                // ✨ NOVO: QR CODE GRANDE DO PIX
+                if (qrCodeBase64 && qrCodeBase64.length > 20) {
+                    doc.setFontSize(11); doc.setFont("helvetica", "bold"); 
+                    doc.text("PAGUE COM PIX (ESCANEIE O QR CODE):", 105, yOffset, null, null, "center");
+                    let imgData = qrCodeBase64;
+                    if (!imgData.startsWith('data:image')) { imgData = 'data:image/png;base64,' + qrCodeBase64; }
+                    doc.addImage(imgData, 'PNG', 75, yOffset + 5, 60, 60); // QR Code Centralizado (60x60)
+                    yOffset += 75;
+                }
+                
+                // PIX Copia e Cola
+                doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.text("OU CHAVE PIX (COPIA E COLA):", 105, yOffset, null, null, "center");
                 doc.setFontSize(8); doc.setFont("courier", "normal");
-                const splitPix = doc.splitTextToSize(pixCopia || 'PIX indisponível', 170); doc.text(splitPix, 20, 138);
+                const splitPix = doc.splitTextToSize(pixCopia || 'PIX indisponível', 170); doc.text(splitPix, 105, yOffset + 6, null, null, "center");
+                
+                yOffset += 25;
+
+                // ✨ NOVO: SIMULADOR DE CÓDIGO DE BARRAS DE AUTENTICAÇÃO
+                doc.setFontSize(9); doc.setFont("helvetica", "bold");
+                doc.text("CÓDIGO DE AUTENTICAÇÃO / PAGAMENTO INTERNO:", 105, yOffset, null, null, "center");
+                
+                let startX = 35; const endX = 175; const barY = yOffset + 4; const barH = 15;
+                doc.setFillColor(0, 0, 0);
+                
+                // Desenhar as barrinhas do código de barras
+                let hash = (cpfOriginal + valorTotal + "102938475610293847561029384756").replace(/\D/g, '');
+                let currX = startX;
+                for(let i = 0; i < 50 && currX < endX; i++) {
+                    let w = (parseInt(hash.charAt(i % hash.length)) % 3) * 0.8 + 0.5;
+                    let space = (parseInt(hash.charAt((i+1) % hash.length)) % 2) * 0.8 + 1.0;
+                    if (currX + w <= endX) { doc.rect(currX, barY, w, barH, 'F'); }
+                    currX += w + space;
+                }
+                yOffset += 25;
+                doc.setFontSize(8); doc.setFont("courier", "normal");
+                doc.text(`${hash.substring(0, 10)} ${hash.substring(10, 20)} ${hash.substring(20, 30)} ${hash.substring(30, 44)}`, 105, yOffset, null, null, "center");
 
                 return doc.output('datauristring').split(',')[1];
             } catch (errPdf) { return null; }
@@ -378,8 +438,7 @@
         window.mascaraMoeda = (event) => {
             let v = event.target.value.replace(/\D/g, '');
             if(v === '') { event.target.value = ''; return; }
-            v = (parseInt(v, 10) / 100).toFixed(2);
-            event.target.value = v.replace('.', ',');
+            event.target.value = (parseInt(v, 10) / 100).toFixed(2).replace('.', ',');
         };
 
         window.focarProximo = (event, nextId) => { if (event.key === "Enter") { event.preventDefault(); const nextEl = document.getElementById(nextId); if(nextEl) { nextEl.focus(); if(nextEl.tagName === 'INPUT') nextEl.select(); } } };
@@ -397,7 +456,7 @@
             moradoresAvulso.forEach(f => {
                 const texto = `${f.nome} ${f.cpf || ''} ${f.lote_endereco || ''}`.toLowerCase();
                 if(texto.includes(termoBuscado)) {
-                    html += `<option value="${f.id}" data-nome="${f.nome}" data-cpf="${f.cpf || ''}" data-tel="${f.telefone}">${f.nome} (${f.lote_endereco})</option>`;
+                    html += `<option value="${f.id}" data-nome="${f.nome}" data-cpf="${f.cpf || ''}" data-tel="${f.telefone}" data-endereco="${f.lote_endereco || ''}">${f.nome} (${f.lote_endereco})</option>`;
                     if(matchCount === 0) { firstMatchId = f.id; firstMatchName = f.nome; }
                     matchCount++;
                 }
@@ -736,7 +795,7 @@
                             <td class="p-2 md:p-3 text-center"><input type="number" id="atu-${famId}" onkeyup="window.calcularLinha('${famId}')" onkeydown="window.pularLinhaGrelha(event, this)" class="input-leitura p-2 md:p-3 border-2 border-blue-400 bg-blue-50 rounded-xl text-center font-black outline-none text-blue-800"></td>
                             <td class="p-2 md:p-3 text-center font-bold text-blue-600"><span id="cons-${famId}">0</span><span class="text-[10px] md:text-xs ml-1">m³</span></td>
                             <td class="p-2 md:p-3 text-center"><input type="number" step="0.01" id="multa-${famId}" value="${multa}" onkeyup="window.calcularLinha('${famId}')" class="w-16 md:w-24 p-2 md:p-3 border border-red-200 rounded-xl text-center outline-none text-red-600 font-bold text-sm md:text-base"></td>
-                            <td class="p-2 md:p-3 text-right font-black text-green-700 text-sm md:text-lg">R$ <span id="valTotal-${famId}">0,00</span><input type="hidden" id="h-total-${famId}" value="0" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}"><input type="hidden" id="h-agua-${famId}" value="0"><input type="hidden" id="h-taxa-${famId}" value="${taxaPendente}" data-desc="${descTaxa}"></td>
+                            <td class="p-2 md:p-3 text-right font-black text-green-700 text-sm md:text-lg">R$ <span id="valTotal-${famId}">0,00</span><input type="hidden" id="h-total-${famId}" value="0" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}" data-endereco="${f.lote_endereco || ''}"><input type="hidden" id="h-agua-${famId}" value="0"><input type="hidden" id="h-taxa-${famId}" value="${taxaPendente}" data-desc="${descTaxa}"></td>
                             <td class="p-2 md:p-3 text-center" id="status-${famId}"><span class="bg-gray-200 px-2 py-1 md:px-3 md:py-1 rounded-full text-[9px] md:text-[10px] text-gray-500 font-bold uppercase">Espera</span></td>
                         </tr>
                     `;
@@ -747,7 +806,7 @@
         };
 
         // ==========================================
-        // LOTE MENSAL (COMPLETO)
+        // GERAÇÃO MENSAL (LOTE) COM NOVO PDF
         // ==========================================
         window.gerarFaturasEmLote = async () => {
             const inputs = document.querySelectorAll('input[id^="h-total-"]');
@@ -783,6 +842,7 @@
                 
                 const cpfOriginal = input.dataset.cpf && input.dataset.cpf !== "undefined" ? input.dataset.cpf : "";
                 const cpfLimpo = cpfOriginal.replace(/\D/g, '');
+                const enderecoCliente = input.dataset.endereco || "";
                 
                 const l_ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0;
                 const atu_str = document.getElementById(`atu-${id}`).value;
@@ -799,9 +859,9 @@
                 } catch(e) {}
                 
                 try {
-                    const pdfEmBase64 = window.gerarFaturaPDFBase64(nome, cpfOriginal, descFinal, venc, total, pixData.copiaECola, consumoFinal + " m³");
+                    // DESENHA O NOVO PDF PREMIUM
+                    const pdfEmBase64 = window.gerarFaturaPDFBase64(nome, cpfOriginal, enderecoCliente, descFinal, venc, total, pixData.copiaECola, pixData.qrCodeBase64, consumoFinal + " m³");
 
-                    // 🚨 SALVANDO TODOS OS CAMPOS NECESSÁRIOS PARA O ROBÔ
                     await addDoc(collection(db, "faturas"), { 
                         familia_id: id, 
                         mes_referencia: descFinal, 
@@ -843,7 +903,7 @@
         };
 
         // ==========================================
-        // TAXAS AVULSAS (COMPLETO)
+        // TAXAS AVULSAS COM NOVO PDF
         // ==========================================
         window.submitAvulso = async (e) => {
             e.preventDefault();
@@ -883,9 +943,8 @@
                     } catch(err) {}
 
                     try {
-                        const pdfEmBase64 = window.gerarFaturaPDFBase64(f.nome, cpfOriginal, descricao, vencimento, valor, pixData.copiaECola, null);
+                        const pdfEmBase64 = window.gerarFaturaPDFBase64(f.nome, cpfOriginal, f.lote_endereco, descricao, vencimento, valor, pixData.copiaECola, pixData.qrCodeBase64, null);
                         
-                        // 🚨 SALVANDO TODOS OS CAMPOS
                         await addDoc(collection(db, "faturas"), { 
                             familia_id: id, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, 
                             consumo_m3: 0, consumo: "N/A", pdf_base64: pdfEmBase64, valor_agua: 0, valor_multa: 0, 
@@ -902,6 +961,7 @@
                 const cpfOriginal = opt.dataset.cpf && opt.dataset.cpf !== "undefined" ? opt.dataset.cpf : ""; 
                 const cpfLimpo = cpfOriginal.replace(/\D/g, ''); 
                 const telCliente = opt.dataset.tel || "";
+                const endCliente = opt.dataset.endereco || "";
                 
                 let pixData = { sucesso: false, copiaECola: "", qrCodeBase64: "", txid: "" };
                 try {
@@ -913,9 +973,8 @@
                 try {
                     for(let i = 0; i < repeticoes; i++) {
                         let descFinal = repeticoes > 1 ? `${descricao} (Cópia ${i+1}/${repeticoes})` : descricao;
-                        const pdfEmBase64 = window.gerarFaturaPDFBase64(nome, cpfOriginal, descFinal, vencimento, valor, pixData.copiaECola, null);
+                        const pdfEmBase64 = window.gerarFaturaPDFBase64(nome, cpfOriginal, endCliente, descFinal, vencimento, valor, pixData.copiaECola, pixData.qrCodeBase64, null);
                         
-                        // 🚨 SALVANDO TODOS OS CAMPOS
                         await addDoc(collection(db, "faturas"), { 
                             familia_id: familiaId, mes_referencia: descFinal, leitura_anterior: 0, leitura_atual: 0, 
                             consumo_m3: 0, consumo: "N/A", pdf_base64: pdfEmBase64, valor_agua: 0, valor_multa: 0, 
@@ -925,7 +984,7 @@
                             data_lancamento: new Date().toISOString() 
                         }); 
                     }
-                    window.esconderLoading(); alert(`✅ Serviço avulso gerado com sucesso!`);
+                    window.esconderLoading(); alert(`✅ Serviço avulso gerado com sucesso! (PDF Salvo)`);
                 } catch(e) { window.esconderLoading(); alert("Erro ao salvar fatura."); }
             }
             document.getElementById("formAvulso").reset(); document.getElementById("buscaClienteAvulso").value = ""; document.getElementById("avulsoRepeticoes").value = 1; window.filtrarAvulsoESelecionar();
