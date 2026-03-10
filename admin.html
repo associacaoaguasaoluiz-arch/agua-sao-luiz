@@ -6,6 +6,7 @@
     <title>App Gestão 22.0 - Água São Luiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <style>
         body { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; -webkit-touch-callout: none; }
@@ -328,10 +329,14 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        
+        // IMPORTAÇÃO NOVA PARA SALVAR O PDF NA NUVEM
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ", authDomain: "sistema-agua-sao-luiz.firebaseapp.com", projectId: "sistema-agua-sao-luiz" };
+        const firebaseConfig = { apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ", authDomain: "sistema-agua-sao-luiz.firebaseapp.com", projectId: "sistema-agua-sao-luiz", storageBucket: "sistema-agua-sao-luiz.appspot.com" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const storage = getStorage(app); // INICIALIZA O STORAGE DO PDF
 
         window.familiasGlobal = {}; 
         window.valoresAguaGlobais = { val1: 25, val2: 50, val3: 100, multa: 25 };
@@ -407,7 +412,6 @@
             window.open(`https://wa.me/${telLimpo}?text=${encodeURIComponent(msg)}`, '_blank');
         };
 
-        // ROTINAS DE INTELIGÊNCIA ARTIFICIAL E SCRIPT DE VOZ (MANTIDAS)
         window.vozAtiva = false;
         let recognition;
         window.alternarVoz = () => {
@@ -439,21 +443,16 @@
             recognition.start();
         };
 
-        // ==========================================
-        // GESTÃO DOS NOVOS AVISOS (COM FRASES E EMOJIS)
-        // ==========================================
         window.carregarModeloAviso = () => {
             const mod = document.getElementById("avisoModelo").value;
             const txt = document.getElementById("avisoMensagem");
             
-            // Banco de Frases de Racionamento
             const dicasRacionamento = [
                 "💧 Dica: Economizar água para um futuro melhor!",
                 "💧 Lembre-se: Cada gota conta. Evite o desperdício!",
                 "💧 Dica: Água é vida. Pequenas atitudes fazem a diferença na nossa comunidade!",
                 "💧 Consciente: Racionar água é dever de todos nós. Cuide do nosso bem maior a *Água!*"
             ];
-            // Sorteia uma frase diferente cada vez que clica
             const dicaSorteada = dicasRacionamento[Math.floor(Math.random() * dicasRacionamento.length)];
 
             if (mod === 'manutencao') {
@@ -461,7 +460,7 @@
             } else if (mod === 'reuniao') {
                 txt.value = "📢 *Aviso*\n\n*Esta é uma mensagem automática:*\nReunião para a todos os usuários, você está convidado (a) a participar, na próxima semana data a ser definida e repassada.\n\n" + dicaSorteada;
             } else if (mod === 'livre') {
-                txt.value = "\n\n" + dicaSorteada; // Mantém a dica de água no final para mensagem livre
+                txt.value = "\n\n" + dicaSorteada; 
             } else { 
                 txt.value = ""; 
             }
@@ -547,7 +546,6 @@
             }
         };
 
-        // INICIALIZAÇÃO
         window.onload = async () => {
             const date = new Date();
             document.getElementById("relDataInicio").value = new Date(date.getFullYear(), date.getMonth(), 1).toISOString().split('T')[0];
@@ -774,6 +772,9 @@
             } catch (e) { corpo.innerHTML = "<tr><td colspan='7'>Erro ao carregar dados.</td></tr>"; }
         };
 
+        // ==========================================
+        // GERAÇÃO DE LOTE COM PDF ATUALIZADA AQUI:
+        // ==========================================
         window.gerarFaturasEmLote = async () => {
             const inputs = document.querySelectorAll('input[id^="h-total-"]');
             const linhas = Array.from(inputs).filter(i => {
@@ -803,7 +804,7 @@
                 const taxaPendente = parseFloat(document.getElementById(`h-taxa-${id}`).value);
                 const descTaxa = document.getElementById(`h-taxa-${id}`).dataset.desc;
                 const nome = input.dataset.nome;
-                const cpf = input.dataset.cpf.replace(/\D/g, '');
+                const cpf = input.dataset.cpf.replace(/\D/g, ''); // EXTRAI O CPF
                 
                 const l_ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0;
                 const atu_str = document.getElementById(`atu-${id}`).value;
@@ -817,20 +818,74 @@
                     const pix = await res.json();
                     
                     if(pix.sucesso) {
-                        await addDoc(collection(db, "faturas"), { familia_id: id, mes_referencia: descFinal, leitura_anterior: l_ant, leitura_atual: l_atu, consumo_m3: consumoFinal, valor_agua: vAgua, valor_multa: vMulta, taxa_extra: taxaPendente, valor_total: total, vencimento: venc, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pix.copiaECola, qr_code_base64: pix.qrCodeBase64, pix_txid: String(pix.txid), data_lancamento: new Date().toISOString(), telefone: input.dataset.tel, nome_morador: nome });
+                        let url_pdf_nuvem = "";
+                        try {
+                            const { jsPDF } = window.jspdf;
+                            const docPdf = new jsPDF();
+                            
+                            docPdf.setFontSize(16);
+                            docPdf.text("ASSOCIAÇÃO DE ÁGUA SÃO LUIZ", 105, 20, null, null, "center");
+                            docPdf.setFontSize(12);
+                            docPdf.text("----------------------------------------------------------------", 20, 30);
+                            docPdf.text(`MORADOR: ${nome}`, 20, 40);
+                            docPdf.text(`CPF: ${input.dataset.cpf}`, 20, 50);
+                            docPdf.text(`REFERÊNCIA: ${descFinal}`, 20, 60);
+                            docPdf.text(`VENCIMENTO: ${venc.split('-').reverse().join('/')}`, 20, 70);
+                            docPdf.text(`CONSUMO REGISTRADO: ${consumoFinal} m³`, 20, 80);
+                            docPdf.text(`VALOR TOTAL: R$ ${total.toFixed(2).replace('.', ',')}`, 20, 90);
+                            docPdf.text("----------------------------------------------------------------", 20, 100);
+                            docPdf.text("CHAVE PIX (Copia e Cola):", 20, 110);
+                            docPdf.setFontSize(9);
+                            docPdf.text(pix.copiaECola, 20, 120, { maxWidth: 170 });
+                            
+                            const pdfBlob = docPdf.output('blob');
+                            const pdfRef = ref(storage, `faturas/fatura_${cpf}_${Date.now()}.pdf`);
+                            await uploadBytes(pdfRef, pdfBlob);
+                            url_pdf_nuvem = await getDownloadURL(pdfRef);
+                        } catch (errPdf) {
+                            console.error("Erro ao gerar PDF", errPdf);
+                        }
+
+                        // AGORA ELE ADICIONA NO BANCO TUDO O QUE O SEU ROBÔ VAI PRECISAR!
+                        await addDoc(collection(db, "faturas"), { 
+                            familia_id: id, 
+                            mes_referencia: descFinal, 
+                            leitura_anterior: l_ant, 
+                            leitura_atual: l_atu, 
+                            consumo_m3: consumoFinal, 
+                            consumo: consumoFinal + " m³", 
+                            url_pdf: url_pdf_nuvem,
+                            valor_agua: vAgua, 
+                            valor_multa: vMulta, 
+                            taxa_extra: taxaPendente, 
+                            valor_total: total, 
+                            vencimento: venc, 
+                            status: "pendente", 
+                            whatsapp_enviado: false, 
+                            pix_copia_cola: pix.copiaECola, 
+                            qr_code_base64: pix.qrCodeBase64, 
+                            pix_txid: String(pix.txid), 
+                            data_lancamento: new Date().toISOString(), 
+                            telefone: input.dataset.tel, 
+                            nome_morador: nome,
+                            cpf: cpf 
+                        });
+
                         await updateDoc(doc(db, "familias", id), { ultima_leitura: l_atu, taxa_pendente_valor: 0, taxa_pendente_desc: "" });
                         await addDoc(collection(db, "logs_agente"), { data: new Date().toISOString(), acao: 'Lote Mensal', cliente: nome, valor: total });
+                        
                         const nomePZ = nome.replace(/'/g, "\\'"); 
                         const dataBr = venc.split('-').reverse().join('/');
                         const statusElement = document.getElementById(`status-${id}`);
                         if(statusElement) statusElement.innerHTML = `<button onclick="window.enviarWhatsAppSemEmoji('normal', '${input.dataset.tel}', '${nomePZ}', '${mes}', '${total.toFixed(2)}', '${dataBr}')" class="bg-green-500 text-white font-bold px-3 py-1.5 rounded-xl text-[10px] md:text-xs shadow-sm transition hover:bg-green-600">📲 ZAP</button>`;
+                        
                         document.getElementById(`atu-${id}`).disabled = true;
                         document.getElementById(`multa-${id}`).disabled = true;
                     }
                 } catch(e) {}
                 if (contadorProcessado < totalLinhas) { await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * (2500 - 1500 + 1)) + 1500)); }
             }
-            window.esconderLoading(); alert("✅ Lote de Faturas Concluído com Sucesso!");
+            window.esconderLoading(); alert("✅ Lote de Faturas Concluído com Sucesso! (PDFs Salvos)");
         };
 
         window.submitAvulso = async (e) => {
