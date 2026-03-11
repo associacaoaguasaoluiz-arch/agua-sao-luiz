@@ -321,7 +321,7 @@
         // ==========================================
         // MOTOR DE PDF: FATURA PREMIUM (V22.9)
         // ==========================================
-        window.gerarFaturaPDFBase64 = (nome, cpfOriginal, endereco, refDesc, venc, valorTotal, pixCopia, qrCodeBase64, consumo) => {
+       window.gerarFaturaPDFBase64 = (nome, cpfOriginal, endereco, refDesc, venc, valorTotal, pixCopia, qrCodeBase64, consumo) => {
             try {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
@@ -387,10 +387,18 @@
                 doc.setLineWidth(0.5); doc.line(75, 158, 135, 158);
                 
                 let yPix = 165;
+                // 🚨 CORREÇÃO: Try-Catch no QR Code para evitar a quebra do PDF
                 if (qrCodeBase64 && qrCodeBase64.length > 20) {
-                    let imgData = qrCodeBase64.startsWith('data:image') ? qrCodeBase64 : 'data:image/png;base64,' + qrCodeBase64;
-                    doc.addImage(imgData, 'PNG', 75, yPix, 60, 60);
-                    yPix += 65;
+                    try {
+                        let imgData = qrCodeBase64.startsWith('data:image') ? qrCodeBase64 : 'data:image/png;base64,' + qrCodeBase64;
+                        doc.addImage(imgData, 'PNG', 75, yPix, 60, 60);
+                        yPix += 65;
+                    } catch (e) {
+                        doc.setDrawColor(200,200,200); doc.rect(75, yPix, 60, 60);
+                        doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.setTextColor(150,150,150);
+                        doc.text("QR Code incompatível", 105, yPix+30, null, null, "center");
+                        yPix += 65;
+                    }
                 } else {
                     doc.setDrawColor(200,200,200); doc.setLineDashPattern([2, 2], 0);
                     doc.rect(75, yPix, 60, 60); doc.setLineDashPattern([], 0);
@@ -429,7 +437,10 @@
                 }
 
                 return doc.output('datauristring').split(',')[1];
-            } catch (errPdf) { return null; }
+            } catch (errPdf) { 
+                console.error("Erro FATAL no PDF:", errPdf); 
+                return null; 
+            }
         };
 
         window.formatarNomeParaBanco = (texto) => {
