@@ -318,76 +318,102 @@
         window.esconderLoading = () => { document.getElementById("loading").style.display = "none"; };
         window.fecharModal = () => document.getElementById("modalMorador").style.display = "none";
         
+      // ==========================================
+        // MOTOR DE PDF: LAYOUT SANEPAR + PLACA SÃO LUIZ
         // ==========================================
-        // MOTOR DE PDF: FATURA PREMIUM (V22.9)
-        // ==========================================
-       window.gerarFaturaPDFBase64 = (nome, cpfOriginal, endereco, refDesc, venc, valorTotal, pixCopia, qrCodeBase64, consumo) => {
+        window.gerarFaturaPDFBase64 = (nome, cpfOriginal, endereco, refDesc, venc, valorTotal, pixCopia, qrCodeBase64, consumo) => {
             try {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
+
+                // === CABEÇALHO (ESTILO PLACA AZUL SÃO LUIZ) ===
+                doc.setFillColor(0, 51, 204); // Azul vibrante idêntico ao da placa
+                doc.rect(10, 10, 95, 25, 'F'); // Desenha a placa no canto esquerdo
                 
-                // --- CABEÇALHO ---
-                doc.setFillColor(30, 64, 175); 
-                doc.rect(0, 0, 210, 30, 'F');
                 doc.setTextColor(255, 255, 255);
                 doc.setFont("helvetica", "bold");
-                doc.setFontSize(18);
-                doc.text("ASSOCIAÇÃO DE ÁGUA DISTRITO SÃO LUIZ", 105, 16, null, null, "center");
-                doc.setFontSize(10);
-                doc.setFont("helvetica", "normal");
-                doc.text("Fatura de Serviços de Água e Esgoto", 105, 23, null, null, "center");
-                
-                // --- CAIXA DE DADOS DO CLIENTE ---
-                doc.setDrawColor(200, 200, 200);
-                doc.setFillColor(245, 247, 250);
-                doc.rect(15, 40, 180, 40, 'FD');
-                
-                doc.setTextColor(100, 100, 100);
+                doc.setFontSize(11);
+                doc.text("ASSOCIAÇÃO DE ÁGUA", 57, 17, null, null, "center");
+                doc.setFontSize(14);
+                doc.text("DISTRITO SÃO LUIZ", 57, 24, null, null, "center");
+                doc.setFontSize(8);
+                doc.text("CAPANEMA - PR", 57, 31, null, null, "center");
+
+                // Info da Associação à direita (Padrão Sanepar)
+                doc.setTextColor(0, 51, 153); // Azul escuro
                 doc.setFontSize(9);
-                doc.text("DADOS DO CLIENTE", 20, 47);
-                
-                doc.setTextColor(30, 30, 30);
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(12);
-                doc.text(nome || 'Cliente Não Informado', 20, 55);
-                
                 doc.setFont("helvetica", "normal");
-                doc.setFontSize(10);
-                doc.text(`CPF: ${cpfOriginal || 'N/A'}`, 20, 62);
-                doc.text(`Endereço/Lote: ${endereco || 'N/A'}`, 20, 69);
+                doc.text("Atendimento WhatsApp:", 195, 17, null, null, "right");
+                doc.setFont("helvetica", "bold");
+                doc.text("(46) 98415-5591", 195, 22, null, null, "right");
+                doc.setFont("helvetica", "normal");
+                doc.text("Documento Auxiliar de Cobrança", 195, 30, null, null, "right");
+
+                // === BLOCO 1: DADOS DO CLIENTE ===
+                doc.setDrawColor(0, 51, 153); // Cor das linhas da grade
+                doc.setLineWidth(0.3); // Linha fina igual Sanepar
                 
-                // --- CAIXA DE DADOS DA FATURA ---
-                doc.rect(15, 85, 180, 25, 'D');
-                doc.setFillColor(230, 235, 245);
-                doc.rect(15, 85, 180, 8, 'F');
-                doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(80, 80, 80);
-                doc.text("MÊS REF.", 20, 90);
-                doc.text("VENCIMENTO", 60, 90);
-                doc.text("CONSUMO", 100, 90);
-                doc.text("TIPO", 140, 90);
-                
-                doc.setFont("helvetica", "normal"); doc.setTextColor(30, 30, 30); doc.setFontSize(10);
-                doc.text(refDesc.toUpperCase(), 20, 102);
-                doc.setTextColor(220, 38, 38); doc.setFont("helvetica", "bold");
-                doc.text(venc.split('-').reverse().join('/'), 60, 102);
-                doc.setTextColor(30, 30, 30); doc.setFont("helvetica", "normal");
-                doc.text(consumo || '-', 100, 102);
-                doc.text(consumo ? "MENSAL" : "AVULSO", 140, 102);
-                
-                // --- CAIXA DE VALOR TOTAL ---
-                doc.rect(15, 115, 180, 25, 'FD');
-                doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.setTextColor(30, 30, 30);
-                doc.text("VALOR TOTAL A PAGAR:", 20, 131);
-                doc.setFontSize(18); doc.setTextColor(22, 163, 74);
-                doc.text(`R$ ${parseFloat(valorTotal).toFixed(2).replace('.', ',')}`, 190, 132, null, null, "right");
-                
-                // --- ÁREA DO PIX E QR CODE ---
-                doc.setTextColor(30, 30, 30); doc.setFontSize(12); doc.setFont("helvetica", "bold");
-                doc.text("ÁREA DE PAGAMENTO (PIX)", 105, 155, null, null, "center");
-                doc.setLineWidth(0.5); doc.line(75, 158, 135, 158);
-                
-                let yPix = 165;
-                // 🚨 CORREÇÃO: Try-Catch no QR Code para evitar a quebra do PDF
+                doc.rect(10, 40, 190, 20); // Retângulo principal
+                doc.line(140, 40, 140, 60); // Divisória vertical
+                doc.line(10, 50, 190, 50); // Divisória horizontal
+
+                doc.setFontSize(7); doc.setTextColor(0, 51, 153); doc.setFont("helvetica", "normal");
+                doc.text("NOME DO CLIENTE", 12, 44);
+                doc.text("CPF / MATRÍCULA", 142, 44);
+                doc.text("ENDEREÇO", 12, 54);
+                doc.text("TIPO DE LIGAÇÃO", 142, 54);
+
+                doc.setFontSize(10); doc.setTextColor(0, 0, 0); doc.setFont("helvetica", "bold");
+                doc.text(nome || 'Cliente Não Informado', 12, 48);
+                doc.text(cpfOriginal || '-', 142, 48);
+                doc.text(endereco || 'Não Informado', 12, 58);
+                doc.text("ÁGUA RESIDENCIAL", 142, 58);
+
+                // === BLOCO 2: LEITURAS E CONSUMO ===
+                doc.rect(10, 65, 190, 15);
+                doc.line(70, 65, 70, 80);
+                doc.line(130, 65, 130, 80);
+
+                doc.setFontSize(7); doc.setTextColor(0, 51, 153); doc.setFont("helvetica", "normal");
+                doc.text("MÊS DE REFERÊNCIA", 12, 69);
+                doc.text("MODALIDADE", 72, 69);
+                doc.text("CONSUMO REGISTRADO / m³", 132, 69);
+
+                doc.setFontSize(10); doc.setTextColor(0, 0, 0); doc.setFont("helvetica", "bold");
+                doc.text(refDesc.toUpperCase(), 12, 76);
+                doc.text(consumo ? "MENSAL" : "SERVIÇO AVULSO", 72, 76);
+                doc.text(consumo || '-', 132, 76);
+
+                // === BLOCO 3: VALORES (SEM ESGOTO) ===
+                doc.rect(10, 85, 190, 15);
+                doc.setFillColor(230, 240, 255); // Fundo azul bem clarinho para o Total
+                doc.rect(130, 85, 70, 15, 'F'); // Pinta o fundo do total
+                doc.rect(10, 85, 190, 15); // Redesenha o contorno por cima
+                doc.line(70, 85, 70, 100);
+                doc.line(130, 85, 130, 100);
+
+                doc.setFontSize(7); doc.setTextColor(0, 51, 153); doc.setFont("helvetica", "normal");
+                doc.text("DESCRIÇÃO DO FATURAMENTO", 12, 89);
+                doc.text("VENCIMENTO", 72, 89);
+                doc.text("TOTAL A PAGAR", 132, 89);
+
+                doc.setFontSize(10); doc.setTextColor(0, 0, 0); doc.setFont("helvetica", "bold");
+                doc.text("SERVIÇO DE DISTRIBUIÇÃO DE ÁGUA", 12, 96);
+                doc.setTextColor(220, 38, 38); // Vencimento em vermelho
+                doc.text(venc.split('-').reverse().join('/'), 72, 96);
+                doc.setTextColor(0, 0, 0); doc.setFontSize(12);
+                doc.text(`R$ ${parseFloat(valorTotal).toFixed(2).replace('.', ',')}`, 132, 96);
+
+                // === ÁREA DO PIX E QR CODE (Mantive intacto o seu gerador) ===
+                let yPix = 115;
+                doc.setDrawColor(200, 200, 200);
+                doc.line(10, yPix, 200, yPix);
+                yPix += 10;
+
+                doc.setTextColor(30, 30, 30); doc.setFontSize(11); doc.setFont("helvetica", "bold");
+                doc.text("PAGAMENTO VIA PIX", 105, yPix, null, null, "center");
+                yPix += 5;
+
                 if (qrCodeBase64 && qrCodeBase64.length > 20) {
                     try {
                         let imgData = qrCodeBase64.startsWith('data:image') ? qrCodeBase64 : 'data:image/png;base64,' + qrCodeBase64;
@@ -406,35 +432,12 @@
                     doc.text("QR Code indisponível", 105, yPix+30, null, null, "center");
                     yPix += 65;
                 }
-                
-                doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(80, 80, 80);
+
+                doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.setTextColor(80, 80, 80);
                 doc.text("CHAVE PIX (COPIA E COLA):", 105, yPix, null, null, "center");
                 doc.setFont("courier", "normal"); doc.setFontSize(8); doc.setTextColor(30, 30, 30);
                 const splitPix = doc.splitTextToSize(pixCopia || 'Pix Copia e Cola indisponível no momento.', 170); 
                 doc.text(splitPix, 105, yPix + 5, null, null, "center");
-                
-                // --- CÓDIGO DE BARRAS DE AUTENTICAÇÃO ---
-                yPix += 20;
-                doc.setDrawColor(200, 200, 200);
-                doc.line(15, yPix, 195, yPix);
-                
-                yPix += 10;
-                doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.setTextColor(80, 80, 80);
-                doc.text("CÓDIGO DE BARRAS / AUTENTICAÇÃO:", 105, yPix, null, null, "center");
-                
-                let hash = (cpfOriginal + valorTotal + "102938475610293847561029384756").replace(/\D/g, '');
-                doc.setFont("courier", "normal"); doc.setFontSize(9); doc.setTextColor(30, 30, 30);
-                doc.text(`${hash.substring(0, 10)} ${hash.substring(10, 20)} ${hash.substring(20, 30)} ${hash.substring(30, 44)}`, 105, yPix + 6, null, null, "center");
-                
-                let startX = 35; const endX = 175; const barY = yPix + 10; const barH = 15;
-                doc.setFillColor(0, 0, 0);
-                let currX = startX;
-                for(let i = 0; i < 50 && currX < endX; i++) {
-                    let w = (parseInt(hash.charAt(i % hash.length)) % 3) * 0.8 + 0.4;
-                    let space = (parseInt(hash.charAt((i+1) % hash.length)) % 2) * 0.8 + 0.8;
-                    if (currX + w <= endX) { doc.rect(currX, barY, w, barH, 'F'); }
-                    currX += w + space;
-                }
 
                 return doc.output('datauristring').split(',')[1];
             } catch (errPdf) { 
