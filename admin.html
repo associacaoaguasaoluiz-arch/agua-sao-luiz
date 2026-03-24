@@ -17,18 +17,13 @@
             -ms-user-select: none; 
             user-select: none; 
             -webkit-touch-callout: none; 
-        }
-        
-        body { 
             font-family: 'Inter', sans-serif; 
             background-color: #f3f4f6; 
             max-width: 100vw; 
             overflow-x: hidden; 
         }
         
-        .tela-oculta { 
-            display: none !important; 
-        }
+        .tela-oculta { display: none !important; }
         
         .loading-overlay { 
             display: none; 
@@ -68,26 +63,14 @@
             line-height: 1.2; 
         }
         
-        th.coluna-fixa { 
-            background-color: #f8fafc; 
-        }
+        th.coluna-fixa { background-color: #f8fafc; }
         
-        .overflow-x-auto { 
-            -webkit-overflow-scrolling: touch; 
-        }
+        .overflow-x-auto { -webkit-overflow-scrolling: touch; }
         
-        .scroll-suave::-webkit-scrollbar { 
-            height: 6px; 
-        }
+        .scroll-suave::-webkit-scrollbar { height: 6px; }
+        .scroll-suave::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         
-        .scroll-suave::-webkit-scrollbar-thumb { 
-            background: #cbd5e1; 
-            border-radius: 4px; 
-        }
-        
-        .conteudo-principal { 
-            padding-bottom: 100px; 
-        } 
+        .conteudo-principal { padding-bottom: 100px; } 
         
         .input-leitura { 
             width: 100%; 
@@ -114,7 +97,6 @@
             padding: 1rem; 
         }
 
-        /* Animação do Ponto de Status */
         .status-agua {
             width: 14px;
             height: 14px;
@@ -460,7 +442,7 @@
                         
                         <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-emerald-200 lg:col-span-2">
                             <h3 class="font-bold text-base md:text-lg text-emerald-800 mb-3 md:mb-4">
-                                <i class="fa-solid fa-robot"></i> Status do Robô (Água & Defesa)
+                                <i class="fa-solid fa-robot"></i> Status do Robô (Água)
                             </h3>
                             
                             <div class="flex flex-col md:flex-row gap-4 items-center mb-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
@@ -469,7 +451,7 @@
                                     <span id="agua-texto-status" class="font-bold text-slate-600 uppercase tracking-wider text-sm">Verificando...</span>
                                 </div>
                                 <div id="agua-area-botoes" class="flex gap-2 w-full md:w-auto justify-end">
-                                    </div>
+                                </div>
                             </div>
                             
                             <div id="agua-area-qr" class="text-center hidden mb-4 bg-white p-6 rounded-xl border-2 border-dashed border-emerald-300">
@@ -477,7 +459,7 @@
                                 <img id="agua-qrcode-img" class="mx-auto border shadow-sm rounded-lg w-[200px] h-[200px]" src="" />
                             </div>
                             
-                            <div id="agua-area-fila" class="mt-4 pt-4 border-t border-slate-200 bg-blue-50 p-4 rounded-xl">
+                            <div id="agua-area-fila" class="mt-4 pt-4 border-t border-slate-200 bg-blue-50 p-4 rounded-xl hidden">
                                 <div class="flex justify-between items-center mb-2">
                                     <span class="text-xs md:text-sm font-black text-blue-900 uppercase"><i class="fa-solid fa-list-ol mr-1"></i> Fila Global de Envios</span>
                                     <span id="agua-qtd-fila" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-black shadow-sm">0 Pendentes</span>
@@ -608,7 +590,7 @@
             <button onclick="window.mudarAba('aba-moradores', this)" class="w-full p-2 flex flex-col items-center text-blue-600 bg-blue-50 border border-blue-200 rounded-xl transition-all min-w-[60px]"><i class="fa-solid fa-users text-lg mb-1"></i><span class="text-[9px] font-bold">Pessoas</span></button>
             <button onclick="window.mudarAba('aba-leituras', this)" class="w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all min-w-[60px]"><i class="fa-solid fa-pen-to-square text-lg mb-1"></i><span class="text-[9px] font-bold">Água</span></button>
             <button onclick="window.mudarAba('aba-avulso', this)" class="w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all min-w-[60px]"><i class="fa-solid fa-wrench text-lg mb-1"></i><span class="text-[9px] font-bold">Avulso</span></button>
-            <button onclick="window.mudarAba('aba-avisos', this)" class="w-full p-2 flex flex-col items-center text-amber-500 bg-transparent border border-transparent rounded-xl transition-all min-w-[60px]"><i class="fa-solid fa-bullhorn text-lg mb-1"></i><span class="text-[9px] font-bold">Avisos</span></button>
+            <button onclick="window.mudarAba('aba-avisos', this)" class="w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all min-w-[60px]"><i class="fa-solid fa-bullhorn text-lg mb-1"></i><span class="text-[9px] font-bold">Avisos</span></button>
             <button onclick="window.mudarAba('aba-abertas', this)" class="w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all min-w-[60px]"><i class="fa-solid fa-hourglass-half text-lg mb-1"></i><span class="text-[9px] font-bold">Abertas</span></button>
             <button onclick="window.mudarAba('aba-recebimentos', this)" class="w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all min-w-[60px]"><i class="fa-solid fa-check-double text-lg mb-1"></i><span class="text-[9px] font-bold">Pagos</span></button>
             <button onclick="window.mudarAba('aba-relatorios', this)" class="w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all min-w-[60px]"><i class="fa-solid fa-chart-pie text-lg mb-1"></i><span class="text-[9px] font-bold">Gráfico</span></button>
@@ -639,7 +621,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // 1. CONFIGURAÇÃO FIREBASE
         const firebaseConfig = { 
             apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ", 
             authDomain: "sistema-agua-sao-luiz.firebaseapp.com", 
@@ -649,23 +630,14 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 2. VARIÁVEIS GLOBAIS
         window.familiasGlobal = {}; 
         window.valoresAguaGlobais = { val1: 25, val2: 50, val3: 100, multa: 25 };
         let unsubAbertas = null; let unsubPagos = null; let unsubAvisos = null; let unsubRoboStatus = null;
 
-        window.mostrarLoading = (msg) => { 
-            document.getElementById("loadingMsg").innerText = msg; 
-            document.getElementById("loading").style.display = "flex"; 
-        };
-        window.esconderLoading = () => { 
-            document.getElementById("loading").style.display = "none"; 
-        };
-        window.fecharModal = () => {
-            document.getElementById("modalMorador").style.display = "none";
-        }
+        window.mostrarLoading = (msg) => { document.getElementById("loadingMsg").innerText = msg; document.getElementById("loading").style.display = "flex"; };
+        window.esconderLoading = () => { document.getElementById("loading").style.display = "none"; };
+        window.fecharModal = () => { document.getElementById("modalMorador").style.display = "none"; }
         
-        // 3. NOVO: LISTENER DO ROBÔ WHATSAPP
         window.iniciarListenerRobo = () => {
             if (unsubRoboStatus) unsubRoboStatus();
             
@@ -682,12 +654,10 @@
                 if (snap.exists()) {
                     const data = snap.data();
                     
-                    // STATUS DA FILA (Mostra quantidade)
                     if (data.fila_tamanho !== undefined) {
                         areaFila.style.display = "block";
                         qFila.innerText = `${data.fila_tamanho} Pendentes`;
                         tFila.innerText = data.status_fila || "Ocioso";
-                        
                         if (data.status_fila && data.status_fila.includes("Anti-Ban")) {
                             tFila.className = "text-xs md:text-sm font-bold text-amber-600 bg-amber-50 p-2 rounded border border-amber-200 animate-pulse";
                         } else {
@@ -708,30 +678,20 @@
                         bStatus.className = "status-agua status-aguardando";
                         tStatus.innerText = "Aguardando leitura...";
                         areaQr.style.display = "block";
-                        
-                        QRCode.toDataURL(data.qrCode, { width: 250, margin: 2 }, function (err, url) { 
-                            if (!err) imgQr.src = url; 
-                        });
-                        
-                        areaBtn.innerHTML = `
-                            <button onclick="window.conectarRoboAgua()" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition"><i class="fa-solid fa-rotate"></i> Gerar Novo QR</button>
-                        `;
+                        QRCode.toDataURL(data.qrCode, { width: 250, margin: 2 }, function (err, url) { if (!err) imgQr.src = url; });
+                        areaBtn.innerHTML = `<button onclick="window.conectarRoboAgua()" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition"><i class="fa-solid fa-rotate"></i> Gerar Novo QR</button>`;
                     } 
                     else if (data.status === 'iniciando' || data.comando === 'conectar') {
                         bStatus.className = "status-agua status-aguardando";
                         tStatus.innerText = "Iniciando Motor na Oracle...";
                         areaQr.style.display = "none";
-                        areaBtn.innerHTML = `
-                            <button class="bg-slate-100 text-slate-400 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200" disabled><i class="fa-solid fa-spinner fa-spin"></i> Aguarde...</button>
-                        `;
+                        areaBtn.innerHTML = `<button class="bg-slate-100 text-slate-400 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200" disabled><i class="fa-solid fa-spinner fa-spin"></i> Aguarde...</button>`;
                     } 
                     else {
                         bStatus.className = "status-agua status-offline";
                         tStatus.innerText = "Motor Desligado";
                         areaQr.style.display = "none";
-                        areaBtn.innerHTML = `
-                            <button onclick="window.conectarRoboAgua()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-sm"><i class="fa-brands fa-whatsapp"></i> Ligar Robô</button>
-                        `;
+                        areaBtn.innerHTML = `<button onclick="window.conectarRoboAgua()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-sm"><i class="fa-brands fa-whatsapp"></i> Ligar Robô</button>`;
                     }
                 } else {
                     areaBtn.innerHTML = `<button onclick="window.conectarRoboAgua()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-sm"><i class="fa-brands fa-whatsapp"></i> Ligar Robô</button>`;
@@ -739,205 +699,61 @@
             });
         };
 
-        window.conectarRoboAgua = async () => {
-            await setDoc(doc(db, "config","status_bot_agua"), { comando: "conectar" }, { merge: true });
-        };
+        window.conectarRoboAgua = async () => { await setDoc(doc(db, "config", "status_bot_agua"), { comando: "conectar" }, { merge: true }); };
+        window.desconectarRoboAgua = async () => { if(confirm("🛑 Deseja desligar o robô?")) { await setDoc(doc(db, "config", "status_bot_agua"), { comando: "desconectar" }, { merge: true }); } };
 
-        window.desconectarRoboAgua = async () => {
-            if(confirm("🛑 Deseja desligar o robô? (Ele não fará mais envios automáticos)")) {
-                await setDoc(doc(db, "config", "status_bot_agua"), { comando: "desconectar" }, { merge: true });
-            }
-        };
-
-        // 4. MOTOR DE PDF
         window.gerarFaturaPDFBase64 = (nome, cpfOriginal, endereco, refDesc, venc, valorTotal, pixCopia, qrCodeBase64, consumo) => {
             try {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-
-                doc.setFillColor(0, 51, 204); 
-                doc.rect(10, 10, 95, 25, 'F'); 
-                
-                doc.setTextColor(255, 255, 255);
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(11);
-                doc.text("ASSOCIAÇÃO DE ÁGUA", 57, 17, null, null, "center");
-                doc.setFontSize(14);
-                doc.text("DISTRITO SÃO LUIZ", 57, 24, null, null, "center");
-                doc.setFontSize(8);
-                doc.text("CAPANEMA - PR", 57, 31, null, null, "center");
-
-                doc.setTextColor(0, 51, 153); 
-                doc.setFontSize(9);
-                doc.setFont("helvetica", "normal");
-                doc.text("Atendimento WhatsApp:", 195, 17, null, null, "right");
-                doc.setFont("helvetica", "bold");
-                doc.text("(46) 98415-5591", 195, 22, null, null, "right");
-                doc.setFont("helvetica", "normal");
-                doc.text("Documento Auxiliar de Cobrança", 195, 30, null, null, "right");
-
-                doc.setDrawColor(0, 51, 153); 
-                doc.setLineWidth(0.3); 
-                
-                doc.rect(10, 40, 190, 20); 
-                doc.line(140, 40, 140, 60); 
-                doc.line(10, 50, 190, 50); 
-
-                doc.setFontSize(7); doc.setTextColor(0, 51, 153); doc.setFont("helvetica", "normal");
-                doc.text("NOME DO CLIENTE", 12, 44);
-                doc.text("CPF / MATRÍCULA", 142, 44);
-                doc.text("ENDEREÇO", 12, 54);
-                doc.text("TIPO DE LIGAÇÃO", 142, 54);
-
-                doc.setFontSize(10); doc.setTextColor(0, 0, 0); doc.setFont("helvetica", "bold");
-                doc.text(nome || 'Cliente Não Informado', 12, 48);
-                doc.text(cpfOriginal || '-', 142, 48);
-                doc.text(endereco || 'Não Informado', 12, 58);
-                doc.text("ÁGUA RESIDENCIAL", 142, 58);
-
-                doc.rect(10, 65, 190, 15);
-                doc.line(70, 65, 70, 80);
-                doc.line(130, 65, 130, 80);
-
-                doc.setFontSize(7); doc.setTextColor(0, 51, 153); doc.setFont("helvetica", "normal");
-                doc.text("MÊS DE REFERÊNCIA", 12, 69);
-                doc.text("MODALIDADE", 72, 69);
-                doc.text("CONSUMO REGISTRADO / m³", 132, 69);
-
-                doc.setFontSize(10); doc.setTextColor(0, 0, 0); doc.setFont("helvetica", "bold");
-                doc.text(refDesc.toUpperCase(), 12, 76);
-                doc.text(consumo ? "MENSAL" : "SERVIÇO AVULSO", 72, 76);
-                doc.text(consumo || '-', 132, 76);
-
-                doc.rect(10, 85, 190, 15);
-                doc.setFillColor(230, 240, 255); 
-                doc.rect(130, 85, 70, 15, 'F'); 
-                doc.rect(10, 85, 190, 15); 
-                doc.line(70, 85, 70, 100);
-                doc.line(130, 85, 130, 100);
-
-                doc.setFontSize(7); doc.setTextColor(0, 51, 153); doc.setFont("helvetica", "normal");
-                doc.text("DESCRIÇÃO DO FATURAMENTO", 12, 89);
-                doc.text("VENCIMENTO", 72, 89);
-                doc.text("TOTAL A PAGAR", 132, 89);
-
-                doc.setFontSize(10); doc.setTextColor(0, 0, 0); doc.setFont("helvetica", "bold");
-                doc.text("SERVIÇO DE DISTRIBUIÇÃO DE ÁGUA", 12, 96);
-                doc.setTextColor(220, 38, 38); 
-                doc.text(venc.split('-').reverse().join('/'), 72, 96);
-                doc.setTextColor(0, 0, 0); doc.setFontSize(12);
-                doc.text(`R$ ${parseFloat(valorTotal).toFixed(2).replace('.', ',')}`, 132, 96);
-
-                let yPix = 115;
-                doc.setDrawColor(200, 200, 200);
-                doc.line(10, yPix, 200, yPix);
-                yPix += 10;
-
-                doc.setTextColor(30, 30, 30); doc.setFontSize(11); doc.setFont("helvetica", "bold");
-                doc.text("PAGAMENTO VIA PIX", 105, yPix, null, null, "center");
-                yPix += 5;
-
+                const { jsPDF } = window.jspdf; const doc = new jsPDF();
+                doc.setFillColor(0, 51, 204); doc.rect(10, 10, 95, 25, 'F'); 
+                doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(11); doc.text("ASSOCIAÇÃO DE ÁGUA", 57, 17, null, null, "center"); doc.setFontSize(14); doc.text("DISTRITO SÃO LUIZ", 57, 24, null, null, "center"); doc.setFontSize(8); doc.text("CAPANEMA - PR", 57, 31, null, null, "center");
+                doc.setTextColor(0, 51, 153); doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.text("Atendimento WhatsApp:", 195, 17, null, null, "right"); doc.setFont("helvetica", "bold"); doc.text("(46) 98415-5591", 195, 22, null, null, "right"); doc.setFont("helvetica", "normal"); doc.text("Documento Auxiliar de Cobrança", 195, 30, null, null, "right");
+                doc.setDrawColor(0, 51, 153); doc.setLineWidth(0.3); doc.rect(10, 40, 190, 20); doc.line(140, 40, 140, 60); doc.line(10, 50, 190, 50); 
+                doc.setFontSize(7); doc.setTextColor(0, 51, 153); doc.setFont("helvetica", "normal"); doc.text("NOME DO CLIENTE", 12, 44); doc.text("CPF / MATRÍCULA", 142, 44); doc.text("ENDEREÇO", 12, 54); doc.text("TIPO DE LIGAÇÃO", 142, 54);
+                doc.setFontSize(10); doc.setTextColor(0, 0, 0); doc.setFont("helvetica", "bold"); doc.text(nome || 'Cliente Não Informado', 12, 48); doc.text(cpfOriginal || '-', 142, 48); doc.text(endereco || 'Não Informado', 12, 58); doc.text("ÁGUA RESIDENCIAL", 142, 58);
+                doc.rect(10, 65, 190, 15); doc.line(70, 65, 70, 80); doc.line(130, 65, 130, 80);
+                doc.setFontSize(7); doc.setTextColor(0, 51, 153); doc.setFont("helvetica", "normal"); doc.text("MÊS DE REFERÊNCIA", 12, 69); doc.text("MODALIDADE", 72, 69); doc.text("CONSUMO REGISTRADO / m³", 132, 69);
+                doc.setFontSize(10); doc.setTextColor(0, 0, 0); doc.setFont("helvetica", "bold"); doc.text(refDesc.toUpperCase(), 12, 76); doc.text(consumo ? "MENSAL" : "SERVIÇO AVULSO", 72, 76); doc.text(consumo || '-', 132, 76);
+                doc.rect(10, 85, 190, 15); doc.setFillColor(230, 240, 255); doc.rect(130, 85, 70, 15, 'F'); doc.rect(10, 85, 190, 15); doc.line(70, 85, 70, 100); doc.line(130, 85, 130, 100);
+                doc.setFontSize(7); doc.setTextColor(0, 51, 153); doc.setFont("helvetica", "normal"); doc.text("DESCRIÇÃO DO FATURAMENTO", 12, 89); doc.text("VENCIMENTO", 72, 89); doc.text("TOTAL A PAGAR", 132, 89);
+                doc.setFontSize(10); doc.setTextColor(0, 0, 0); doc.setFont("helvetica", "bold"); doc.text("SERVIÇO DE DISTRIBUIÇÃO DE ÁGUA", 12, 96); doc.setTextColor(220, 38, 38); doc.text(venc.split('-').reverse().join('/'), 72, 96); doc.setTextColor(0, 0, 0); doc.setFontSize(12); doc.text(`R$ ${parseFloat(valorTotal).toFixed(2).replace('.', ',')}`, 132, 96);
+                let yPix = 115; doc.setDrawColor(200, 200, 200); doc.line(10, yPix, 200, yPix); yPix += 10;
+                doc.setTextColor(30, 30, 30); doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text("PAGAMENTO VIA PIX", 105, yPix, null, null, "center"); yPix += 5;
                 if (qrCodeBase64 && qrCodeBase64.length > 20) {
-                    try {
-                        let imgData = qrCodeBase64.startsWith('data:image') ? qrCodeBase64 : 'data:image/png;base64,' + qrCodeBase64;
-                        doc.addImage(imgData, 'PNG', 75, yPix, 60, 60);
-                        yPix += 65;
-                    } catch (e) {
-                        doc.setDrawColor(200,200,200); doc.rect(75, yPix, 60, 60);
-                        doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.setTextColor(150,150,150);
-                        doc.text("QR Code incompatível", 105, yPix+30, null, null, "center");
-                        yPix += 65;
-                    }
+                    try { let imgData = qrCodeBase64.startsWith('data:image') ? qrCodeBase64 : 'data:image/png;base64,' + qrCodeBase64; doc.addImage(imgData, 'PNG', 75, yPix, 60, 60); yPix += 65;
+                    } catch (e) { doc.setDrawColor(200,200,200); doc.rect(75, yPix, 60, 60); doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.setTextColor(150,150,150); doc.text("QR Code incompatível", 105, yPix+30, null, null, "center"); yPix += 65; }
                 } else {
-                    doc.setDrawColor(200,200,200); doc.setLineDashPattern([2, 2], 0);
-                    doc.rect(75, yPix, 60, 60); doc.setLineDashPattern([], 0);
-                    doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.setTextColor(150,150,150);
-                    doc.text("QR Code indisponível", 105, yPix+30, null, null, "center");
-                    yPix += 65;
+                    doc.setDrawColor(200,200,200); doc.setLineDashPattern([2, 2], 0); doc.rect(75, yPix, 60, 60); doc.setLineDashPattern([], 0); doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.setTextColor(150,150,150); doc.text("QR Code indisponível", 105, yPix+30, null, null, "center"); yPix += 65;
                 }
-
-                doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.setTextColor(80, 80, 80);
-                doc.text("CHAVE PIX (COPIA E COLA):", 105, yPix, null, null, "center");
-                doc.setFont("courier", "normal"); doc.setFontSize(8); doc.setTextColor(30, 30, 30);
-                const splitPix = doc.splitTextToSize(pixCopia || 'Pix Copia e Cola indisponível no momento.', 170); 
-                doc.text(splitPix, 105, yPix + 5, null, null, "center");
-
+                doc.setFontSize(8); doc.setFont("helvetica", "bold"); doc.setTextColor(80, 80, 80); doc.text("CHAVE PIX (COPIA E COLA):", 105, yPix, null, null, "center");
+                doc.setFont("courier", "normal"); doc.setFontSize(8); doc.setTextColor(30, 30, 30); const splitPix = doc.splitTextToSize(pixCopia || 'Pix Copia e Cola indisponível no momento.', 170); doc.text(splitPix, 105, yPix + 5, null, null, "center");
                 return doc.output('datauristring').split(',')[1];
-            } catch (errPdf) { 
-                console.error("Erro FATAL no PDF:", errPdf); 
-                return null; 
-            }
+            } catch (errPdf) { return null; }
         };
 
         window.formatarNomeParaBanco = (texto) => {
-            if (!texto) return "";
-            const preposicoes = ["de", "da", "do", "das", "dos", "e"];
+            if (!texto) return ""; const preposicoes = ["de", "da", "do", "das", "dos", "e"];
             return texto.toLowerCase().split(" ").map((p, i) => (p.length === 0 ? "" : (i > 0 && preposicoes.includes(p) ? p : p.charAt(0).toUpperCase() + p.substring(1)))).join(" ").trimStart(); 
         };
 
         window.mascaraMoeda = (e) => {
-            let v = e.target.value.replace(/\D/g, '');
-            if(v === '') { e.target.value = ''; return; }
+            let v = e.target.value.replace(/\D/g, ''); if(v === '') { e.target.value = ''; return; }
             e.target.value = (parseInt(v, 10) / 100).toFixed(2).replace('.', ',');
         };
 
-        window.focarProximo = (e, nextId) => { 
-            if (e.key === "Enter") { 
-                e.preventDefault(); 
-                const n = document.getElementById(nextId); 
-                if(n) { 
-                    n.focus(); 
-                    if(n.tagName === 'INPUT') n.select(); 
-                } 
-            } 
-        };
-        
-        window.pularLinhaGrelha = (e, atual) => { 
-            if (e.key === "Enter") { 
-                e.preventDefault(); 
-                const nR = atual.closest('tr').nextElementSibling; 
-                if(nR) { 
-                    const nI = nR.querySelector('input[id^="atu-"]'); 
-                    if(nI) { 
-                        nI.focus(); 
-                        nI.select(); 
-                    } 
-                } 
-            } 
-        };
+        window.focarProximo = (e, nextId) => { if (e.key === "Enter") { e.preventDefault(); const n = document.getElementById(nextId); if(n) { n.focus(); if(n.tagName === 'INPUT') n.select(); } } };
+        window.pularLinhaGrelha = (e, atual) => { if (e.key === "Enter") { e.preventDefault(); const nR = atual.closest('tr').nextElementSibling; if(nR) { const nI = nR.querySelector('input[id^="atu-"]'); if(nI) { nI.focus(); nI.select(); } } } };
 
         window.renderizarSelectAvulso = (filtro = "") => {
-            const select = document.getElementById("avulsoFamilia");
-            const displayNome = document.getElementById("avulsoClienteNomeExibicao");
-            let html = "<option value='TODOS'>🌟 RATEIO: COBRAR TODOS</option>";
-            let matchCount = 0; let firstMatchId = null; let firstMatchName = null;
-            const termo = filtro.toLowerCase().trim();
-            
+            const select = document.getElementById("avulsoFamilia"); const displayNome = document.getElementById("avulsoClienteNomeExibicao");
+            let html = "<option value='TODOS'>🌟 RATEIO: COBRAR TODOS</option>"; let matchCount = 0; let firstMatchId = null; let firstMatchName = null; const termo = filtro.toLowerCase().trim();
             const moradores = Object.entries(window.familiasGlobal).map(([id, f]) => ({id, ...f})).sort((a,b) => (a.nome || "").localeCompare(b.nome || "", 'pt-BR'));
-
             moradores.forEach(f => {
                 const txt = `${f.nome} ${f.cpf || ''} ${f.lote_endereco || ''}`.toLowerCase();
-                if(txt.includes(termo)) {
-                    html += `<option value="${f.id}" data-nome="${f.nome}" data-cpf="${f.cpf || ''}" data-tel="${f.telefone}" data-endereco="${f.lote_endereco || ''}">${f.nome} (${f.lote_endereco})</option>`;
-                    if(matchCount === 0) { firstMatchId = f.id; firstMatchName = f.nome; }
-                    matchCount++;
-                }
+                if(txt.includes(termo)) { html += `<option value="${f.id}" data-nome="${f.nome}" data-cpf="${f.cpf || ''}" data-tel="${f.telefone}" data-endereco="${f.lote_endereco || ''}">${f.nome} (${f.lote_endereco})</option>`; if(matchCount === 0) { firstMatchId = f.id; firstMatchName = f.nome; } matchCount++; }
             });
             select.innerHTML = html;
-
-            if (termo === "") {
-                select.value = 'TODOS'; 
-                displayNome.innerText = "🌟 RATEIO: COBRAR TODOS"; 
-                displayNome.className = "text-xs md:text-sm font-bold text-blue-700 bg-blue-50 p-2 md:p-3 rounded-xl mt-2";
-            } else if (firstMatchId) {
-                select.value = firstMatchId; 
-                displayNome.innerText = `✅ Selecionado: ${firstMatchName}`; 
-                displayNome.className = "text-xs md:text-sm font-bold text-green-700 bg-green-50 p-2 md:p-3 rounded-xl mt-2 border border-green-200";
-            } else {
-                select.value = ""; 
-                displayNome.innerText = "❌ Nenhum cliente encontrado"; 
-                displayNome.className = "text-xs md:text-sm font-bold text-red-700 bg-red-50 p-2 md:p-3 rounded-xl mt-2";
-            }
+            if (termo === "") { select.value = 'TODOS'; displayNome.innerText = "🌟 RATEIO: COBRAR TODOS"; displayNome.className = "text-xs md:text-sm font-bold text-blue-700 bg-blue-50 p-2 md:p-3 rounded-xl mt-2"; } else if (firstMatchId) { select.value = firstMatchId; displayNome.innerText = `✅ Selecionado: ${firstMatchName}`; displayNome.className = "text-xs md:text-sm font-bold text-green-700 bg-green-50 p-2 md:p-3 rounded-xl mt-2 border border-green-200"; } else { select.value = ""; displayNome.innerText = "❌ Nenhum cliente encontrado"; displayNome.className = "text-xs md:text-sm font-bold text-red-700 bg-red-50 p-2 md:p-3 rounded-xl mt-2"; }
             displayNome.classList.remove('hidden');
         };
 
@@ -952,223 +768,84 @@
         };
 
         window.carregarModeloAviso = () => {
-            const mod = document.getElementById("avisoModelo").value;
-            const txt = document.getElementById("avisoMensagem");
+            const mod = document.getElementById("avisoModelo").value; const txt = document.getElementById("avisoMensagem");
             const dicas = ["💧 Dica: Economizar água para um futuro melhor!", "💧 Lembre-se: Cada gota conta. Evite o desperdício!", "💧 Dica: Água é vida. Pequenas atitudes fazem a diferença!", "💧 Consciente: Racionar água é dever de todos nós."];
             const d = dicas[Math.floor(Math.random() * dicas.length)];
-            
-            if (mod === 'manutencao') {
-                txt.value = "⚠️ *Aviso*\n\n*Esta é uma mensagem automática:* Programação de manutenção na rede. Possível falta d'água..\n\n" + d;
-            } else if (mod === 'reuniao') {
-                txt.value = "📢 *Aviso*\n\n*Esta é uma mensagem automática:*\nReunião para a todos os usuários, você está convidado (a) a participar, na próxima semana data a ser definida e repassada.\n\n" + d;
-            } else if (mod === 'livre') {
-                txt.value = "\n\n" + d; 
-            } else {
-                txt.value = ""; 
-            }
+            if (mod === 'manutencao') { txt.value = "⚠️ *Aviso*\n\n*Esta é uma mensagem automática:* Programação de manutenção na rede. Possível falta d'água..\n\n" + d; } else if (mod === 'reuniao') { txt.value = "📢 *Aviso*\n\n*Esta é uma mensagem automática:*\nReunião para a todos os usuários, você está convidado (a) a participar, na próxima semana data a ser definida e repassada.\n\n" + d; } else if (mod === 'livre') { txt.value = "\n\n" + d; } else { txt.value = ""; }
         };
 
         window.submitAviso = async (e) => {
-            e.preventDefault();
-            const msg = document.getElementById("avisoMensagem").value;
-            if(!msg.trim() || !confirm(`🚨 Enviar esta mensagem para TODOS os moradores?`)) return;
-            
-            window.mostrarLoading("A preparar envios...");
-            const loteId = Date.now().toString(); 
-            let cont = 0;
-            
-            for(let [id, f] of Object.entries(window.familiasGlobal)) {
-                try { 
-                    await addDoc(collection(db, "avisos"), { 
-                        lote_id: loteId, 
-                        familia_id: id, 
-                        nome_morador: f.nome, 
-                        telefone: f.telefone, 
-                        mensagem: msg, 
-                        status: "pendente", 
-                        data_criacao: new Date().toISOString() 
-                    }); 
-                    cont++; 
-                } catch(err) {}
-            }
-            
-            window.esconderLoading(); 
-            alert(`✅ ${cont} mensagens na fila! O Robô irá enviar automaticamente.`); 
-            document.getElementById("formAvisos").reset();
+            e.preventDefault(); const msg = document.getElementById("avisoMensagem").value; if(!msg.trim() || !confirm(`🚨 Enviar esta mensagem para TODOS os moradores?`)) return;
+            window.mostrarLoading("A preparar envios..."); const loteId = Date.now().toString(); let cont = 0;
+            for(let [id, f] of Object.entries(window.familiasGlobal)) { try { await addDoc(collection(db, "avisos"), { lote_id: loteId, familia_id: id, nome_morador: f.nome, telefone: f.telefone, mensagem: msg, status: "pendente", data_criacao: new Date().toISOString() }); cont++; } catch(err) {} }
+            window.esconderLoading(); alert(`✅ ${cont} mensagens na fila! O Robô irá enviar automaticamente.`); document.getElementById("formAvisos").reset();
         };
 
         window.iniciarListenerAvisos = async () => {
-            if(unsubAvisos) unsubAvisos();
-            const container = document.getElementById("listaAvisosArea");
-            container.innerHTML = "<p class='text-center p-4 text-slate-400 font-bold'>A analisar fila...</p>";
-            
+            if(unsubAvisos) unsubAvisos(); const container = document.getElementById("listaAvisosArea"); container.innerHTML = "<p class='text-center p-4 text-slate-400 font-bold'>A analisar fila...</p>";
             unsubAvisos = onSnapshot(query(collection(db, "avisos")), (snap) => {
                 const lotes = {};
-                snap.forEach(d => {
-                    const av = d.data(); 
-                    const id = av.lote_id; 
-                    if(!id) return;
-                    
-                    if(!lotes[id]) lotes[id] = { msg: av.mensagem, data: av.data_criacao, total: 0, enviados: 0, erro: 0 };
-                    lotes[id].total++;
-                    
-                    if(av.status === 'enviado') lotes[id].enviados++;
-                    if(av.status === 'erro' || av.status === 'cancelar') lotes[id].erro++; 
-                });
-                
+                snap.forEach(d => { const av = d.data(); const id = av.lote_id; if(!id) return; if(!lotes[id]) lotes[id] = { msg: av.mensagem, data: av.data_criacao, total: 0, enviados: 0, erro: 0 }; lotes[id].total++; if(av.status === 'enviado') lotes[id].enviados++; if(av.status === 'erro' || av.status === 'cancelar') lotes[id].erro++; });
                 let html = "";
                 Object.keys(lotes).sort((a,b) => b - a).forEach(id => {
-                    const lote = lotes[id]; 
-                    const pendentes = lote.total - lote.enviados - lote.erro;
+                    const lote = lotes[id]; const pendentes = lote.total - lote.enviados - lote.erro;
                     let stBadge = pendentes > 0 ? `<span class="bg-amber-100 text-amber-700 px-2 py-1 rounded-lg text-[10px] font-black uppercase animate-pulse">Na Fila</span>` : `<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-lg text-[10px] font-black uppercase">Concluído</span>`;
                     const pct = Math.round(((lote.enviados + lote.erro) / lote.total) * 100) || 0;
-                    
-                    html += `
-                    <div class="border-2 border-slate-200 rounded-2xl p-4 bg-slate-50 relative overflow-hidden mb-3">
-                        <div class="absolute bottom-0 left-0 h-1 bg-emerald-500 transition-all duration-1000" style="width: ${pct}%;"></div>
-                        <div class="flex justify-between items-start mb-3"><span class="text-[10px] font-black text-slate-400">${new Date(lote.data).toLocaleString('pt-BR')}</span>${stBadge}</div>
-                        <p class="text-xs text-slate-700 mb-4 line-clamp-3 bg-white p-2 rounded-lg border border-slate-100">${lote.msg.replace(/\\n/g, '<br>')}</p>
-                        <div class="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-200 mb-3 shadow-inner text-center">
-                            <div class="flex-1 border-r"><div class="text-[9px] text-slate-400 font-black">Total</div><div class="font-black text-lg">${lote.total}</div></div>
-                            <div class="flex-1 border-r"><div class="text-[9px] text-emerald-500 font-black">Enviados</div><div class="font-black text-emerald-600 text-lg">${lote.enviados}</div></div>
-                            <div class="flex-1"><div class="text-[9px] text-amber-500 font-black">Aguardando</div><div class="font-black text-amber-600 text-lg">${pendentes}</div></div>
-                        </div>
-                        <button onclick="window.cancelarLoteAviso('${id}')" class="w-full bg-red-50 text-red-500 hover:bg-red-500 hover:text-white border border-red-200 py-2 rounded-xl text-xs font-black transition">🗑️ Abortar Restante</button>
-                    </div>`;
-                });
-                container.innerHTML = html || "<p class='text-center p-6 text-slate-400 text-xs font-bold'>Nenhuma campanha de aviso ativa</p>";
+                    html += `<div class="border-2 border-slate-200 rounded-2xl p-4 bg-slate-50 relative overflow-hidden mb-3"><div class="absolute bottom-0 left-0 h-1 bg-emerald-500 transition-all duration-1000" style="width: ${pct}%;"></div><div class="flex justify-between items-start mb-3"><span class="text-[10px] font-black text-slate-400">${new Date(lote.data).toLocaleString('pt-BR')}</span>${stBadge}</div><p class="text-xs text-slate-700 mb-4 line-clamp-3 bg-white p-2 rounded-lg border border-slate-100">${lote.msg.replace(/\\n/g, '<br>')}</p><div class="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-200 mb-3 shadow-inner text-center"><div class="flex-1 border-r"><div class="text-[9px] text-slate-400 font-black">Total</div><div class="font-black text-lg">${lote.total}</div></div><div class="flex-1 border-r"><div class="text-[9px] text-emerald-500 font-black">Enviados</div><div class="font-black text-emerald-600 text-lg">${lote.enviados}</div></div><div class="flex-1"><div class="text-[9px] text-amber-500 font-black">Aguardando</div><div class="font-black text-amber-600 text-lg">${pendentes}</div></div></div><button onclick="window.cancelarLoteAviso('${id}')" class="w-full bg-red-50 text-red-500 hover:bg-red-500 hover:text-white border border-red-200 py-2 rounded-xl text-xs font-black transition">🗑️ Abortar Restante</button></div>`;
+                }); container.innerHTML = html || "<p class='text-center p-6 text-slate-400 text-xs font-bold'>Nenhuma campanha de aviso ativa</p>";
             });
         };
 
         window.cancelarLoteAviso = async (loteId) => {
             if(confirm("🚨 ALERTA: Deseja cancelar este disparo e APAGAR as mensagens de quem ainda não recebeu?")) {
-                window.mostrarLoading("A enviar comando ao robô...");
-                const snap = await getDocs(query(collection(db, "avisos"), where("lote_id", "==", loteId)));
-                const p = []; 
-                snap.forEach(d => { 
-                    p.push(updateDoc(doc(db, "avisos", d.id), { status: "cancelar" })); 
-                });
-                await Promise.all(p); 
-                window.esconderLoading();
+                window.mostrarLoading("A enviar comando ao robô..."); const snap = await getDocs(query(collection(db, "avisos"), where("lote_id", "==", loteId))); const p = []; snap.forEach(d => { p.push(updateDoc(doc(db, "avisos", d.id), { status: "cancelar" })); }); await Promise.all(p); window.esconderLoading();
             }
         };
 
         window.onload = async () => {
-            const d = new Date();
-            document.getElementById("relDataInicio").value = new Date(d.getFullYear(), d.getMonth(), 1).toISOString().split('T')[0];
-            document.getElementById("relDataFim").value = d.toISOString().split('T')[0];
-            document.getElementById("dataVencimento").value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-20`;
-            
-            if(localStorage.getItem("admin_saoluiz_logado") === "sim") {
-                document.getElementById("loginAdmin").style.display = "none"; 
-                document.getElementById("painelAdmin").classList.remove('tela-oculta');
-                await window.carregarValoresConfig(); 
-                window.carregarFamilias();
-                window.iniciarListenerRobo(); // Inicia o Listener do Status do Robô
-            }
-            
-            document.getElementById("avulsoTipo").addEventListener('change', function() {
-                document.getElementById("divVencimentoAvulso").style.display = this.value === 'somar_proxima' ? 'none' : 'block';
-                document.getElementById("avulsoVencimento").required = this.value === 'pix_agora';
-            });
+            const d = new Date(); document.getElementById("relDataInicio").value = new Date(d.getFullYear(), d.getMonth(), 1).toISOString().split('T')[0]; document.getElementById("relDataFim").value = d.toISOString().split('T')[0]; document.getElementById("dataVencimento").value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-20`;
+            if(localStorage.getItem("admin_saoluiz_logado") === "sim") { document.getElementById("loginAdmin").style.display = "none"; document.getElementById("painelAdmin").classList.remove('tela-oculta'); await window.carregarValoresConfig(); window.carregarFamilias(); window.iniciarListenerRobo(); }
+            document.getElementById("avulsoTipo").addEventListener('change', function() { document.getElementById("divVencimentoAvulso").style.display = this.value === 'somar_proxima' ? 'none' : 'block'; document.getElementById("avulsoVencimento").required = this.value === 'pix_agora'; });
         };
 
         window.carregarValoresConfig = async () => {
-            try {
-                const snap = await getDoc(doc(db, "config", "valores"));
-                if(snap.exists()) { 
-                    window.valoresAguaGlobais = snap.data(); 
-                } else { 
-                    await setDoc(doc(db, "config", "valores"), window.valoresAguaGlobais); 
-                }
-                document.getElementById('cfgVal1').value = window.valoresAguaGlobais.val1;
-                document.getElementById('cfgVal2').value = window.valoresAguaGlobais.val2;
-                document.getElementById('cfgVal3').value = window.valoresAguaGlobais.val3;
-                document.getElementById('cfgMulta').value = window.valoresAguaGlobais.multa;
-            } catch(e) {}
+            try { const snap = await getDoc(doc(db, "config", "valores")); if(snap.exists()) { window.valoresAguaGlobais = snap.data(); } else { await setDoc(doc(db, "config", "valores"), window.valoresAguaGlobais); } document.getElementById('cfgVal1').value = window.valoresAguaGlobais.val1; document.getElementById('cfgVal2').value = window.valoresAguaGlobais.val2; document.getElementById('cfgVal3').value = window.valoresAguaGlobais.val3; document.getElementById('cfgMulta').value = window.valoresAguaGlobais.multa; } catch(e) {}
         };
 
         window.salvarConfigAgua = async () => {
-            window.valoresAguaGlobais.val1 = parseFloat(document.getElementById('cfgVal1').value) || 25;
-            window.valoresAguaGlobais.val2 = parseFloat(document.getElementById('cfgVal2').value) || 50;
-            window.valoresAguaGlobais.val3 = parseFloat(document.getElementById('cfgVal3').value) || 100;
-            
-            window.mostrarLoading("A salvar no banco..."); 
-            await setDoc(doc(db, "config", "valores"), window.valoresAguaGlobais);
-            window.esconderLoading(); 
-            alert("✅ Valores salvos!");
+            window.valoresAguaGlobais.val1 = parseFloat(document.getElementById('cfgVal1').value) || 25; window.valoresAguaGlobais.val2 = parseFloat(document.getElementById('cfgVal2').value) || 50; window.valoresAguaGlobais.val3 = parseFloat(document.getElementById('cfgVal3').value) || 100;
+            window.mostrarLoading("A salvar no banco..."); await setDoc(doc(db, "config", "valores"), window.valoresAguaGlobais); window.esconderLoading(); alert("✅ Valores salvos!");
         };
 
-        window.salvarConfigMulta = async () => {
-            window.valoresAguaGlobais.multa = parseFloat(document.getElementById('cfgMulta').value) || 25;
-            window.mostrarLoading("A salvar..."); 
-            await setDoc(doc(db, "config", "valores"), window.valoresAguaGlobais);
-            window.esconderLoading(); 
-            alert("✅ Multa salva!");
-        };
+        window.salvarConfigMulta = async () => { window.valoresAguaGlobais.multa = parseFloat(document.getElementById('cfgMulta').value) || 25; window.mostrarLoading("A salvar..."); await setDoc(doc(db, "config", "valores"), window.valoresAguaGlobais); window.esconderLoading(); alert("✅ Multa salva!"); };
 
         window.entrarAdmin = async (e) => {
-            e.preventDefault();
-            const s = document.getElementById("senhaAdmin").value;
-            window.mostrarLoading("A verificar...");
-            try {
-                const snap = await getDoc(doc(db, "config", "admin"));
-                let sc = snap.exists() ? snap.data().senha : "admin123";
-                if(!snap.exists()) await setDoc(doc(db, "config", "admin"), { senha: sc });
-                if(s === sc) {
-                    localStorage.setItem("admin_saoluiz_logado", "sim");
-                    document.getElementById("loginAdmin").style.display = "none"; 
-                    document.getElementById("painelAdmin").classList.remove('tela-oculta');
-                    await window.carregarValoresConfig(); 
-                    window.carregarFamilias();
-                    window.iniciarListenerRobo();
-                } else { 
-                    document.getElementById("erroLogin").classList.remove('hidden'); 
-                }
-            } catch(err) {}
-            window.esconderLoading();
+            e.preventDefault(); const s = document.getElementById("senhaAdmin").value; window.mostrarLoading("A verificar...");
+            try { const snap = await getDoc(doc(db, "config", "admin")); let sc = snap.exists() ? snap.data().senha : "admin123"; if(!snap.exists()) await setDoc(doc(db, "config", "admin"), { senha: sc }); if(s === sc) { localStorage.setItem("admin_saoluiz_logado", "sim"); document.getElementById("loginAdmin").style.display = "none"; document.getElementById("painelAdmin").classList.remove('tela-oculta'); await window.carregarValoresConfig(); window.carregarFamilias(); window.iniciarListenerRobo(); } else { document.getElementById("erroLogin").classList.remove('hidden'); } } catch(err) {} window.esconderLoading();
         };
 
-        window.salvarSenhaAdmin = async () => {
-            const n = document.getElementById("cfgSenhaAdmin").value;
-            if(n.length < 4) return alert("Mínimo 4 caracteres.");
-            window.mostrarLoading("A forçar senha...");
-            try { 
-                await setDoc(doc(db, "config", "admin"), { senha: n }); 
-                window.esconderLoading(); 
-                alert("✅ Senha do Painel alterada!"); 
-                document.getElementById("cfgSenhaAdmin").value = ""; 
-            } catch(e) { window.esconderLoading(); }
-        };
-
-        window.salvarSenhaAgente = async () => {
-            const n = document.getElementById("cfgSenhaAgente").value;
-            if(n.length < 4) return alert("Mínimo 4 caracteres.");
-            window.mostrarLoading("A forçar senha...");
-            try { 
-                await setDoc(doc(db, "config", "agente"), { senha: n }); 
-                window.esconderLoading(); 
-                alert("✅ Senha do App Agente alterada!"); 
-                document.getElementById("cfgSenhaAgente").value = ""; 
-            } catch(e) { window.esconderLoading(); }
-        };
-
-        window.sairAdmin = () => { 
-            localStorage.removeItem("admin_saoluiz_logado"); 
-            location.reload(); 
-        };
+        window.salvarSenhaAdmin = async () => { const n = document.getElementById("cfgSenhaAdmin").value; if(n.length < 4) return alert("Mínimo 4 caracteres."); window.mostrarLoading("A forçar senha..."); try { await setDoc(doc(db, "config", "admin"), { senha: n }); window.esconderLoading(); alert("✅ Senha do Painel alterada!"); document.getElementById("cfgSenhaAdmin").value = ""; } catch(e) { window.esconderLoading(); } };
+        window.salvarSenhaAgente = async () => { const n = document.getElementById("cfgSenhaAgente").value; if(n.length < 4) return alert("Mínimo 4 caracteres."); window.mostrarLoading("A forçar senha..."); try { await setDoc(doc(db, "config", "agente"), { senha: n }); window.esconderLoading(); alert("✅ Senha do App Agente alterada!"); document.getElementById("cfgSenhaAgente").value = ""; } catch(e) { window.esconderLoading(); } };
+        window.sairAdmin = () => { localStorage.removeItem("admin_saoluiz_logado"); location.reload(); };
 
         window.mudarAba = (id, el) => {
             document.querySelectorAll('.conteudo-aba').forEach(a => a.classList.add('tela-oculta'));
             document.getElementById(id).classList.remove('tela-oculta');
-            document.querySelectorAll('.menu-btn').forEach(b => { 
-                b.classList.remove('bg-blue-600', 'text-white'); 
-                b.classList.add('text-slate-400'); 
-            });
-            if(el) { 
+            document.querySelectorAll('.menu-btn').forEach(b => { b.classList.remove('bg-blue-600', 'text-white'); b.classList.add('text-slate-400'); });
+            
+            if(el && el.classList.contains('menu-btn')) { 
                 el.classList.add('bg-blue-600', 'text-white'); 
                 el.classList.remove('text-slate-400'); 
             }
+            
+            if(el && !el.classList.contains('menu-btn')) { 
+                // CORREÇÃO: Limpar corretamente as classes dos botões mobile
+                document.querySelectorAll('nav.md\\:hidden button').forEach(b => { 
+                    b.className = 'w-full p-2 flex flex-col items-center text-gray-400 bg-transparent border border-transparent rounded-xl transition-all min-w-[60px]'; 
+                }); 
+                el.className = 'w-full p-2 flex flex-col items-center text-blue-600 bg-blue-50 border border-blue-200 rounded-xl transition-all min-w-[60px]'; 
+            }
+            
             if(id === 'aba-leituras') window.carregarLoteFaturas();
             if(id === 'aba-avulso') window.carregarSelectAvulso();
             if(id === 'aba-avisos') window.iniciarListenerAvisos();
@@ -1178,565 +855,167 @@
             if(id === 'aba-config') window.carregarLogsAgente();
         };
 
-        window.abrirModalCadastro = () => { 
-            document.getElementById("formMorador").reset(); 
-            document.getElementById("modId").value = ""; 
-            document.getElementById("modalMorador").style.display = "flex"; 
-        };
-        
-        window.abrirModalEdicao = (id, n, c, t, l) => { 
-            document.getElementById("modId").value = id; 
-            document.getElementById("modNome").value = n; 
-            document.getElementById("modCpf").value = c; 
-            document.getElementById("modTel").value = t; 
-            document.getElementById("modLote").value = l; 
-            document.getElementById("modalMorador").style.display = "flex"; 
-        };
-        
-        window.filtrarTabela = (inputId, tabelaId) => {
-            const f = document.getElementById(inputId).value.toLowerCase();
-            const l = document.getElementById(tabelaId).getElementsByTagName('tr');
-            for (let i=0; i<l.length; i++) {
-                l[i].style.display = l[i].innerText.toLowerCase().includes(f) ? "" : "none";
-            }
-        };
+        window.abrirModalCadastro = () => { document.getElementById("formMorador").reset(); document.getElementById("modId").value = ""; document.getElementById("modalMorador").style.display = "flex"; };
+        window.abrirModalEdicao = (id, n, c, t, l) => { document.getElementById("modId").value = id; document.getElementById("modNome").value = n; document.getElementById("modCpf").value = c; document.getElementById("modTel").value = t; document.getElementById("modLote").value = l; document.getElementById("modalMorador").style.display = "flex"; };
+        window.filtrarTabela = (inputId, tabelaId) => { const f = document.getElementById(inputId).value.toLowerCase(); const l = document.getElementById(tabelaId).getElementsByTagName('tr'); for (let i=0; i<l.length; i++) { l[i].style.display = l[i].innerText.toLowerCase().includes(f) ? "" : "none"; } };
 
-        window.atualizarCacheFamilias = async () => {
-            const snap = await getDocs(collection(db, "familias"));
-            window.familiasGlobal = {}; 
-            snap.forEach(d => { window.familiasGlobal[d.id] = d.data(); });
-        };
+        window.atualizarCacheFamilias = async () => { const snap = await getDocs(collection(db, "familias")); window.familiasGlobal = {}; snap.forEach(d => { window.familiasGlobal[d.id] = d.data(); }); };
 
         window.submitMorador = async (e) => {
-            e.preventDefault();
-            const id = document.getElementById("modId").value;
-            const d = { 
-                nome: window.formatarNomeParaBanco(document.getElementById("modNome").value).trim(), 
-                cpf: document.getElementById("modCpf").value.replace(/\D/g, ''), 
-                telefone: document.getElementById("modTel").value, 
-                lote_endereco: document.getElementById("modLote").value 
-            };
-            
-            window.mostrarLoading("A guardar...");
-            if(id) {
-                await updateDoc(doc(db, "familias", id), d); 
-            } else {
-                await addDoc(collection(db, "familias"), {...d, senha: "123456", status_ativo: true, ultima_leitura: 0});
-            }
-            window.fecharModal(); 
-            window.carregarFamilias(); 
-            window.esconderLoading();
+            e.preventDefault(); const id = document.getElementById("modId").value; const d = { nome: window.formatarNomeParaBanco(document.getElementById("modNome").value).trim(), cpf: document.getElementById("modCpf").value.replace(/\D/g, ''), telefone: document.getElementById("modTel").value, lote_endereco: document.getElementById("modLote").value };
+            window.mostrarLoading("A guardar..."); if(id) { await updateDoc(doc(db, "familias", id), d); } else { await addDoc(collection(db, "familias"), {...d, senha: "123456", status_ativo: true, ultima_leitura: 0}); } window.fecharModal(); window.carregarFamilias(); window.esconderLoading();
         };
 
-        window.excluirMorador = async (id, nome) => { 
-            if(confirm(`Apagar ${nome}?`)) { 
-                window.mostrarLoading("A apagar..."); 
-                await deleteDoc(doc(db, "familias", id)); 
-                window.carregarFamilias(); 
-                window.esconderLoading(); 
-            } 
-        };
+        window.excluirMorador = async (id, nome) => { if(confirm(`Apagar ${nome}?`)) { window.mostrarLoading("A apagar..."); await deleteDoc(doc(db, "familias", id)); window.carregarFamilias(); window.esconderLoading(); } };
 
         window.carregarFamilias = async () => {
-            const tbody = document.getElementById("tabelaMoradores");
-            await window.atualizarCacheFamilias();
-            const mor = Object.entries(window.familiasGlobal).map(([id, f]) => ({id, ...f})).sort((a,b) => (a.nome || "").localeCompare(b.nome || "", 'pt-BR'));
-            
-            let html = "";
-            mor.forEach(f => {
-                html += `<tr class="border-b hover:bg-slate-50">
-                    <td class="p-3"><strong>${f.nome}</strong><br><small>${f.lote_endereco}</small></td>
-                    <td class="p-3 text-slate-500 font-mono">${f.cpf}</td>
-                    <td class="p-3">
-                        <button onclick="window.abrirModalEdicao('${f.id}','${f.nome}','${f.cpf}','${f.telefone}','${f.lote_endereco}')" class="text-blue-600 bg-blue-50 px-3 py-2 rounded-lg font-bold mr-2">Editar</button>
-                        <button onclick="window.excluirMorador('${f.id}','${f.nome}')" class="text-red-600 bg-red-50 px-3 py-2 rounded-lg font-bold">🗑️</button>
-                    </td>
-                </tr>`;
-            });
-            tbody.innerHTML = html;
+            const tbody = document.getElementById("tabelaMoradores"); await window.atualizarCacheFamilias(); const mor = Object.entries(window.familiasGlobal).map(([id, f]) => ({id, ...f})).sort((a,b) => (a.nome || "").localeCompare(b.nome || "", 'pt-BR'));
+            let html = ""; mor.forEach(f => { html += `<tr class="border-b hover:bg-slate-50"><td class="p-3"><strong>${f.nome}</strong><br><small>${f.lote_endereco}</small></td><td class="p-3 text-slate-500 font-mono">${f.cpf}</td><td class="p-3"><button onclick="window.abrirModalEdicao('${f.id}','${f.nome}','${f.cpf}','${f.telefone}','${f.lote_endereco}')" class="text-blue-600 bg-blue-50 px-3 py-2 rounded-lg font-bold mr-2">Editar</button><button onclick="window.excluirMorador('${f.id}','${f.nome}')" class="text-red-600 bg-red-50 px-3 py-2 rounded-lg font-bold">🗑️</button></td></tr>`; }); tbody.innerHTML = html;
         };
 
         window.calcularLinha = (id) => {
-            const ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0;
-            const atu_str = document.getElementById(`atu-${id}`).value;
-            const atu = atu_str === "" ? ant : parseFloat(atu_str); 
-            const multa = parseFloat(document.getElementById(`multa-${id}`).value) || 0;
-            const taxa = parseFloat(document.getElementById(`h-taxa-${id}`).value) || 0;
-
-            let cons = (atu >= ant && atu > 0) ? atu - ant : 0;
-            document.getElementById(`cons-${id}`).innerText = cons;
-            
-            let vAgua = 0;
-            if (cons > 0) { 
-                if (cons <= 10) vAgua = parseFloat(window.valoresAguaGlobais.val1); 
-                else if (cons <= 30) vAgua = parseFloat(window.valoresAguaGlobais.val2); 
-                else vAgua = parseFloat(window.valoresAguaGlobais.val3); 
-            }
-            
-            const total = vAgua + multa + taxa; 
-            document.getElementById(`valTotal-${id}`).innerText = total.toFixed(2).replace('.', ',');
-            document.getElementById(`h-agua-${id}`).value = vAgua;
-            document.getElementById(`h-total-${id}`).value = total;
+            const ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0; const atu_str = document.getElementById(`atu-${id}`).value; const atu = atu_str === "" ? ant : parseFloat(atu_str); const multa = parseFloat(document.getElementById(`multa-${id}`).value) || 0; const taxa = parseFloat(document.getElementById(`h-taxa-${id}`).value) || 0;
+            let cons = (atu >= ant && atu > 0) ? atu - ant : 0; document.getElementById(`cons-${id}`).innerText = cons;
+            let vAgua = 0; if (cons > 0) { if (cons <= 10) vAgua = parseFloat(window.valoresAguaGlobais.val1); else if (cons <= 30) vAgua = parseFloat(window.valoresAguaGlobais.val2); else vAgua = parseFloat(window.valoresAguaGlobais.val3); }
+            const total = vAgua + multa + taxa; document.getElementById(`valTotal-${id}`).innerText = total.toFixed(2).replace('.', ','); document.getElementById(`h-agua-${id}`).value = vAgua; document.getElementById(`h-total-${id}`).value = total;
         };
 
         window.carregarLoteFaturas = async () => {
-            const corpo = document.getElementById("corpoTabelaLote");
-            corpo.innerHTML = "<tr><td colspan='7' class='p-8 text-center text-blue-600 font-bold'>A sincronizar dados...</td></tr>";
+            const corpo = document.getElementById("corpoTabelaLote"); corpo.innerHTML = "<tr><td colspan='7' class='p-8 text-center text-blue-600 font-bold'>A sincronizar dados...</td></tr>";
             try {
-                await window.atualizarCacheFamilias();
-                const fatSnap = await getDocs(collection(db, "faturas"));
-                const faturas = []; 
-                fatSnap.forEach(d => faturas.push(d.data()));
-
-                let html = "";
-                const hoje = new Date(); hoje.setHours(0,0,0,0);
-                const multaPadrao = parseFloat(window.valoresAguaGlobais.multa) || 25.00;
-                const mor = Object.entries(window.familiasGlobal).map(([id, f]) => ({id, ...f})).sort((a,b) => (a.nome || "").localeCompare(b.nome || "", 'pt-BR'));
-
+                await window.atualizarCacheFamilias(); const fatSnap = await getDocs(collection(db, "faturas")); const faturas = []; fatSnap.forEach(d => faturas.push(d.data()));
+                let html = ""; const hoje = new Date(); hoje.setHours(0,0,0,0); const multaPadrao = parseFloat(window.valoresAguaGlobais.multa) || 25.00; const mor = Object.entries(window.familiasGlobal).map(([id, f]) => ({id, ...f})).sort((a,b) => (a.nome || "").localeCompare(b.nome || "", 'pt-BR'));
                 mor.forEach(f => {
-                    const temAtraso = faturas.some(fat => fat.familia_id === f.id && fat.status === 'pendente' && new Date(fat.vencimento + "T00:00:00") < hoje);
-                    const multa = temAtraso ? multaPadrao : 0.0;
-                    const uL = f.ultima_leitura || 0;
-                    const tP = f.taxa_pendente_valor || 0;
-                    const dT = f.taxa_pendente_desc || "";
-                    const avisoTaxa = tP > 0 ? `<br><span class="text-blue-600 font-black text-[9px] uppercase bg-blue-50 px-1 rounded mt-1">+ R$ ${tP} (${dT})</span>` : "";
-
-                    html += `
-                        <tr id="linha-${f.id}" class="hover:bg-blue-50 border-b">
-                            <td class="p-2 md:p-3 coluna-fixa"><strong class="text-xs text-slate-800">${f.nome}</strong><br><small class="text-gray-400 font-normal">${f.cpf}</small>${avisoTaxa}</td>
-                            <td class="p-2 md:p-3 text-center"><input type="number" id="ant-${f.id}" value="${uL}" onkeyup="window.calcularLinha('${f.id}')" class="input-leitura p-2 border bg-gray-100 rounded-xl text-center outline-none"></td>
-                            <td class="p-2 md:p-3 text-center"><input type="number" id="atu-${f.id}" onkeyup="window.calcularLinha('${f.id}')" onkeydown="window.pularLinhaGrelha(event, this)" class="input-leitura p-2 border-2 border-blue-400 bg-blue-50 rounded-xl text-center font-black outline-none"></td>
-                            <td class="p-2 md:p-3 text-center font-bold text-blue-600"><span id="cons-${f.id}">0</span><span class="text-[10px] ml-1">m³</span></td>
-                            <td class="p-2 md:p-3 text-center"><input type="number" step="0.01" id="multa-${f.id}" value="${multa}" onkeyup="window.calcularLinha('${f.id}')" class="w-16 md:w-24 p-2 border border-red-200 rounded-xl text-center outline-none text-red-600 font-bold"></td>
-                            <td class="p-2 md:p-3 text-right font-black text-green-700 text-sm md:text-lg">R$ <span id="valTotal-${f.id}">0,00</span><input type="hidden" id="h-total-${f.id}" value="0" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}" data-endereco="${f.lote_endereco || ''}"><input type="hidden" id="h-agua-${f.id}" value="0"><input type="hidden" id="h-taxa-${f.id}" value="${tP}" data-desc="${dT}"></td>
-                            <td class="p-2 md:p-3 text-center" id="status-${f.id}"><span class="bg-gray-200 px-2 py-1 rounded-full text-[10px] text-gray-500 font-bold uppercase">Espera</span></td>
-                        </tr>
-                    `;
+                    const temAtraso = faturas.some(fat => fat.familia_id === f.id && fat.status === 'pendente' && new Date(fat.vencimento + "T00:00:00") < hoje); const multa = temAtraso ? multaPadrao : 0.0; const uL = f.ultima_leitura || 0; const tP = f.taxa_pendente_valor || 0; const dT = f.taxa_pendente_desc || ""; const avisoTaxa = tP > 0 ? `<br><span class="text-blue-600 font-black text-[9px] uppercase bg-blue-50 px-1 rounded mt-1">+ R$ ${tP} (${dT})</span>` : "";
+                    html += `<tr id="linha-${f.id}" class="hover:bg-blue-50 border-b"><td class="p-2 md:p-3 coluna-fixa"><strong class="text-xs text-slate-800">${f.nome}</strong><br><small class="text-gray-400 font-normal">${f.cpf}</small>${avisoTaxa}</td><td class="p-2 md:p-3 text-center"><input type="number" id="ant-${f.id}" value="${uL}" onkeyup="window.calcularLinha('${f.id}')" class="input-leitura p-2 border bg-gray-100 rounded-xl text-center outline-none"></td><td class="p-2 md:p-3 text-center"><input type="number" id="atu-${f.id}" onkeyup="window.calcularLinha('${f.id}')" onkeydown="window.pularLinhaGrelha(event, this)" class="input-leitura p-2 border-2 border-blue-400 bg-blue-50 rounded-xl text-center font-black outline-none"></td><td class="p-2 md:p-3 text-center font-bold text-blue-600"><span id="cons-${f.id}">0</span><span class="text-[10px] ml-1">m³</span></td><td class="p-2 md:p-3 text-center"><input type="number" step="0.01" id="multa-${f.id}" value="${multa}" onkeyup="window.calcularLinha('${f.id}')" class="w-16 md:w-24 p-2 border border-red-200 rounded-xl text-center outline-none text-red-600 font-bold"></td><td class="p-2 md:p-3 text-right font-black text-green-700 text-sm md:text-lg">R$ <span id="valTotal-${f.id}">0,00</span><input type="hidden" id="h-total-${f.id}" value="0" data-nome="${f.nome}" data-cpf="${f.cpf}" data-tel="${f.telefone}" data-endereco="${f.lote_endereco || ''}"><input type="hidden" id="h-agua-${f.id}" value="0"><input type="hidden" id="h-taxa-${f.id}" value="${tP}" data-desc="${dT}"></td><td class="p-2 md:p-3 text-center" id="status-${f.id}"><span class="bg-gray-200 px-2 py-1 rounded-full text-[10px] text-gray-500 font-bold uppercase">Espera</span></td></tr>`;
                 });
-                corpo.innerHTML = html;
-                Object.keys(window.familiasGlobal).forEach(famId => { 
-                    if(document.getElementById(`atu-${famId}`)) window.calcularLinha(famId); 
-                });
-            } catch (e) { 
-                corpo.innerHTML = "<tr><td colspan='7'>Erro ao carregar dados.</td></tr>"; 
-            }
+                corpo.innerHTML = html; Object.keys(window.familiasGlobal).forEach(famId => { if(document.getElementById(`atu-${famId}`)) window.calcularLinha(famId); });
+            } catch (e) { corpo.innerHTML = "<tr><td colspan='7'>Erro ao carregar dados.</td></tr>"; }
         };
 
         window.gerarFaturasEmLote = async () => {
-            const inputs = document.querySelectorAll('input[id^="h-total-"]');
-            const linhas = Array.from(inputs).filter(i => {
-                const id = i.id.replace('h-total-', '');
-                const atuVal = document.getElementById(`atu-${id}`).value;
-                const taxa = parseFloat(document.getElementById(`h-taxa-${id}`).value) || 0;
-                const multa = parseFloat(document.getElementById(`multa-${id}`).value) || 0;
-                const total = parseFloat(i.value) || 0;
-                return total > 0 && (atuVal !== "" || taxa > 0 || multa > 0);
-            });
-
-            if(linhas.length === 0) return alert("Preencha as leituras ou taxas para faturar!");
-            const totalLinhas = linhas.length;
-            window.mostrarLoading(`A preparar ${totalLinhas} faturas...`);
-            
-            const mes = document.getElementById("mesReferencia").value;
-            const venc = document.getElementById("dataVencimento").value;
-            let contadorProcessado = 0;
-            
+            const inputs = document.querySelectorAll('input[id^="h-total-"]'); const linhas = Array.from(inputs).filter(i => { const id = i.id.replace('h-total-', ''); const atuVal = document.getElementById(`atu-${id}`).value; const taxa = parseFloat(document.getElementById(`h-taxa-${id}`).value) || 0; const multa = parseFloat(document.getElementById(`multa-${id}`).value) || 0; const total = parseFloat(i.value) || 0; return total > 0 && (atuVal !== "" || taxa > 0 || multa > 0); });
+            if(linhas.length === 0) return alert("Preencha as leituras ou taxas para faturar!"); const totalLinhas = linhas.length; window.mostrarLoading(`A preparar ${totalLinhas} faturas...`); const mes = document.getElementById("mesReferencia").value; const venc = document.getElementById("dataVencimento").value; let contadorProcessado = 0;
             for(let input of linhas) {
-                contadorProcessado++;
-                const nome = input.dataset.nome || "Morador";
-                document.getElementById("loadingMsg").innerText = `A comunicar com o banco...\nProgresso: ${contadorProcessado} de ${totalLinhas}\n(${nome})`;
-                
-                const total = parseFloat(input.value);
-                const id = input.id.replace('h-total-', '');
-                const vAgua = parseFloat(document.getElementById(`h-agua-${id}`).value);
-                const vMulta = parseFloat(document.getElementById(`multa-${id}`).value) || 0;
-                const taxaPendente = parseFloat(document.getElementById(`h-taxa-${id}`).value);
-                const descTaxa = document.getElementById(`h-taxa-${id}`).dataset.desc;
-                const telCliente = input.dataset.tel || "";
-                const endCliente = input.dataset.endereco || "";
-                const cpfOriginal = input.dataset.cpf && input.dataset.cpf !== "undefined" ? input.dataset.cpf : "";
-                const cpfLimpo = cpfOriginal.replace(/\D/g, '');
-                
-                const l_ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0;
-                const atu_str = document.getElementById(`atu-${id}`).value;
-                const l_atu = atu_str === "" ? l_ant : parseFloat(atu_str); 
-                const consumoFinal = (l_atu > l_ant) ? l_atu - l_ant : 0;
-                let descFinal = `Água ${mes}`;
-                if(taxaPendente > 0) descFinal += ` + ${descTaxa}`;
-
-                let pixData = { sucesso: false, copiaECola: "", qrCodeBase64: "", txid: "" };
-                try {
-                    const pixReq = fetch("/api/gerar-pix", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ valor: total, descricao: descFinal, nome: nome }) });
-                    const res = await Promise.race([pixReq, new Promise((_, r) => setTimeout(() => r(new Error("Timeout PIX")), 12000))]);
-                    if(res.ok) pixData = await res.json();
-                } catch(e) {}
-                
+                contadorProcessado++; const nome = input.dataset.nome || "Morador"; document.getElementById("loadingMsg").innerText = `A comunicar com o banco...\nProgresso: ${contadorProcessado} de ${totalLinhas}\n(${nome})`;
+                const total = parseFloat(input.value); const id = input.id.replace('h-total-', ''); const vAgua = parseFloat(document.getElementById(`h-agua-${id}`).value); const vMulta = parseFloat(document.getElementById(`multa-${id}`).value) || 0; const taxaPendente = parseFloat(document.getElementById(`h-taxa-${id}`).value); const descTaxa = document.getElementById(`h-taxa-${id}`).dataset.desc; const telCliente = input.dataset.tel || ""; const endCliente = input.dataset.endereco || ""; const cpfOriginal = input.dataset.cpf && input.dataset.cpf !== "undefined" ? input.dataset.cpf : ""; const cpfLimpo = cpfOriginal.replace(/\D/g, ''); const l_ant = parseFloat(document.getElementById(`ant-${id}`).value) || 0; const atu_str = document.getElementById(`atu-${id}`).value; const l_atu = atu_str === "" ? l_ant : parseFloat(atu_str); const consumoFinal = (l_atu > l_ant) ? l_atu - l_ant : 0; let descFinal = `Água ${mes}`; if(taxaPendente > 0) descFinal += ` + ${descTaxa}`;
+                let pixData = { sucesso: false, copiaECola: "", qrCodeBase64: "", txid: "" }; try { const pixReq = fetch("/api/gerar-pix", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ valor: total, descricao: descFinal, nome: nome }) }); const res = await Promise.race([pixReq, new Promise((_, r) => setTimeout(() => r(new Error("Timeout PIX")), 12000))]); if(res.ok) pixData = await res.json(); } catch(e) {}
                 try {
                     const pdfEmBase64 = window.gerarFaturaPDFBase64(nome, cpfOriginal, endCliente, descFinal, venc, total, pixData.copiaECola, pixData.qrCodeBase64, consumoFinal + " m³");
-
-                    await addDoc(collection(db, "faturas"), { 
-                        familia_id: id, 
-                        mes_referencia: descFinal, 
-                        leitura_anterior: l_ant, 
-                        leitura_atual: l_atu, 
-                        consumo_m3: consumoFinal, 
-                        consumo: consumoFinal + " m³", 
-                        pdf_base64: pdfEmBase64,
-                        valor_agua: vAgua, 
-                        valor_multa: vMulta, 
-                        taxa_extra: taxaPendente, 
-                        valor_total: total, 
-                        vencimento: venc, 
-                        status: "pendente", 
-                        whatsapp_enviado: false, 
-                        pix_copia_cola: pixData.copiaECola || "", 
-                        qr_code_base64: pixData.qrCodeBase64 || "", 
-                        pix_txid: String(pixData.txid || ""), 
-                        data_lancamento: new Date().toISOString(), 
-                        telefone: telCliente, 
-                        nome_morador: nome, 
-                        cpf: cpfLimpo 
-                    });
-
-                    await updateDoc(doc(db, "familias", id), { ultima_leitura: l_atu, taxa_pendente_valor: 0, taxa_pendente_desc: "" });
-                    await addDoc(collection(db, "logs_agente"), { data: new Date().toISOString(), acao: 'Lote Mensal', cliente: nome, valor: total });
-                    
-                    const nomePZ = nome.replace(/'/g, "\\'"); 
-                    const dataBr = venc.split('-').reverse().join('/');
-                    const st = document.getElementById(`status-${id}`);
-                    if(st) st.innerHTML = `<button onclick="window.enviarWhatsAppSemEmoji('normal', '${telCliente}', '${nomePZ}', '${mes}', '${total.toFixed(2)}', '${dataBr}')" class="bg-green-500 text-white font-bold px-3 py-1.5 rounded-xl text-[10px] shadow-sm">📲 ZAP</button>`;
-                    
-                    document.getElementById(`atu-${id}`).disabled = true; 
-                    document.getElementById(`multa-${id}`).disabled = true;
-                } catch(err) {}
-                if (contadorProcessado < totalLinhas) { 
-                    await new Promise(resolve => setTimeout(resolve, 800)); 
-                }
+                    await addDoc(collection(db, "faturas"), { familia_id: id, mes_referencia: descFinal, leitura_anterior: l_ant, leitura_atual: l_atu, consumo_m3: consumoFinal, consumo: consumoFinal + " m³", pdf_base64: pdfEmBase64, valor_agua: vAgua, valor_multa: vMulta, taxa_extra: taxaPendente, valor_total: total, vencimento: venc, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pixData.copiaECola || "", qr_code_base64: pixData.qrCodeBase64 || "", pix_txid: String(pixData.txid || ""), data_lancamento: new Date().toISOString(), telefone: telCliente, nome_morador: nome, cpf: cpfLimpo });
+                    await updateDoc(doc(db, "familias", id), { ultima_leitura: l_atu, taxa_pendente_valor: 0, taxa_pendente_desc: "" }); await addDoc(collection(db, "logs_agente"), { data: new Date().toISOString(), acao: 'Lote Mensal', cliente: nome, valor: total });
+                    const nomePZ = nome.replace(/'/g, "\\'"); const dataBr = venc.split('-').reverse().join('/'); const st = document.getElementById(`status-${id}`); if(st) st.innerHTML = `<button onclick="window.enviarWhatsAppSemEmoji('normal', '${telCliente}', '${nomePZ}', '${mes}', '${total.toFixed(2)}', '${dataBr}')" class="bg-green-500 text-white font-bold px-3 py-1.5 rounded-xl text-[10px] shadow-sm">📲 ZAP</button>`; document.getElementById(`atu-${id}`).disabled = true; document.getElementById(`multa-${id}`).disabled = true;
+                } catch(err) {} if (contadorProcessado < totalLinhas) { await new Promise(resolve => setTimeout(resolve, 800)); }
             }
             window.esconderLoading(); alert("✅ Lote Mensal Gerado! O Robô iniciará o envio das faturas automaticamente.");
         };
 
         window.submitAvulso = async (e) => {
-            e.preventDefault();
-            const tipo = document.getElementById("avulsoTipo").value;
-            const select = document.getElementById("avulsoFamilia");
-            const opt = select.options[select.selectedIndex];
-            const familiaId = select.value;
-            const descricao = document.getElementById("avulsoDescricao").value;
-            const repeticoes = parseInt(document.getElementById("avulsoRepeticoes").value) || 1;
-            const valorStr = document.getElementById("avulsoValor").value;
-            const valor = parseFloat(valorStr.replace(/\./g, '').replace(',', '.'));
-            
-            if(isNaN(valor) || valor <= 0) return alert("Digite um valor válido.");
-            const vencimento = document.getElementById("avulsoVencimento").value;
-            window.mostrarLoading(repeticoes > 1 ? `A clonar faturas...` : "A processar Fatura Oficial e PIX...");
-            
+            e.preventDefault(); const tipo = document.getElementById("avulsoTipo").value; const select = document.getElementById("avulsoFamilia"); const opt = select.options[select.selectedIndex]; const familiaId = select.value; const descricao = document.getElementById("avulsoDescricao").value; const repeticoes = parseInt(document.getElementById("avulsoRepeticoes").value) || 1; const valorStr = document.getElementById("avulsoValor").value; const valor = parseFloat(valorStr.replace(/\./g, '').replace(',', '.'));
+            if(isNaN(valor) || valor <= 0) return alert("Digite um valor válido."); const vencimento = document.getElementById("avulsoVencimento").value; window.mostrarLoading(repeticoes > 1 ? `A clonar faturas...` : "A processar Fatura Oficial e PIX...");
             if(tipo === 'somar_proxima') {
-                if(familiaId === 'TODOS') {
-                    if(!confirm(`Somar R$ ${valor.toFixed(2).replace('.',',')} na conta de TODOS?`)) { window.esconderLoading(); return; }
-                    for(let id of Object.keys(window.familiasGlobal)) { 
-                        await updateDoc(doc(db, "familias", id), { taxa_pendente_valor: valor, taxa_pendente_desc: descricao }); 
-                    }
-                } else { 
-                    await updateDoc(doc(db, "familias", familiaId), { taxa_pendente_valor: valor, taxa_pendente_desc: descricao }); 
-                }
-                window.esconderLoading(); 
-                alert("✅ Serviço agendado para a próxima fatura de água!"); 
-                document.getElementById("formAvulso").reset(); 
-                document.getElementById("buscaClienteAvulso").value = ""; 
-                document.getElementById("avulsoRepeticoes").value = 1; 
-                window.filtrarAvulsoESelecionar();
-                return;
+                if(familiaId === 'TODOS') { if(!confirm(`Somar R$ ${valor.toFixed(2).replace('.',',')} na conta de TODOS?`)) { window.esconderLoading(); return; } for(let id of Object.keys(window.familiasGlobal)) { await updateDoc(doc(db, "familias", id), { taxa_pendente_valor: valor, taxa_pendente_desc: descricao }); } } else { await updateDoc(doc(db, "familias", familiaId), { taxa_pendente_valor: valor, taxa_pendente_desc: descricao }); }
+                window.esconderLoading(); alert("✅ Serviço agendado para a próxima fatura de água!"); document.getElementById("formAvulso").reset(); document.getElementById("buscaClienteAvulso").value = ""; document.getElementById("avulsoRepeticoes").value = 1; window.filtrarAvulsoESelecionar(); return;
             }
-            
             if(familiaId === 'TODOS') {
                 if(!confirm(`Gerar PIX e Faturas Oficiais para TODOS?`)) { window.esconderLoading(); return; }
                 for(let [id, f] of Object.entries(window.familiasGlobal)) {
-                    const cpfOriginal = f.cpf && f.cpf !== "undefined" ? f.cpf : ""; 
-                    const cpfLimpo = cpfOriginal.replace(/\D/g, ''); 
-                    let pixData = { sucesso: false, copiaECola: "", qrCodeBase64: "" };
-                    
-                    try {
-                        const pixReq = fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: f.nome}) });
-                        const res = await Promise.race([pixReq, new Promise((_, r) => setTimeout(() => r(new Error("Timeout")), 12000))]);
-                        if(res.ok) pixData = await res.json();
-                    } catch(err) {}
-
-                    try {
-                        const pdfEmBase64 = window.gerarFaturaPDFBase64(f.nome, cpfOriginal, f.lote_endereco, descricao, vencimento, valor, pixData.copiaECola, pixData.qrCodeBase64, null);
-                        await addDoc(collection(db, "faturas"), { 
-                            familia_id: id, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, 
-                            consumo_m3: 0, consumo: "N/A", pdf_base64: pdfEmBase64, valor_agua: 0, valor_multa: 0, 
-                            taxa_extra: valor, valor_total: valor, vencimento: vencimento, status: "pendente", 
-                            whatsapp_enviado: false, pix_copia_cola: pixData.copiaECola || "", qr_code_base64: pixData.qrCodeBase64 || "", 
-                            pix_txid: String(pixData.txid || ""), telefone: f.telefone || "", nome_morador: f.nome, 
-                            cpf: cpfLimpo, data_lancamento: new Date().toISOString() 
-                        }); 
-                    } catch(err) {}
+                    const cpfOriginal = f.cpf && f.cpf !== "undefined" ? f.cpf : ""; const cpfLimpo = cpfOriginal.replace(/\D/g, ''); let pixData = { sucesso: false, copiaECola: "", qrCodeBase64: "" };
+                    try { const pixReq = fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: f.nome}) }); const res = await Promise.race([pixReq, new Promise((_, r) => setTimeout(() => r(new Error("Timeout")), 12000))]); if(res.ok) pixData = await res.json(); } catch(err) {}
+                    try { const pdfEmBase64 = window.gerarFaturaPDFBase64(f.nome, cpfOriginal, f.lote_endereco, descricao, vencimento, valor, pixData.copiaECola, pixData.qrCodeBase64, null); await addDoc(collection(db, "faturas"), { familia_id: id, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, consumo: "N/A", pdf_base64: pdfEmBase64, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento: vencimento, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pixData.copiaECola || "", qr_code_base64: pixData.qrCodeBase64 || "", pix_txid: String(pixData.txid || ""), telefone: f.telefone || "", nome_morador: f.nome, cpf: cpfLimpo, data_lancamento: new Date().toISOString() }); } catch(err) {}
                 }
                 window.esconderLoading(); alert(`✅ Faturas avulsas geradas.`);
             } else {
-                const nome = opt.dataset.nome;
-                const cpfOriginal = opt.dataset.cpf && opt.dataset.cpf !== "undefined" ? opt.dataset.cpf : ""; 
-                const cpfLimpo = cpfOriginal.replace(/\D/g, ''); 
-                const telCliente = opt.dataset.tel || "";
-                const endCliente = opt.dataset.endereco || "";
-                
-                let pixData = { sucesso: false, copiaECola: "", qrCodeBase64: "" };
+                const nome = opt.dataset.nome; const cpfOriginal = opt.dataset.cpf && opt.dataset.cpf !== "undefined" ? opt.dataset.cpf : ""; const cpfLimpo = cpfOriginal.replace(/\D/g, ''); const telCliente = opt.dataset.tel || ""; const endCliente = opt.dataset.endereco || ""; let pixData = { sucesso: false, copiaECola: "", qrCodeBase64: "" };
+                try { const pixReq = fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: nome}) }); const res = await Promise.race([pixReq, new Promise((_, r) => setTimeout(() => r(new Error("Timeout")), 15000))]); if(res.ok) pixData = await res.json(); } catch(e) {}
                 try {
-                    const pixReq = fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: nome}) });
-                    const res = await Promise.race([pixReq, new Promise((_, r) => setTimeout(() => r(new Error("Timeout")), 15000))]);
-                    if(res.ok) pixData = await res.json();
-                } catch(e) {}
-
-                try {
-                    for(let i = 0; i < repeticoes; i++) {
-                        let descFinal = repeticoes > 1 ? `${descricao} (Cópia ${i+1}/${repeticoes})` : descricao;
-                        const pdfEmBase64 = window.gerarFaturaPDFBase64(nome, cpfOriginal, endCliente, descFinal, vencimento, valor, pixData.copiaECola, pixData.qrCodeBase64, null);
-                        await addDoc(collection(db, "faturas"), { 
-                            familia_id: familiaId, mes_referencia: descFinal, leitura_anterior: 0, leitura_atual: 0, 
-                            consumo_m3: 0, consumo: "N/A", pdf_base64: pdfEmBase64, valor_agua: 0, valor_multa: 0, 
-                            taxa_extra: valor, valor_total: valor, vencimento: vencimento, status: "pendente", 
-                            whatsapp_enviado: false, pix_copia_cola: pixData.copiaECola || "", qr_code_base64: pixData.qrCodeBase64 || "", 
-                            pix_txid: String(pixData.txid || ""), telefone: telCliente, nome_morador: nome, 
-                            cpf: cpfLimpo, data_lancamento: new Date().toISOString() 
-                        }); 
-                    }
+                    for(let i = 0; i < repeticoes; i++) { let descFinal = repeticoes > 1 ? `${descricao} (Cópia ${i+1}/${repeticoes})` : descricao; const pdfEmBase64 = window.gerarFaturaPDFBase64(nome, cpfOriginal, endCliente, descFinal, vencimento, valor, pixData.copiaECola, pixData.qrCodeBase64, null); await addDoc(collection(db, "faturas"), { familia_id: familiaId, mes_referencia: descFinal, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, consumo: "N/A", pdf_base64: pdfEmBase64, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento: vencimento, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pixData.copiaECola || "", qr_code_base64: pixData.qrCodeBase64 || "", pix_txid: String(pixData.txid || ""), telefone: telCliente, nome_morador: nome, cpf: cpfLimpo, data_lancamento: new Date().toISOString() }); }
                     window.esconderLoading(); alert(`✅ Serviço avulso gerado com sucesso! (PDF Salvo)`);
-                } catch(e) { 
-                    window.esconderLoading(); 
-                    alert("Erro ao salvar fatura."); 
-                }
+                } catch(e) { window.esconderLoading(); alert("Erro ao salvar fatura."); }
             }
-            document.getElementById("formAvulso").reset(); 
-            document.getElementById("buscaClienteAvulso").value = ""; 
-            document.getElementById("avulsoRepeticoes").value = 1; 
-            window.filtrarAvulsoESelecionar();
+            document.getElementById("formAvulso").reset(); document.getElementById("buscaClienteAvulso").value = ""; document.getElementById("avulsoRepeticoes").value = 1; window.filtrarAvulsoESelecionar();
         };
 
         window.iniciarListenerAbertas = async () => {
-            if(unsubAbertas) unsubAbertas();
-            const tbody = document.getElementById("tabelaAbertas");
-            tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center'>A carregar...</td></tr>";
-            const q = query(collection(db, "faturas"), where("status", "==", "pendente"));
-            
+            if(unsubAbertas) unsubAbertas(); const tbody = document.getElementById("tabelaAbertas"); tbody.innerHTML = "<tr><td colspan='4' class='p-8 text-center'>A carregar...</td></tr>"; const q = query(collection(db, "faturas"), where("status", "==", "pendente"));
             unsubAbertas = onSnapshot(q, (snap) => {
-                const hoje = new Date(); hoje.setHours(0,0,0,0);
-                let abertas = [];
-                snap.forEach(d => abertas.push({id: d.id, ...d.data()}));
-                abertas.sort((a,b) => new Date(a.vencimento) - new Date(b.vencimento));
-                let html = "";
-                
+                const hoje = new Date(); hoje.setHours(0,0,0,0); let abertas = []; snap.forEach(d => abertas.push({id: d.id, ...d.data()})); abertas.sort((a,b) => new Date(a.vencimento) - new Date(b.vencimento)); let html = "";
                 for(let f of abertas) {
-                    const isOverdue = new Date(f.vencimento + "T00:00:00") < hoje;
-                    const rowClass = isOverdue ? "bg-red-50" : "hover:bg-amber-50";
-                    const tel = f.telefone || window.familiasGlobal[f.familia_id]?.telefone;
-                    const nomePZ = String(f.nome_morador || "Morador").replace(/'/g, "\\'");
-                    const dataBr = f.vencimento.split('-').reverse().join('/');
-                    const valorForm = f.valor_total.toFixed(2);
-                    
-                    let dtLanc = new Date(f.data_lancamento);
-                    let hrCriacao = !isNaN(dtLanc) ? dtLanc.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit', second:'2-digit'}) : '--:--:--';
-                    
-                    let btnClass = 'bg-white hover:bg-slate-50 border border-slate-300';
-                    let statusEnvio = `<span class="text-slate-400 text-[10px] font-bold mt-1"><i class="fa-solid fa-clock"></i> Na Fila</span>`;
-                    
-                    if (f.whatsapp_enviado) {
-                        if (f.data_envio_whatsapp && !f.data_envio_whatsapp.includes("ERRO") && !f.data_envio_whatsapp.includes("INVALIDO")) {
-                            let dtEnv = new Date(f.data_envio_whatsapp);
-                            let hrEnvio = dtEnv.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit', second:'2-digit'});
-                            btnClass = 'bg-green-50 hover:bg-green-100 border border-green-400';
-                            statusEnvio = `<span class="text-green-600 text-[10px] font-black mt-1"><i class="fa-brands fa-whatsapp"></i> Env: ${hrEnvio}</span>`;
-                        } else { 
-                            btnClass = 'bg-red-50 hover:bg-red-100 border border-red-400';
-                            statusEnvio = `<span class="text-red-600 text-[10px] font-black mt-1"><i class="fa-solid fa-triangle-exclamation"></i> ERRO ZAP</span>`; 
-                        }
-                    }
-
-                    const btnZap = `<button onclick="window.enviarWhatsAppSemEmoji('normal', '${tel}', '${nomePZ}', '${f.mes_referencia}', '${valorForm}', '${dataBr}')" class="${btnClass} rounded-lg shadow-sm transition flex flex-col items-center justify-center min-w-[85px] h-[45px] px-2 leading-none">
-                        <span class="text-red-500 font-bold text-[10px]">Criado: ${hrCriacao}</span>
-                        ${statusEnvio}
-                    </button>`;
-
-                    html += `<tr class="${rowClass} border-b">
-                        <td class="p-3 md:p-4 font-mono text-[10px] md:text-sm">${isOverdue ? "🚨 " : "⏳ "}${dataBr}</td>
-                        <td class="p-3 md:p-4 leading-tight"><strong>${f.nome_morador}</strong><br><small class="text-gray-500 text-[10px] md:text-xs">${f.mes_referencia}</small></td>
-                        <td class="p-3 md:p-4 text-right font-bold text-amber-700 text-sm md:text-base">R$ ${valorForm}</td>
-                        <td class="p-2 md:p-4"><div class="flex items-center justify-end gap-1 md:gap-2">${btnZap}<button onclick="window.marcarPago('${f.id}')" class="bg-blue-600 text-white px-3 md:px-4 rounded-lg text-[10px] md:text-xs font-bold transition hover:bg-blue-700 h-[45px] flex items-center justify-center">Baixa</button><button onclick="window.excluirFatura('${f.id}', '${nomePZ}', ${f.valor_total})" class="bg-red-100 text-red-600 px-3 md:px-4 rounded-lg text-[10px] md:text-xs font-bold transition hover:bg-red-200 h-[45px] flex items-center justify-center">🗑️</button></div></td>
-                    </tr>`;
+                    const isOverdue = new Date(f.vencimento + "T00:00:00") < hoje; const rowClass = isOverdue ? "bg-red-50" : "hover:bg-amber-50"; const tel = f.telefone || window.familiasGlobal[f.familia_id]?.telefone; const nomePZ = String(f.nome_morador || "Morador").replace(/'/g, "\\'"); const dataBr = f.vencimento.split('-').reverse().join('/'); const valorForm = f.valor_total.toFixed(2); let dtLanc = new Date(f.data_lancamento); let hrCriacao = !isNaN(dtLanc) ? dtLanc.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit', second:'2-digit'}) : '--:--:--'; let btnClass = 'bg-white hover:bg-slate-50 border border-slate-300'; let statusEnvio = `<span class="text-slate-400 text-[10px] font-bold mt-1"><i class="fa-solid fa-clock"></i> Na Fila</span>`;
+                    if (f.whatsapp_enviado) { if (f.data_envio_whatsapp && !f.data_envio_whatsapp.includes("ERRO") && !f.data_envio_whatsapp.includes("INVALIDO")) { let dtEnv = new Date(f.data_envio_whatsapp); let hrEnvio = dtEnv.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit', second:'2-digit'}); btnClass = 'bg-green-50 hover:bg-green-100 border border-green-400'; statusEnvio = `<span class="text-green-600 text-[10px] font-black mt-1"><i class="fa-brands fa-whatsapp"></i> Env: ${hrEnvio}</span>`; } else { btnClass = 'bg-red-50 hover:bg-red-100 border border-red-400'; statusEnvio = `<span class="text-red-600 text-[10px] font-black mt-1"><i class="fa-solid fa-triangle-exclamation"></i> ERRO ZAP</span>`; } }
+                    const btnZap = `<button onclick="window.enviarWhatsAppSemEmoji('normal', '${tel}', '${nomePZ}', '${f.mes_referencia}', '${valorForm}', '${dataBr}')" class="${btnClass} rounded-lg shadow-sm transition flex flex-col items-center justify-center min-w-[85px] h-[45px] px-2 leading-none"><span class="text-red-500 font-bold text-[10px]">Criado: ${hrCriacao}</span>${statusEnvio}</button>`;
+                    html += `<tr class="${rowClass} border-b"><td class="p-3 md:p-4 font-mono text-[10px] md:text-sm">${isOverdue ? "🚨 " : "⏳ "}${dataBr}</td><td class="p-3 md:p-4 leading-tight"><strong>${f.nome_morador}</strong><br><small class="text-gray-500 text-[10px] md:text-xs">${f.mes_referencia}</small></td><td class="p-3 md:p-4 text-right font-bold text-amber-700 text-sm md:text-base">R$ ${valorForm}</td><td class="p-2 md:p-4"><div class="flex items-center justify-end gap-1 md:gap-2">${btnZap}<button onclick="window.marcarPago('${f.id}')" class="bg-blue-600 text-white px-3 md:px-4 rounded-lg text-[10px] md:text-xs font-bold transition hover:bg-blue-700 h-[45px] flex items-center justify-center">Baixa</button><button onclick="window.excluirFatura('${f.id}', '${nomePZ}', ${f.valor_total})" class="bg-red-100 text-red-600 px-3 md:px-4 rounded-lg text-[10px] md:text-xs font-bold transition hover:bg-red-200 h-[45px] flex items-center justify-center">🗑️</button></div></td></tr>`;
                 }
                 tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center text-green-600 font-bold'>Tudo Pago!</td></tr>";
             });
         };
         
         window.iniciarListenerPagos = async () => {
-            if(unsubPagos) unsubPagos();
-            const tbody = document.getElementById("tabelaPagos");
+            if(unsubPagos) unsubPagos(); const tbody = document.getElementById("tabelaPagos");
             unsubPagos = onSnapshot(query(collection(db, "faturas"), where("status", "==", "pago")), (snap) => {
-                const pagas = []; 
-                snap.forEach(d => pagas.push({id: d.id, ...d.data()}));
-                pagas.sort((a,b) => new Date(b.data_pagamento) - new Date(a.data_pagamento));
-                let html = "";
-                for(let p of pagas) {
-                    const dt = new Date(p.data_pagamento);
-                    html += `<tr class="border-b">
-                        <td class="p-3 text-[10px] font-mono text-gray-500">${dt.toLocaleDateString('pt-BR')} ${dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}</td>
-                        <td class="p-3 font-bold text-sm">${p.nome_morador}</td>
-                        <td class="p-3 text-right font-black text-green-600">R$ ${p.valor_total.toFixed(2)}</td>
-                        <td class="p-3 text-center"><span class="bg-green-100 text-green-700 px-2 py-1 rounded-lg text-[9px] font-bold uppercase">Confirmado</span></td>
-                    </tr>`;
-                }
+                const pagas = []; snap.forEach(d => pagas.push({id: d.id, ...d.data()})); pagas.sort((a,b) => new Date(b.data_pagamento) - new Date(a.data_pagamento)); let html = "";
+                for(let p of pagas) { const dt = new Date(p.data_pagamento); html += `<tr class="border-b"><td class="p-3 text-[10px] font-mono text-gray-500">${dt.toLocaleDateString('pt-BR')} ${dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}</td><td class="p-3 font-bold text-sm">${p.nome_morador}</td><td class="p-3 text-right font-black text-green-600">R$ ${p.valor_total.toFixed(2)}</td><td class="p-3 text-center"><span class="bg-green-100 text-green-700 px-2 py-1 rounded-lg text-[9px] font-bold uppercase">Confirmado</span></td></tr>`; }
                 tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center text-gray-400'>Nenhum recebimento.</td></tr>";
             });
         };
 
-        window.excluirFatura = async (id, nome, valor) => { 
-            if(confirm(`Cancelar a fatura de ${nome}?`)) { 
-                window.mostrarLoading("A cancelar..."); 
-                await updateDoc(doc(db, "faturas", id), {status: "cancelar"}); 
-                await addDoc(collection(db, "logs_agente"), { data: new Date().toISOString(), acao: 'Cancelada', cliente: nome, valor: valor }); 
-                window.esconderLoading();
-            } 
-        };
-
-        window.marcarPago = async (id) => { 
-            if(confirm("Confirmar baixa de pagamento manual?")) { 
-                await updateDoc(doc(db, "faturas", id), {status: "pago", data_pagamento: new Date().toISOString()}); 
-            } 
-        };
+        window.excluirFatura = async (id, nome, valor) => { if(confirm(`Cancelar a fatura de ${nome}?`)) { window.mostrarLoading("A cancelar..."); await updateDoc(doc(db, "faturas", id), {status: "cancelar"}); await addDoc(collection(db, "logs_agente"), { data: new Date().toISOString(), acao: 'Cancelada', cliente: nome, valor: valor }); window.esconderLoading(); } };
+        window.marcarPago = async (id) => { if(confirm("Confirmar baixa de pagamento manual?")) { await updateDoc(doc(db, "faturas", id), {status: "pago", data_pagamento: new Date().toISOString()}); } };
 
         let todasFaturasCache = [];
         window.carregarRelatorio = async () => {
-            window.mostrarLoading("A consultar..."); 
-            const snap = await getDocs(collection(db, "faturas"));
-            todasFaturasCache = []; 
-            snap.forEach(d => todasFaturasCache.push(d.data()));
-            window.esconderLoading(); 
-            window.gerarRelatorioFiltrado();
+            window.mostrarLoading("A consultar..."); const snap = await getDocs(collection(db, "faturas")); todasFaturasCache = []; snap.forEach(d => todasFaturasCache.push(d.data())); window.esconderLoading(); window.gerarRelatorioFiltrado();
         };
 
         window.gerarRelatorioFiltrado = () => {
-            const dtIni = document.getElementById("relDataInicio").value; 
-            const dtFim = document.getElementById("relDataFim").value;
-            const statusF = document.getElementById("relStatus").value; 
-            const termo = document.getElementById("relBusca").value.toLowerCase();
-            
-            let filtradas = todasFaturasCache.filter(f => {
-                let matchD = true;
-                if(dtIni || dtFim) { 
-                    const dtB = f.data_lancamento ? f.data_lancamento.split('T')[0] : f.vencimento; 
-                    if(dtIni && dtB < dtIni) matchD = false; 
-                    if(dtFim && dtB > dtFim) matchD = false; 
-                }
-                return matchD && (statusF === "TODOS" || f.status === statusF) && (!termo || (f.nome_morador || "").toLowerCase().includes(termo)) && f.status !== "cancelar";
-            }).sort((a,b) => new Date(b.vencimento) - new Date(a.vencimento));
-
-            let tPago = 0, tPend = 0, tInad = 0, tM3 = 0, html = ""; 
-            const hoje = new Date(); hoje.setHours(0,0,0,0);
-
+            const dtIni = document.getElementById("relDataInicio").value; const dtFim = document.getElementById("relDataFim").value; const statusF = document.getElementById("relStatus").value; const termo = document.getElementById("relBusca").value.toLowerCase();
+            let filtradas = todasFaturasCache.filter(f => { let matchD = true; if(dtIni || dtFim) { const dtB = f.data_lancamento ? f.data_lancamento.split('T')[0] : f.vencimento; if(dtIni && dtB < dtIni) matchD = false; if(dtFim && dtB > dtFim) matchD = false; } return matchD && (statusF === "TODOS" || f.status === statusF) && (!termo || (f.nome_morador || "").toLowerCase().includes(termo)) && f.status !== "cancelar"; }).sort((a,b) => new Date(b.vencimento) - new Date(a.vencimento));
+            let tPago = 0, tPend = 0, tInad = 0, tM3 = 0, html = ""; const hoje = new Date(); hoje.setHours(0,0,0,0);
             filtradas.forEach(f => {
                 let badge = 'bg-gray-100 text-gray-700'; let st = f.status;
-                if(f.status === "pago") { 
-                    tPago += f.valor_total; st = "Recebido"; badge = 'bg-green-100 text-green-700'; 
-                } else if(new Date(f.vencimento + "T00:00:00") < hoje) { 
-                    tInad += f.valor_total; st = "Inadimplente"; badge = 'bg-red-100 text-red-700'; 
-                } else { 
-                    tPend += f.valor_total; st = "Pendente"; badge = 'bg-orange-100 text-orange-700'; 
-                }
-                
+                if(f.status === "pago") { tPago += f.valor_total; st = "Recebido"; badge = 'bg-green-100 text-green-700'; } else if(new Date(f.vencimento + "T00:00:00") < hoje) { tInad += f.valor_total; st = "Inadimplente"; badge = 'bg-red-100 text-red-700'; } else { tPend += f.valor_total; st = "Pendente"; badge = 'bg-orange-100 text-orange-700'; }
                 tM3 += (f.consumo_m3 || 0);
-                html += `<tr class="border-b hover:bg-slate-50">
-                    <td class="p-3 pl-4 font-bold text-xs">${f.nome_morador}</td>
-                    <td class="p-3 text-[10px]">${f.mes_referencia}<br>Venc: ${f.vencimento.split('-').reverse().join('/')}</td>
-                    <td class="p-3 text-center font-bold text-blue-600 text-xs">${f.consumo_m3 || 0} m³</td>
-                    <td class="p-3 text-center"><span class="px-2 py-1 rounded text-[9px] uppercase font-bold ${badge}">${st}</span></td>
-                    <td class="p-3 text-right font-black pr-4">R$ ${f.valor_total.toFixed(2)}</td>
-                </tr>`;
+                html += `<tr class="border-b hover:bg-slate-50"><td class="p-3 pl-4 font-bold text-xs">${f.nome_morador}</td><td class="p-3 text-[10px]">${f.mes_referencia}<br>Venc: ${f.vencimento.split('-').reverse().join('/')}</td><td class="p-3 text-center font-bold text-blue-600 text-xs">${f.consumo_m3 || 0} m³</td><td class="p-3 text-center"><span class="px-2 py-1 rounded text-[9px] uppercase font-bold ${badge}">${st}</span></td><td class="p-3 text-right font-black pr-4">R$ ${f.valor_total.toFixed(2)}</td></tr>`;
             });
-            
-            document.getElementById("relCardM3").innerText = tM3.toFixed(0); 
-            document.getElementById("relCardQtd").innerText = filtradas.length;
-            document.getElementById("relCardPendente").innerText = "R$ " + tPend.toFixed(2).replace('.',','); 
-            document.getElementById("relCardInadimplente").innerText = "R$ " + tInad.toFixed(2).replace('.',',');
-            document.getElementById("relCardPago").innerText = "R$ " + tPago.toFixed(2).replace('.',','); 
-            document.getElementById("tabelaRelatorio").innerHTML = html || "<tr><td colspan='5' class='p-8 text-center text-gray-400'>Sem resultados.</td></tr>";
+            document.getElementById("relCardM3").innerText = tM3.toFixed(0); document.getElementById("relCardQtd").innerText = filtradas.length; document.getElementById("relCardPendente").innerText = "R$ " + tPend.toFixed(2).replace('.',','); document.getElementById("relCardInadimplente").innerText = "R$ " + tInad.toFixed(2).replace('.',','); document.getElementById("relCardPago").innerText = "R$ " + tPago.toFixed(2).replace('.',','); document.getElementById("tabelaRelatorio").innerHTML = html || "<tr><td colspan='5' class='p-8 text-center text-gray-400'>Sem resultados.</td></tr>";
         };
 
         window.carregarLogsAgente = async () => {
             window.mostrarLoading("A procurar...");
             try {
-                const snap = await getDocs(collection(db, "logs_agente")); 
-                let logs = []; 
-                snap.forEach(d => logs.push(d.data())); 
-                logs.sort((a,b) => new Date(b.data) - new Date(a.data)); 
-                let html = "";
-                
+                const snap = await getDocs(collection(db, "logs_agente")); let logs = []; snap.forEach(d => logs.push(d.data())); logs.sort((a,b) => new Date(b.data) - new Date(a.data)); let html = "";
                 logs.forEach(l => {
-                    const dt = new Date(l.data); 
-                    const dtF = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-                    
-                    if (l.mensagem) { 
-                        html += `<tr class="hover:bg-slate-50 border-b"><td class="p-3 text-[10px] font-mono text-gray-500">${dtF}</td><td class="p-3 text-[10px]"><span class="bg-slate-200 px-2 py-1 rounded-md font-bold">Antigo</span></td><td class="p-3 text-xs font-bold" colspan="2">${l.mensagem}</td></tr>`; 
-                    } else {
-                        let cor = "bg-emerald-50 text-emerald-600"; 
-                        if (l.acao === 'Cancelada') cor = "bg-red-50 text-red-600"; 
-                        if (l.acao && l.acao.includes('Avulso')) cor = "bg-orange-50 text-orange-600"; 
-                        if (l.acao && l.acao.includes('Disparo')) cor = "bg-amber-50 text-amber-600";
-                        
-                        html += `<tr class="hover:bg-slate-50 border-b">
-                            <td class="p-3 text-[10px] font-mono text-gray-500">${dtF}</td>
-                            <td class="p-3 text-[10px]"><span class="${cor} px-2 py-1 rounded-md font-bold">${l.acao}</span></td>
-                            <td class="p-3 text-[11px] font-bold max-w-[120px] truncate">${l.cliente}</td>
-                            <td class="p-3 text-[11px] font-black text-right">${l.valor > 0 ? (l.acao==='Disparo Massa' ? l.valor + ' msg' : 'R$ ' + parseFloat(l.valor).toFixed(2).replace('.',',')) : '-'}</td>
-                        </tr>`;
+                    const dt = new Date(l.data); const dtF = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+                    if (l.mensagem) { html += `<tr class="hover:bg-slate-50 border-b"><td class="p-3 text-[10px] font-mono text-gray-500">${dtF}</td><td class="p-3 text-[10px]"><span class="bg-slate-200 px-2 py-1 rounded-md font-bold">Antigo</span></td><td class="p-3 text-xs font-bold" colspan="2">${l.mensagem}</td></tr>`; } else {
+                        let cor = "bg-emerald-50 text-emerald-600"; if (l.acao === 'Cancelada') cor = "bg-red-50 text-red-600"; if (l.acao && l.acao.includes('Avulso')) cor = "bg-orange-50 text-orange-600"; if (l.acao && l.acao.includes('Disparo')) cor = "bg-amber-50 text-amber-600";
+                        html += `<tr class="hover:bg-slate-50 border-b"><td class="p-3 text-[10px] font-mono text-gray-500">${dtF}</td><td class="p-3 text-[10px]"><span class="${cor} px-2 py-1 rounded-md font-bold">${l.acao}</span></td><td class="p-3 text-[11px] font-bold max-w-[120px] truncate">${l.cliente}</td><td class="p-3 text-[11px] font-black text-right">${l.valor > 0 ? (l.acao==='Disparo Massa' ? l.valor + ' msg' : 'R$ ' + parseFloat(l.valor).toFixed(2).replace('.',',')) : '-'}</td></tr>`;
                     }
-                });
-                document.getElementById("tabelaLogsAgente").innerHTML = html || "<tr><td colspan='4' class='p-6 text-center text-gray-400'>Sem histórico.</td></tr>";
-            } catch(e) { } 
-            window.esconderLoading();
+                }); document.getElementById("tabelaLogsAgente").innerHTML = html || "<tr><td colspan='4' class='p-6 text-center text-gray-400'>Sem histórico.</td></tr>";
+            } catch(e) { } window.esconderLoading();
         };
 
         window.exportarBase = async () => {
-            window.mostrarLoading("Backup..."); 
-            const famSnap = await getDocs(collection(db, "familias")); 
-            const fatSnap = await getDocs(collection(db, "faturas"));
-            
-            const data = { familias: [], faturas: [] }; 
-            famSnap.forEach(d => data.familias.push({id: d.id, ...d.data()})); 
-            fatSnap.forEach(d => data.faturas.push({id: d.id, ...d.data()}));
-            
-            const a = document.createElement("a"); 
-            a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], {type: "application/json"})); 
-            a.download = `backup_saoluiz_${new Date().toISOString().split('T')[0]}.json`; 
-            a.click(); 
-            window.esconderLoading();
+            window.mostrarLoading("Backup..."); const famSnap = await getDocs(collection(db, "familias")); const fatSnap = await getDocs(collection(db, "faturas"));
+            const data = { familias: [], faturas: [] }; famSnap.forEach(d => data.familias.push({id: d.id, ...d.data()})); fatSnap.forEach(d => data.faturas.push({id: d.id, ...d.data()}));
+            const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], {type: "application/json"})); a.download = `backup_saoluiz_${new Date().toISOString().split('T')[0]}.json`; a.click(); window.esconderLoading();
         };
 
         window.importarBase = async () => {
-            const file = document.getElementById("fileImport").files[0]; 
-            if(!file || !confirm("Adicionar dados?")) return;
-            
-            window.mostrarLoading("Importando..."); 
-            const reader = new FileReader();
+            const file = document.getElementById("fileImport").files[0]; if(!file || !confirm("Adicionar dados?")) return;
+            window.mostrarLoading("Importando..."); const reader = new FileReader();
             reader.onload = async (e) => {
                 const data = JSON.parse(e.target.result);
                 if(data.familias) for(let f of data.familias) { const {id, ...rest} = f; await setDoc(doc(db, "familias", id), rest); }
                 if(data.faturas) for(let f of data.faturas) { const {id, ...rest} = f; await setDoc(doc(db, "faturas", id), rest); }
-                alert("Sucesso!"); 
-                window.carregarFamilias(); 
-                window.esconderLoading();
-            }; 
-            reader.readAsText(file);
+                alert("Sucesso!"); window.carregarFamilias(); window.esconderLoading();
+            }; reader.readAsText(file);
         };
 
         window.limparFaturas = async () => {
             if(prompt("Digite CONFIRMO para prosseguir") !== "CONFIRMO") return;
-            window.mostrarLoading("Formatando..."); 
-            const snap = await getDocs(collection(db, "faturas"));
+            window.mostrarLoading("Formatando..."); const snap = await getDocs(collection(db, "faturas"));
             snap.forEach(async (d) => { await deleteDoc(doc(db, "faturas", d.id)); });
-            alert("Formatado!"); 
-            window.carregarLoteFaturas(); 
-            window.esconderLoading();
+            alert("Formatado!"); window.carregarLoteFaturas(); window.esconderLoading();
         };
     </script>
 </body>
