@@ -4,34 +4,138 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>App Gestão v22.9 - Água São Luiz</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
     
     <style>
-        body { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; -webkit-touch-callout: none; }
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; max-width: 100vw; overflow-x: hidden; }
-        .tela-oculta { display: none !important; }
-        .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.95); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; }
-        .spinner { border: 4px solid #e2e8f0; border-top: 4px solid #3b82f6; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .coluna-fixa { position: sticky; left: 0; z-index: 20; background-color: white; border-right: 2px solid #e5e7eb; max-width: 130px; min-width: 130px; white-space: normal; font-size: 0.75rem; line-height: 1.2; }
-        th.coluna-fixa { background-color: #f8fafc; }
-        .overflow-x-auto { -webkit-overflow-scrolling: touch; }
-        .scroll-suave::-webkit-scrollbar { height: 6px; }
-        .scroll-suave::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .conteudo-principal { padding-bottom: 100px; } 
-        .input-leitura { width: 100%; min-width: 80px; max-width: 120px; font-size: 1rem; transition: all 0.2s; }
-        .input-leitura:focus { background-color: #fffbeb; border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2); }
-        .modal-fundo { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; justify-content: center; align-items: center; padding: 1rem; }
+        body { 
+            -webkit-user-select: none; 
+            -moz-user-select: none; 
+            -ms-user-select: none; 
+            user-select: none; 
+            -webkit-touch-callout: none; 
+        }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f3f4f6; 
+            max-width: 100vw; 
+            overflow-x: hidden; 
+        }
+        
+        .tela-oculta { 
+            display: none !important; 
+        }
+        
+        .loading-overlay { 
+            display: none; 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(255,255,255,0.95); 
+            z-index: 9999; 
+            justify-content: center; 
+            align-items: center; 
+            flex-direction: column; 
+        }
+        
+        .spinner { 
+            border: 4px solid #e2e8f0; 
+            border-top: 4px solid #3b82f6; 
+            border-radius: 50%; 
+            width: 50px; 
+            height: 50px; 
+            animation: spin 1s linear infinite; 
+        }
+        
+        @keyframes spin { 
+            0% { transform: rotate(0deg); } 
+            100% { transform: rotate(360deg); } 
+        }
+        
+        .coluna-fixa { 
+            position: sticky; 
+            left: 0; 
+            z-index: 20; 
+            background-color: white; 
+            border-right: 2px solid #e5e7eb; 
+            max-width: 130px; 
+            min-width: 130px; 
+            white-space: normal; 
+            font-size: 0.75rem; 
+            line-height: 1.2; 
+        }
+        
+        th.coluna-fixa { 
+            background-color: #f8fafc; 
+        }
+        
+        .overflow-x-auto { 
+            -webkit-overflow-scrolling: touch; 
+        }
+        
+        .scroll-suave::-webkit-scrollbar { 
+            height: 6px; 
+        }
+        
+        .scroll-suave::-webkit-scrollbar-thumb { 
+            background: #cbd5e1; 
+            border-radius: 4px; 
+        }
+        
+        .conteudo-principal { 
+            padding-bottom: 100px; 
+        } 
+        
+        .input-leitura { 
+            width: 100%; 
+            min-width: 80px; 
+            max-width: 120px; 
+            font-size: 1rem; 
+            transition: all 0.2s; 
+        }
+        
+        .input-leitura:focus { 
+            background-color: #fffbeb; 
+            border-color: #f59e0b; 
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2); 
+        }
+        
+        .modal-fundo { 
+            display: none; 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0,0,0,0.6); 
+            z-index: 100; 
+            justify-content: center; 
+            align-items: center; 
+            padding: 1rem; 
+        }
+
+        /* Animação do Ponto de Status */
+        .status-agua {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .status-offline { background-color: #94a3b8; }
+        .status-online { background-color: #10b981; box-shadow: 0 0 8px #10b981; }
+        .status-aguardando { background-color: #f59e0b; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
     </style>
 </head>
+
 <body class="text-gray-800 h-screen flex overflow-hidden">
 
     <div id="loading" class="loading-overlay">
         <div class="spinner"></div>
         <p id="loadingMsg" class="mt-6 font-bold text-slate-700 text-center px-4 text-sm md:text-base"></p>
-        <button onclick="window.esconderLoading()" class="mt-8 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest shadow-sm transition active:scale-95">❌ Cancelar / Destravar</button>
+        <button onclick="window.esconderLoading()" class="mt-8 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest shadow-sm transition active:scale-95">
+            ❌ Cancelar / Destravar
+        </button>
     </div>
 
     <div id="loginAdmin" class="fixed inset-0 bg-slate-900 flex justify-center items-center z-50 p-4">
@@ -45,19 +149,45 @@
     </div>
 
     <div id="painelAdmin" class="flex w-full h-full tela-oculta relative">
+        
         <aside class="w-64 bg-slate-900 text-white flex-col hidden md:flex shadow-xl z-30 relative">
             <a href="https://wa.me/5546984155591" target="_blank" title="Desenvolvido por Sieklicki" class="absolute top-1 left-2 text-[9px] font-black text-white/30 hover:text-white transition tracking-widest select-none cursor-pointer z-50">© COPYRIGHT SIEKLICKI</a>
-            <div class="p-6 text-center border-b border-slate-700 pt-8"><h1 class="text-xl font-bold">💧 São Luiz <span class="text-[10px] text-blue-400 align-top">v22.9</span></h1></div>
+            
+            <div class="p-6 text-center border-b border-slate-700 pt-8">
+                <h1 class="text-xl font-bold">💧 São Luiz <span class="text-[10px] text-blue-400 align-top">v22.9</span></h1>
+            </div>
+            
             <nav class="flex-1 p-4 space-y-2 overflow-y-auto scroll-suave text-sm text-gray-400">
-                <button onclick="window.mudarAba('aba-moradores', this)" class="menu-btn w-full flex items-center p-3 rounded-xl bg-blue-600 text-white font-bold transition"><i class="fa-solid fa-users w-6 mr-2"></i> Moradores</button>
-                <button onclick="window.mudarAba('aba-leituras', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-pen-to-square w-6 mr-2"></i> Água (Mensal)</button>
-                <button onclick="window.mudarAba('aba-avulso', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-wrench w-6 mr-2"></i> Taxas Avulsas</button>
-                <button onclick="window.mudarAba('aba-avisos', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition text-amber-500 hover:text-amber-400"><i class="fa-solid fa-bullhorn w-6 mr-2"></i> Avisos (Massa)</button>
-                <button onclick="window.mudarAba('aba-abertas', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-hourglass-half w-6 mr-2"></i> Pendentes</button>
-                <button onclick="window.mudarAba('aba-recebimentos', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-check-double w-6 mr-2"></i> Pagos</button>
-                <button onclick="window.mudarAba('aba-relatorios', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-chart-pie w-6 mr-2"></i> Relatórios</button>
-                <button onclick="window.mudarAba('aba-config', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition"><i class="fa-solid fa-gear w-6 mr-2"></i> Configuração</button>
-                <div class="pt-6 mt-6 border-t border-slate-700"><button onclick="window.sairAdmin()" class="w-full flex items-center justify-center p-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold transition">Sair do Painel</button></div>
+                <button onclick="window.mudarAba('aba-moradores', this)" class="menu-btn w-full flex items-center p-3 rounded-xl bg-blue-600 text-white font-bold transition">
+                    <i class="fa-solid fa-users w-6 mr-2"></i> Moradores
+                </button>
+                <button onclick="window.mudarAba('aba-leituras', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition">
+                    <i class="fa-solid fa-pen-to-square w-6 mr-2"></i> Água (Mensal)
+                </button>
+                <button onclick="window.mudarAba('aba-avulso', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition">
+                    <i class="fa-solid fa-wrench w-6 mr-2"></i> Taxas Avulsas
+                </button>
+                <button onclick="window.mudarAba('aba-avisos', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition text-amber-500 hover:text-amber-400">
+                    <i class="fa-solid fa-bullhorn w-6 mr-2"></i> Avisos (Massa)
+                </button>
+                <button onclick="window.mudarAba('aba-abertas', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition">
+                    <i class="fa-solid fa-hourglass-half w-6 mr-2"></i> Pendentes
+                </button>
+                <button onclick="window.mudarAba('aba-recebimentos', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition">
+                    <i class="fa-solid fa-check-double w-6 mr-2"></i> Pagos
+                </button>
+                <button onclick="window.mudarAba('aba-relatorios', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition">
+                    <i class="fa-solid fa-chart-pie w-6 mr-2"></i> Relatórios
+                </button>
+                <button onclick="window.mudarAba('aba-config', this)" class="menu-btn w-full flex items-center p-3 rounded-xl hover:bg-slate-800 font-bold transition">
+                    <i class="fa-solid fa-gear w-6 mr-2"></i> Configuração
+                </button>
+                
+                <div class="pt-6 mt-6 border-t border-slate-700">
+                    <button onclick="window.sairAdmin()" class="w-full flex items-center justify-center p-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold transition">
+                        Sair do Painel
+                    </button>
+                </div>
             </nav>
         </aside>
 
@@ -65,7 +195,9 @@
             <div class="md:hidden bg-slate-900 text-white p-4 text-center sticky top-0 z-40 shadow-md font-bold flex justify-between px-4 items-center relative">
                 <a href="https://wa.me/5546984155591" target="_blank" class="absolute top-0.5 left-2 text-[7px] font-black text-white/40 hover:text-white transition tracking-widest select-none cursor-pointer z-50">© SIEKLICKI v22.9</a>
                 <span class="mt-1 ml-10">💧 São Luiz</span>
-                <button onclick="window.sairAdmin()" class="text-red-400 bg-slate-800 px-3 py-1 rounded-lg text-xs"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
+                <button onclick="window.sairAdmin()" class="text-red-400 bg-slate-800 px-3 py-1 rounded-lg text-xs">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sair
+                </button>
             </div>
             
             <div class="p-3 md:p-8 max-w-7xl mx-auto w-full print-area">
@@ -73,27 +205,49 @@
                 <div id="aba-moradores" class="conteudo-aba">
                     <div class="flex flex-col sm:flex-row justify-between items-center mb-4 md:mb-6 gap-3">
                         <h2 class="text-xl md:text-2xl font-bold text-slate-800">👥 Moradores</h2>
-                        <button onclick="window.abrirModalCadastro()" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold shadow-lg transition text-sm">➕ Novo Cadastro</button>
+                        <button onclick="window.abrirModalCadastro()" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-bold shadow-lg transition text-sm">
+                            ➕ Novo Cadastro
+                        </button>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
                         <input type="text" id="buscaMorador" onkeyup="window.filtrarTabela('buscaMorador', 'tabelaMoradores')" placeholder="🔍 Buscar morador ou lote..." class="w-full p-4 bg-gray-50 border-b outline-none text-sm md:text-base">
-                        <div class="overflow-x-auto scroll-suave w-full"><table class="w-full text-left whitespace-nowrap min-w-[550px]"><tbody id="tabelaMoradores" class="divide-y text-sm"></tbody></table></div>
+                        <div class="overflow-x-auto scroll-suave w-full">
+                            <table class="w-full text-left whitespace-nowrap min-w-[550px]">
+                                <tbody id="tabelaMoradores" class="divide-y text-sm"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
                 <div id="aba-leituras" class="conteudo-aba tela-oculta">
                     <div class="mb-4 flex flex-col md:flex-row justify-between items-start md:items-end gap-3">
-                        <div><h2 class="text-xl md:text-2xl font-bold flex items-center gap-2 text-slate-800">📝 Consumo</h2></div>
+                        <div>
+                            <h2 class="text-xl md:text-2xl font-bold flex items-center gap-2 text-slate-800">📝 Consumo</h2>
+                        </div>
                         <div class="flex gap-2 text-xs w-full md:w-auto">
                             <input type="text" id="mesReferencia" value="04/2026" class="p-2 border rounded-lg font-bold text-center flex-1 md:w-24 outline-none">
                             <input type="date" id="dataVencimento" class="p-2 border rounded-lg font-bold text-center flex-1 outline-none">
                         </div>
                     </div>
-                    <button onclick="window.gerarFaturasEmLote()" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 md:py-4 rounded-2xl font-black text-base md:text-xl shadow-xl active:scale-95 transition mb-6">🚀 GERAR E SALVAR LOTES</button>
+                    
+                    <button onclick="window.gerarFaturasEmLote()" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 md:py-4 rounded-2xl font-black text-base md:text-xl shadow-xl active:scale-95 transition mb-6">
+                        🚀 GERAR E SALVAR LOTES
+                    </button>
+                    
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden relative">
                         <div class="overflow-x-auto scroll-suave w-full pb-4">
                             <table class="w-full text-left border-collapse whitespace-nowrap min-w-[850px]">
-                                <thead><tr class="bg-slate-100 text-[10px] uppercase font-bold text-slate-500 border-b"><th class="p-2 md:p-3 coluna-fixa">Morador / CPF</th><th class="p-2 md:p-3 text-center">Hodóm. Ant.</th><th class="p-2 md:p-3 text-center">Hodóm. Atual</th><th class="p-2 md:p-3 text-center">Gasto m³</th><th class="p-2 md:p-3 text-center text-red-600">Multa (R$)</th><th class="p-2 md:p-3 text-right text-green-700 font-black">Total R$</th><th class="p-2 md:p-3 text-center">Status</th></tr></thead>
+                                <thead>
+                                    <tr class="bg-slate-100 text-[10px] uppercase font-bold text-slate-500 border-b">
+                                        <th class="p-2 md:p-3 coluna-fixa">Morador / CPF</th>
+                                        <th class="p-2 md:p-3 text-center">Hodóm. Ant.</th>
+                                        <th class="p-2 md:p-3 text-center">Hodóm. Atual</th>
+                                        <th class="p-2 md:p-3 text-center">Gasto m³</th>
+                                        <th class="p-2 md:p-3 text-center text-red-600">Multa (R$)</th>
+                                        <th class="p-2 md:p-3 text-right text-green-700 font-black">Total R$</th>
+                                        <th class="p-2 md:p-3 text-center">Status</th>
+                                    </tr>
+                                </thead>
                                 <tbody id="corpoTabelaLote" class="divide-y text-sm"></tbody>
                             </table>
                         </div>
@@ -102,8 +256,10 @@
 
                 <div id="aba-avulso" class="conteudo-aba tela-oculta">
                     <h2 class="text-xl md:text-2xl font-bold text-blue-800 mb-4 md:mb-6 mt-4 md:mt-0">🔧 Lançar Serviço Avulso</h2>
+                    
                     <div class="bg-white rounded-2xl shadow-sm border p-4 md:p-6 w-full max-w-2xl mx-auto md:mx-0">
                         <form id="formAvulso" class="space-y-4" onsubmit="window.submitAvulso(event)">
+                            
                             <div>
                                 <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Como deseja cobrar?</label>
                                 <select id="avulsoTipo" class="w-full p-3 bg-blue-50 border border-blue-200 rounded-xl outline-none font-bold text-blue-900 text-sm md:text-base" onchange="window.focarProximo({key: 'Enter', preventDefault: ()=>{}}, 'buscaClienteAvulso')">
@@ -111,16 +267,20 @@
                                     <option value="pix_agora">⚡ Gerar um PIX Separado Agora</option>
                                 </select>
                             </div>
+                            
                             <div class="bg-slate-50 p-3 md:p-4 rounded-xl border border-slate-200 shadow-inner relative">
                                 <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-2">Busque por Nome ou CPF</label>
                                 <input type="text" id="buscaClienteAvulso" oninput="window.filtrarAvulsoESelecionar()" onkeydown="window.focarProximo(event, 'avulsoDescricao')" placeholder="🔍 Digite para buscar..." class="w-full p-3 mb-2 bg-white border-2 border-blue-100 rounded-xl outline-none focus:border-blue-500 text-sm shadow-sm font-bold text-blue-800">
+                                
                                 <div id="avulsoClienteNomeExibicao" class="text-[11px] md:text-sm font-bold text-green-700 bg-green-50 p-2 rounded hidden">Nenhum selecionado</div>
                                 <select id="avulsoFamilia" required class="w-full p-3 bg-white border border-gray-200 rounded-xl outline-none font-bold text-gray-700 shadow-sm mt-2 hidden"></select>
                             </div>
+                            
                             <div>
                                 <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Título do Serviço</label>
                                 <input type="text" id="avulsoDescricao" required placeholder="Ex: Conserto do encanamento" class="w-full p-3 bg-gray-50 border rounded-xl outline-none focus:border-blue-500 transition shadow-sm text-sm md:text-base" onkeydown="window.focarProximo(event, 'avulsoValor')">
                             </div>
+                            
                             <div class="flex flex-col sm:flex-row gap-4">
                                 <div class="flex-[2]">
                                     <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Valor (R$)</label>
@@ -135,7 +295,10 @@
                                     <input type="number" id="avulsoRepeticoes" value="1" min="1" class="w-full p-3 bg-orange-50 border border-orange-200 rounded-xl outline-none font-black text-orange-700 text-center transition shadow-sm text-sm md:text-base" onkeydown="window.focarProximo(event, 'btnSubmitAvulso')">
                                 </div>
                             </div>
-                            <button type="submit" id="btnSubmitAvulso" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-black py-3 md:py-4 rounded-xl shadow-lg mt-2 active:scale-95 transition text-base md:text-lg">Confirmar Lançamento</button>
+                            
+                            <button type="submit" id="btnSubmitAvulso" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-black py-3 md:py-4 rounded-xl shadow-lg mt-2 active:scale-95 transition text-base md:text-lg">
+                                Confirmar Lançamento
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -144,9 +307,11 @@
                     <div class="flex flex-col sm:flex-row justify-between sm:items-end mb-4 md:mb-6 gap-2 mt-4 md:mt-0">
                         <h2 class="text-xl md:text-2xl font-bold text-amber-600"><i class="fa-solid fa-bullhorn mr-2"></i> Central de Avisos</h2>
                     </div>
+                    
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <div class="bg-white rounded-2xl shadow-sm border border-amber-200 p-4 md:p-6">
                             <h3 class="font-black text-slate-700 mb-4 uppercase tracking-tight text-sm">Criar Novo Disparo</h3>
+                            
                             <form id="formAvisos" class="space-y-4" onsubmit="window.submitAviso(event)">
                                 <div>
                                     <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Modelos Prontos</label>
@@ -161,13 +326,20 @@
                                     <label class="block text-[10px] md:text-xs font-bold text-gray-500 uppercase mb-1">Texto a Enviar no WhatsApp</label>
                                     <textarea id="avisoMensagem" required rows="7" class="w-full p-4 bg-gray-50 border border-slate-200 rounded-xl outline-none focus:border-amber-500 transition shadow-inner text-sm md:text-base" placeholder="Selecione um modelo acima ou digite a sua mensagem..."></textarea>
                                 </div>
-                                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-black py-4 rounded-xl shadow-lg mt-2 active:scale-95 transition text-base"><i class="fa-solid fa-paper-plane mr-2"></i> Iniciar Disparo para Todos</button>
+                                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-black py-4 rounded-xl shadow-lg mt-2 active:scale-95 transition text-base">
+                                    <i class="fa-solid fa-paper-plane mr-2"></i> Iniciar Disparo para Todos
+                                </button>
                             </form>
                         </div>
+                        
                         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 md:p-6 flex flex-col h-full">
-                            <div class="flex justify-between items-center mb-4"><h3 class="font-black text-slate-700 uppercase tracking-tight text-sm">Histórico e Progresso</h3></div>
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-black text-slate-700 uppercase tracking-tight text-sm">Histórico e Progresso</h3>
+                            </div>
                             <div id="listaAvisosArea" class="flex-1 overflow-y-auto pr-2 scroll-suave space-y-4 max-h-[400px]">
-                                <p class="text-center text-slate-400 text-sm mt-10"><i class="fa-solid fa-spinner fa-spin mb-2 text-2xl"></i><br>A carregar monitoramento...</p>
+                                <p class="text-center text-slate-400 text-sm mt-10">
+                                    <i class="fa-solid fa-spinner fa-spin mb-2 text-2xl"></i><br>A carregar monitoramento...
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -177,14 +349,26 @@
                     <div class="flex flex-col sm:flex-row justify-between sm:items-end mb-4 md:mb-6 gap-2 mt-4 md:mt-0">
                         <h2 class="text-xl md:text-2xl font-bold text-amber-600 flex items-center gap-2">⏳ Pendentes</h2>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden"><div class="overflow-x-auto w-full"><table class="w-full text-left whitespace-nowrap min-w-[650px]"><tbody id="tabelaAbertas" class="divide-y text-sm"></tbody></table></div></div>
+                    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
+                        <div class="overflow-x-auto w-full">
+                            <table class="w-full text-left whitespace-nowrap min-w-[650px]">
+                                <tbody id="tabelaAbertas" class="divide-y text-sm"></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="aba-recebimentos" class="conteudo-aba tela-oculta">
                     <div class="flex flex-col sm:flex-row justify-between sm:items-end mb-4 md:mb-6 gap-2 mt-4 md:mt-0">
                         <h2 class="text-xl md:text-2xl font-bold text-green-700 flex items-center gap-2">✅ Recebidos</h2>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden"><div class="overflow-x-auto w-full"><table class="w-full text-left whitespace-nowrap min-w-[500px]"><tbody id="tabelaPagos" class="divide-y text-sm"></tbody></table></div></div>
+                    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
+                        <div class="overflow-x-auto w-full">
+                            <table class="w-full text-left whitespace-nowrap min-w-[500px]">
+                                <tbody id="tabelaPagos" class="divide-y text-sm"></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="aba-relatorios" class="conteudo-aba tela-oculta">
@@ -192,29 +376,78 @@
                         <h1 class="text-lg md:text-3xl font-black text-blue-900 tracking-tight">ASSOCIAÇÃO DE ÁGUA DISTRITO SÃO LUIZ</h1>
                         <p class="text-slate-500 font-bold uppercase text-[9px] md:text-xs tracking-widest mt-1 md:mt-2">Relatório Oficial de Gestão Financeira</p>
                     </div>
+                    
                     <div class="flex justify-between items-center mb-4 md:mb-6 no-print flex-wrap gap-2">
                         <h2 class="text-lg md:text-2xl font-bold text-slate-800">📊 Visão Geral</h2>
-                        <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-900 transition text-white px-4 py-2 rounded-lg font-bold shadow-md text-xs md:text-sm"><i class="fa-solid fa-print"></i> Imprimir PDF</button>
+                        <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-900 transition text-white px-4 py-2 rounded-lg font-bold shadow-md text-xs md:text-sm">
+                            <i class="fa-solid fa-print"></i> Imprimir PDF
+                        </button>
                     </div>
+                    
                     <div class="bg-white p-3 md:p-4 rounded-2xl shadow-sm border mb-4 md:mb-6 no-print flex flex-col md:flex-row flex-wrap gap-3 items-end text-xs md:text-sm">
-                        <div class="w-full md:flex-1"><label class="block font-bold text-gray-500 mb-1 uppercase text-[10px] md:text-xs">De</label><input type="date" id="relDataInicio" class="w-full p-2 border rounded-lg outline-none"></div>
-                        <div class="w-full md:flex-1"><label class="block font-bold text-gray-500 mb-1 uppercase text-[10px] md:text-xs">Até</label><input type="date" id="relDataFim" class="w-full p-2 border rounded-lg outline-none"></div>
-                        <div class="w-full md:flex-1"><label class="block font-bold text-gray-500 mb-1 uppercase text-[10px] md:text-xs">Status</label><select id="relStatus" class="w-full p-2 border rounded-lg outline-none bg-white"><option value="TODOS">Geral</option><option value="pago">Apenas Pagos</option><option value="pendente">Apenas Pendentes</option></select></div>
-                        <div class="w-full md:flex-[2]"><label class="block font-bold text-gray-500 mb-1 uppercase text-[10px] md:text-xs">Buscar Cliente</label><input type="text" id="relBusca" class="w-full p-2 border rounded-lg outline-none" placeholder="Ex: João..."></div>
-                        <button onclick="window.gerarRelatorioFiltrado()" class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 transition text-white px-6 py-2 rounded-lg font-bold shadow h-[36px] md:h-[40px]">Filtrar</button>
+                        <div class="w-full md:flex-1">
+                            <label class="block font-bold text-gray-500 mb-1 uppercase text-[10px] md:text-xs">De</label>
+                            <input type="date" id="relDataInicio" class="w-full p-2 border rounded-lg outline-none">
+                        </div>
+                        <div class="w-full md:flex-1">
+                            <label class="block font-bold text-gray-500 mb-1 uppercase text-[10px] md:text-xs">Até</label>
+                            <input type="date" id="relDataFim" class="w-full p-2 border rounded-lg outline-none">
+                        </div>
+                        <div class="w-full md:flex-1">
+                            <label class="block font-bold text-gray-500 mb-1 uppercase text-[10px] md:text-xs">Status</label>
+                            <select id="relStatus" class="w-full p-2 border rounded-lg outline-none bg-white">
+                                <option value="TODOS">Geral</option>
+                                <option value="pago">Apenas Pagos</option>
+                                <option value="pendente">Apenas Pendentes</option>
+                            </select>
+                        </div>
+                        <div class="w-full md:flex-[2]">
+                            <label class="block font-bold text-gray-500 mb-1 uppercase text-[10px] md:text-xs">Buscar Cliente</label>
+                            <input type="text" id="relBusca" class="w-full p-2 border rounded-lg outline-none" placeholder="Ex: João...">
+                        </div>
+                        <button onclick="window.gerarRelatorioFiltrado()" class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 transition text-white px-6 py-2 rounded-lg font-bold shadow h-[36px] md:h-[40px]">
+                            Filtrar
+                        </button>
                     </div>
-                   <div class="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-4 md:mb-6">
-                        <div class="bg-white p-3 md:p-4 rounded-xl border shadow-sm text-center"><p class="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase">Vol (m³)</p><p class="text-lg md:text-xl font-black text-blue-600" id="relCardM3">0</p></div>
-                        <div class="bg-white p-3 md:p-4 rounded-xl border shadow-sm text-center"><p class="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase">Contas</p><p class="text-lg md:text-xl font-black" id="relCardQtd">0</p></div>
-                        <div class="bg-white p-3 md:p-4 rounded-xl border shadow-sm text-center border-orange-100"><p class="text-[9px] md:text-[10px] text-orange-500 font-bold uppercase">Pendentes</p><p class="text-lg md:text-xl font-black text-orange-600" id="relCardPendente">R$ 0,00</p></div>
-                        <div class="bg-white p-3 md:p-4 rounded-xl border shadow-sm text-center border-red-100"><p class="text-[9px] md:text-[10px] text-red-500 font-bold uppercase">Inadimplentes</p><p class="text-lg md:text-xl font-black text-red-600" id="relCardInadimplente">R$ 0,00</p></div>
-                        <div class="bg-white p-3 md:p-4 rounded-xl border shadow-sm text-center border-green-100 col-span-2 md:col-span-1"><p class="text-[9px] md:text-[10px] text-green-600 font-bold uppercase">Recebido</p><p class="text-lg md:text-xl font-black text-green-600" id="relCardPago">R$ 0,00</p></div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-4 md:mb-6">
+                        <div class="bg-white p-3 md:p-4 rounded-xl border shadow-sm text-center">
+                            <p class="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase">Vol (m³)</p>
+                            <p class="text-lg md:text-xl font-black text-blue-600" id="relCardM3">0</p>
+                        </div>
+                        <div class="bg-white p-3 md:p-4 rounded-xl border shadow-sm text-center">
+                            <p class="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase">Contas</p>
+                            <p class="text-lg md:text-xl font-black" id="relCardQtd">0</p>
+                        </div>
+                        <div class="bg-white p-3 md:p-4 rounded-xl border shadow-sm text-center border-orange-100">
+                            <p class="text-[9px] md:text-[10px] text-orange-500 font-bold uppercase">Pendentes</p>
+                            <p class="text-lg md:text-xl font-black text-orange-600" id="relCardPendente">R$ 0,00</p>
+                        </div>
+                        <div class="bg-white p-3 md:p-4 rounded-xl border shadow-sm text-center border-red-100">
+                            <p class="text-[9px] md:text-[10px] text-red-500 font-bold uppercase">Inadimplentes</p>
+                            <p class="text-lg md:text-xl font-black text-red-600" id="relCardInadimplente">R$ 0,00</p>
+                        </div>
+                        <div class="bg-white p-3 md:p-4 rounded-xl border shadow-sm text-center border-green-100 col-span-2 md:col-span-1">
+                            <p class="text-[9px] md:text-[10px] text-green-600 font-bold uppercase">Recebido</p>
+                            <p class="text-lg md:text-xl font-black text-green-600" id="relCardPago">R$ 0,00</p>
+                        </div>
                     </div>
+                    
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
                         <div class="overflow-x-auto w-full">
                             <table class="w-full text-left whitespace-nowrap min-w-[650px] text-sm">
-                                <thead><tr class="bg-slate-50 text-slate-500 uppercase text-[10px] font-bold border-b border-slate-200"><th class="p-4 pl-6">Cliente</th><th class="p-4">Referência</th><th class="p-4 text-center">Consumo M³</th><th class="p-4 text-center">Status</th><th class="p-4 text-right pr-6">Valor Total</th></tr></thead>
-                                <tbody id="tabelaRelatorio" class="divide-y divide-slate-100"><tr><td colspan="5" class="p-8 text-center text-gray-400">Filtre para carregar...</td></tr></tbody>
+                                <thead>
+                                    <tr class="bg-slate-50 text-slate-500 uppercase text-[10px] font-bold border-b border-slate-200">
+                                        <th class="p-4 pl-6">Cliente</th>
+                                        <th class="p-4">Referência</th>
+                                        <th class="p-4 text-center">Consumo M³</th>
+                                        <th class="p-4 text-center">Status</th>
+                                        <th class="p-4 text-right pr-6">Valor Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabelaRelatorio" class="divide-y divide-slate-100">
+                                    <tr><td colspan="5" class="p-8 text-center text-gray-400">Filtre para carregar...</td></tr>
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -222,54 +455,150 @@
 
                 <div id="aba-config" class="conteudo-aba tela-oculta">
                     <h2 class="text-xl md:text-2xl font-bold text-slate-700 mb-4 md:mb-6 mt-4 md:mt-0">⚙️ Configurações do Sistema</h2>
+                    
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                        
+                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-emerald-200 lg:col-span-2">
+                            <h3 class="font-bold text-base md:text-lg text-emerald-800 mb-3 md:mb-4">
+                                <i class="fa-solid fa-robot"></i> Status do Robô (Água & Defesa)
+                            </h3>
+                            
+                            <div class="flex flex-col md:flex-row gap-4 items-center mb-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                <div class="flex items-center gap-3 w-full">
+                                    <div id="agua-bolinha-status" class="status-agua status-offline"></div>
+                                    <span id="agua-texto-status" class="font-bold text-slate-600 uppercase tracking-wider text-sm">Verificando...</span>
+                                </div>
+                                <div id="agua-area-botoes" class="flex gap-2 w-full md:w-auto justify-end">
+                                    </div>
+                            </div>
+                            
+                            <div id="agua-area-qr" class="text-center hidden mb-4 bg-white p-6 rounded-xl border-2 border-dashed border-emerald-300">
+                                <p class="text-sm font-bold text-emerald-700 mb-4 uppercase">Leia o QR Code com o WhatsApp da Associação</p>
+                                <img id="agua-qrcode-img" class="mx-auto border shadow-sm rounded-lg w-[200px] h-[200px]" src="" />
+                            </div>
+                            
+                            <div id="agua-area-fila" class="mt-4 pt-4 border-t border-slate-200 bg-blue-50 p-4 rounded-xl">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-xs md:text-sm font-black text-blue-900 uppercase"><i class="fa-solid fa-list-ol mr-1"></i> Fila Global de Envios</span>
+                                    <span id="agua-qtd-fila" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-black shadow-sm">0 Pendentes</span>
+                                </div>
+                                <p id="agua-status-fila" class="text-xs md:text-sm font-bold text-blue-700 bg-white p-2 rounded border border-blue-100">Ocioso</p>
+                            </div>
+                        </div>
+
                         <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200 lg:col-span-2">
                             <h3 class="font-bold text-base md:text-lg text-slate-700 mb-3 md:mb-4">🔐 Alterar Senha do Administrador</h3>
                             <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                                <div class="w-full sm:w-1/2"><label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1 uppercase">Nova Senha de Acesso</label><input type="password" id="cfgSenhaAdmin" placeholder="Digite a nova senha..." class="w-full p-3 border rounded-xl font-bold text-slate-700 outline-none text-sm md:text-base"></div>
-                                <div class="w-full sm:w-1/2 text-[10px] md:text-xs text-gray-500 leading-relaxed">A senha padrão inicial é <strong>admin123</strong>. Pode alterar esta palavra-passe para aumentar a segurança do painel.</div>
+                                <div class="w-full sm:w-1/2">
+                                    <label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1 uppercase">Nova Senha de Acesso</label>
+                                    <input type="password" id="cfgSenhaAdmin" placeholder="Digite a nova senha..." class="w-full p-3 border rounded-xl font-bold text-slate-700 outline-none text-sm md:text-base">
+                                </div>
+                                <div class="w-full sm:w-1/2 text-[10px] md:text-xs text-gray-500 leading-relaxed">
+                                    A senha padrão inicial é <strong>admin123</strong>. Pode alterar esta palavra-passe para aumentar a segurança do painel.
+                                </div>
                             </div>
-                            <button onclick="window.salvarSenhaAdmin()" class="mt-4 w-full sm:w-auto bg-slate-800 hover:bg-slate-900 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">💾 Guardar Nova Senha</button>
+                            <button onclick="window.salvarSenhaAdmin()" class="mt-4 w-full sm:w-auto bg-slate-800 hover:bg-slate-900 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">
+                                💾 Guardar Nova Senha
+                            </button>
                         </div>
+                       
                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200 lg:col-span-2 mt-2">
                             <h3 class="font-bold text-base md:text-lg text-slate-700 mb-3 md:mb-4">📱 Controle do Agente (Leiturista)</h3>
                             <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center mb-6">
-                                <div class="w-full sm:w-1/2"><label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1 uppercase">Nova Senha do App Agente</label><input type="password" id="cfgSenhaAgente" placeholder="Forçar nova senha..." class="w-full p-3 border rounded-xl font-bold text-slate-700 outline-none text-sm md:text-base"></div>
-                                <button onclick="window.salvarSenhaAgente()" class="mt-4 sm:mt-5 w-full sm:w-auto bg-slate-800 hover:bg-slate-900 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">💾 Salvar Senha Agente</button>
+                                <div class="w-full sm:w-1/2">
+                                    <label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1 uppercase">Nova Senha do App Agente</label>
+                                    <input type="password" id="cfgSenhaAgente" placeholder="Forçar nova senha..." class="w-full p-3 border rounded-xl font-bold text-slate-700 outline-none text-sm md:text-base">
+                                </div>
+                                <button onclick="window.salvarSenhaAgente()" class="mt-4 sm:mt-5 w-full sm:w-auto bg-slate-800 hover:bg-slate-900 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">
+                                    💾 Salvar Senha Agente
+                                </button>
                             </div>
+                            
                             <details class="group border border-slate-200 rounded-xl mt-6 bg-slate-50 overflow-hidden cursor-pointer shadow-sm">
-                                <summary class="flex justify-between items-center p-4 font-bold text-sm text-blue-800 list-none outline-none"><div class="flex items-center gap-2"><i class="fa-solid fa-list-check text-blue-600"></i> Histórico de Atividades (Logs)</div><div class="flex items-center gap-4"><span class="text-xs text-gray-500 font-normal">Clique para expandir</span><i class="fa-solid fa-chevron-down transition duration-300 group-open:rotate-180 text-blue-500"></i></div></summary>
+                                <summary class="flex justify-between items-center p-4 font-bold text-sm text-blue-800 list-none outline-none">
+                                    <div class="flex items-center gap-2"><i class="fa-solid fa-list-check text-blue-600"></i> Histórico de Atividades (Logs)</div>
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-xs text-gray-500 font-normal">Clique para expandir</span>
+                                        <i class="fa-solid fa-chevron-down transition duration-300 group-open:rotate-180 text-blue-500"></i>
+                                    </div>
+                                </summary>
                                 <div class="p-4 border-t border-slate-200 bg-white cursor-default">
-                                    <div class="flex justify-end mb-3"><button onclick="window.carregarLogsAgente()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold px-4 py-2 rounded-lg text-xs transition shadow-sm"><i class="fa-solid fa-rotate-right mr-1"></i> Atualizar Logs Agora</button></div>
+                                    <div class="flex justify-end mb-3">
+                                        <button onclick="window.carregarLogsAgente()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold px-4 py-2 rounded-lg text-xs transition shadow-sm">
+                                            <i class="fa-solid fa-rotate-right mr-1"></i> Atualizar Logs Agora
+                                        </button>
+                                    </div>
                                     <div class="overflow-x-auto w-full max-h-80 overflow-y-auto scroll-suave border border-slate-100 rounded-xl">
                                         <table class="w-full text-left text-sm whitespace-nowrap">
-                                            <thead class="bg-slate-50 sticky top-0 z-10"><tr class="text-gray-500 text-[10px] uppercase border-b border-slate-200"><th class="p-3 font-bold">Data / Hora</th><th class="p-3 font-bold">Ação</th><th class="p-3 font-bold">Cliente</th><th class="p-3 font-bold text-right">Valor (R$)</th></tr></thead>
-                                            <tbody id="tabelaLogsAgente" class="divide-y divide-slate-100"><tr><td colspan="4" class="p-6 text-center text-gray-400 text-xs">Clique em 'Atualizar Logs' para carregar a lista...</td></tr></tbody>
+                                            <thead class="bg-slate-50 sticky top-0 z-10">
+                                                <tr class="text-gray-500 text-[10px] uppercase border-b border-slate-200">
+                                                    <th class="p-3 font-bold">Data / Hora</th>
+                                                    <th class="p-3 font-bold">Ação</th>
+                                                    <th class="p-3 font-bold">Cliente</th>
+                                                    <th class="p-3 font-bold text-right">Valor (R$)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tabelaLogsAgente" class="divide-y divide-slate-100">
+                                                <tr><td colspan="4" class="p-6 text-center text-gray-400 text-xs">Clique em 'Atualizar Logs' para carregar a lista...</td></tr>
+                                            </tbody>
                                         </table>
                                     </div>
                                 </div>
                             </details>
                         </div>
+
                         <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-blue-100 lg:col-span-2">
                             <h3 class="font-bold text-base md:text-lg text-blue-700 mb-3 md:mb-4">💰 Valores da Mensalidade (Água)</h3>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
-                                <div><label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1">Até 10m³ (R$)</label><input type="number" step="0.01" id="cfgVal1" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none text-sm md:text-base"></div>
-                                <div><label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1">De 11m³ a 30m³ (R$)</label><input type="number" step="0.01" id="cfgVal2" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none text-sm md:text-base"></div>
-                                <div><label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1">Acima de 30m³ (R$)</label><input type="number" step="0.01" id="cfgVal3" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none text-sm md:text-base"></div>
+                                <div>
+                                    <label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1">Até 10m³ (R$)</label>
+                                    <input type="number" step="0.01" id="cfgVal1" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none text-sm md:text-base">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1">De 11m³ a 30m³ (R$)</label>
+                                    <input type="number" step="0.01" id="cfgVal2" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none text-sm md:text-base">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1">Acima de 30m³ (R$)</label>
+                                    <input type="number" step="0.01" id="cfgVal3" class="w-full p-3 border rounded-xl font-bold text-blue-600 outline-none text-sm md:text-base">
+                                </div>
                             </div>
-                            <button onclick="window.salvarConfigAgua()" class="mt-4 w-full sm:w-auto bg-blue-500 hover:bg-blue-600 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">💾 Guardar Valores</button>
+                            <button onclick="window.salvarConfigAgua()" class="mt-4 w-full sm:w-auto bg-blue-500 hover:bg-blue-600 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">
+                                💾 Guardar Valores
+                            </button>
                         </div>
+
                         <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-red-100 lg:col-span-2">
                             <h3 class="font-bold text-base md:text-lg text-red-700 mb-3 md:mb-4">🚨 Multa Padrão (Atraso)</h3>
                             <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                                <div class="w-full sm:w-1/3"><label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1">Valor da Multa (R$)</label><input type="number" step="0.01" id="cfgMulta" class="w-full p-3 border rounded-xl font-bold text-red-600 outline-none text-sm md:text-base"></div>
-                                <div class="w-full sm:w-2/3 text-[10px] md:text-xs text-gray-500 leading-relaxed">Valor preenchido automaticamente ao gerar lote se houver pendências. Pode ser alterado na grelha manualmente.</div>
+                                <div class="w-full sm:w-1/3">
+                                    <label class="block text-[10px] md:text-xs font-bold text-gray-500 mb-1">Valor da Multa (R$)</label>
+                                    <input type="number" step="0.01" id="cfgMulta" class="w-full p-3 border rounded-xl font-bold text-red-600 outline-none text-sm md:text-base">
+                                </div>
+                                <div class="w-full sm:w-2/3 text-[10px] md:text-xs text-gray-500 leading-relaxed">
+                                    Valor preenchido automaticamente ao gerar lote se houver pendências. Pode ser alterado na grelha manualmente.
+                                </div>
                             </div>
-                            <button onclick="window.salvarConfigMulta()" class="mt-4 w-full sm:w-auto bg-red-500 hover:bg-red-600 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">💾 Guardar Multa</button>
+                            <button onclick="window.salvarConfigMulta()" class="mt-4 w-full sm:w-auto bg-red-500 hover:bg-red-600 transition text-white font-bold py-3 px-6 rounded-xl shadow text-sm md:text-base">
+                                💾 Guardar Multa
+                            </button>
                         </div>
-                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-blue-100"><h3 class="font-bold text-base md:text-lg text-blue-700 mb-2">💾 Backup</h3><button onclick="window.exportarBase()" class="w-full bg-blue-100 hover:bg-blue-200 transition text-blue-700 font-bold py-3 rounded-xl mt-2 text-sm md:text-base">Exportar JSON</button></div>
-                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-emerald-100"><h3 class="font-bold text-base md:text-lg text-emerald-700 mb-2">📂 Importar</h3><input type="file" id="fileImport" accept=".json" class="mb-3 w-full text-xs md:text-sm"><button onclick="window.importarBase()" class="w-full bg-emerald-100 hover:bg-emerald-200 transition text-emerald-700 font-bold py-3 rounded-xl text-sm md:text-base">Importar JSON</button></div>
-                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-red-100 lg:col-span-2"><h3 class="font-bold text-base md:text-lg text-red-600 mb-2">🗑️ Limpeza Absoluta</h3><button onclick="window.limparFaturas()" class="w-full bg-red-600 hover:bg-red-700 transition text-white font-bold py-3 rounded-xl shadow-md text-sm md:text-base">Apagar TODAS as Faturas</button></div>
+
+                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-blue-100">
+                            <h3 class="font-bold text-base md:text-lg text-blue-700 mb-2">💾 Backup</h3>
+                            <button onclick="window.exportarBase()" class="w-full bg-blue-100 hover:bg-blue-200 transition text-blue-700 font-bold py-3 rounded-xl mt-2 text-sm md:text-base">Exportar JSON</button>
+                        </div>
+                        
+                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-emerald-100">
+                            <h3 class="font-bold text-base md:text-lg text-emerald-700 mb-2">📂 Importar</h3>
+                            <input type="file" id="fileImport" accept=".json" class="mb-3 w-full text-xs md:text-sm">
+                            <button onclick="window.importarBase()" class="w-full bg-emerald-100 hover:bg-emerald-200 transition text-emerald-700 font-bold py-3 rounded-xl text-sm md:text-base">Importar JSON</button>
+                        </div>
+                        
+                        <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-red-100 lg:col-span-2">
+                            <h3 class="font-bold text-base md:text-lg text-red-600 mb-2">🗑️ Limpeza Absoluta</h3>
+                            <button onclick="window.limparFaturas()" class="w-full bg-red-600 hover:bg-red-700 transition text-white font-bold py-3 rounded-xl shadow-md text-sm md:text-base">Apagar TODAS as Faturas</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -288,47 +617,146 @@
 
     <div id="modalMorador" class="modal-fundo no-print">
         <div class="bg-white rounded-3xl shadow-2xl w-[95%] md:w-full max-w-sm mx-auto overflow-hidden">
-            <div class="bg-slate-900 p-4 md:p-5 flex justify-between items-center text-white"><h3 id="tituloModal" class="font-bold">Morador</h3><button onclick="window.fecharModal()" class="text-2xl hover:text-red-400 transition">&times;</button></div>
+            <div class="bg-slate-900 p-4 md:p-5 flex justify-between items-center text-white">
+                <h3 id="tituloModal" class="font-bold">Morador</h3>
+                <button onclick="window.fecharModal()" class="text-2xl hover:text-red-400 transition">&times;</button>
+            </div>
             <form id="formMorador" class="p-4 md:p-6 space-y-3 md:space-y-4" onsubmit="window.submitMorador(event)">
                 <input type="hidden" id="modId">
                 <input type="text" id="modNome" oninput="const p=this.selectionStart; window.formatarNomeParaBanco ? this.value=window.formatarNomeParaBanco(this.value) : null; this.setSelectionRange(p,p);" required placeholder="Nome Completo" class="w-full p-3 md:p-4 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 text-sm md:text-base">
                 <input type="tel" id="modCpf" required placeholder="CPF (Apenas números)" class="w-full p-3 md:p-4 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 text-sm md:text-base">
                 <input type="tel" id="modTel" required placeholder="WhatsApp (DDD+Número)" class="w-full p-3 md:p-4 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 text-sm md:text-base">
                 <input type="text" id="modLote" required placeholder="Lote / Morada" class="w-full p-3 md:p-4 bg-gray-100 rounded-xl outline-none border focus:border-blue-500 text-sm md:text-base">
-                <div class="flex gap-2 pt-2 md:pt-4"><button type="button" onclick="window.fecharModal()" class="flex-1 bg-gray-200 py-3 md:py-4 rounded-xl font-bold hover:bg-gray-300 transition text-sm md:text-base">Cancelar</button><button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 transition text-white py-3 md:py-4 rounded-xl font-bold text-sm md:text-base">Salvar</button></div>
+                <div class="flex gap-2 pt-2 md:pt-4">
+                    <button type="button" onclick="window.fecharModal()" class="flex-1 bg-gray-200 py-3 md:py-4 rounded-xl font-bold hover:bg-gray-300 transition text-sm md:text-base">Cancelar</button>
+                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 transition text-white py-3 md:py-4 rounded-xl font-bold text-sm md:text-base">Salvar</button>
+                </div>
             </form>
         </div>
     </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ", authDomain: "sistema-agua-sao-luiz.firebaseapp.com", projectId: "sistema-agua-sao-luiz", storageBucket: "sistema-agua-sao-luiz.appspot.com" };
+        // 1. CONFIGURAÇÃO FIREBASE
+        const firebaseConfig = { 
+            apiKey: "AIzaSyCGXtcoSinCR6Kn7nDNf4ITWCelYW1PKBQ", 
+            authDomain: "sistema-agua-sao-luiz.firebaseapp.com", 
+            projectId: "sistema-agua-sao-luiz", 
+            storageBucket: "sistema-agua-sao-luiz.appspot.com" 
+        };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // 2. VARIÁVEIS GLOBAIS
         window.familiasGlobal = {}; 
         window.valoresAguaGlobais = { val1: 25, val2: 50, val3: 100, multa: 25 };
-        let unsubAbertas = null; let unsubPagos = null; let unsubAvisos = null;
+        let unsubAbertas = null; let unsubPagos = null; let unsubAvisos = null; let unsubRoboStatus = null;
 
         window.mostrarLoading = (msg) => { 
             document.getElementById("loadingMsg").innerText = msg; 
             document.getElementById("loading").style.display = "flex"; 
         };
-        window.esconderLoading = () => { document.getElementById("loading").style.display = "none"; };
-        window.fecharModal = () => document.getElementById("modalMorador").style.display = "none";
+        window.esconderLoading = () => { 
+            document.getElementById("loading").style.display = "none"; 
+        };
+        window.fecharModal = () => {
+            document.getElementById("modalMorador").style.display = "none";
+        }
         
-      // ==========================================
-        // MOTOR DE PDF: LAYOUT SANEPAR + PLACA SÃO LUIZ
-        // ==========================================
+        // 3. NOVO: LISTENER DO ROBÔ WHATSAPP
+        window.iniciarListenerRobo = () => {
+            if (unsubRoboStatus) unsubRoboStatus();
+            
+            unsubRoboStatus = onSnapshot(doc(db, "config", "status_bot_agua"), (snap) => {
+                const bStatus = document.getElementById("agua-bolinha-status");
+                const tStatus = document.getElementById("agua-texto-status");
+                const areaQr = document.getElementById("agua-area-qr");
+                const imgQr = document.getElementById("agua-qrcode-img");
+                const areaBtn = document.getElementById("agua-area-botoes");
+                const areaFila = document.getElementById("agua-area-fila");
+                const qFila = document.getElementById("agua-qtd-fila");
+                const tFila = document.getElementById("agua-status-fila");
+                
+                if (snap.exists()) {
+                    const data = snap.data();
+                    
+                    // STATUS DA FILA (Mostra quantidade)
+                    if (data.fila_tamanho !== undefined) {
+                        areaFila.style.display = "block";
+                        qFila.innerText = `${data.fila_tamanho} Pendentes`;
+                        tFila.innerText = data.status_fila || "Ocioso";
+                        
+                        if (data.status_fila && data.status_fila.includes("Anti-Ban")) {
+                            tFila.className = "text-xs md:text-sm font-bold text-amber-600 bg-amber-50 p-2 rounded border border-amber-200 animate-pulse";
+                        } else {
+                            tFila.className = "text-xs md:text-sm font-bold text-blue-700 bg-white p-2 rounded border border-blue-100";
+                        }
+                    }
+
+                    if (data.status === 'online') {
+                        bStatus.className = "status-agua status-online";
+                        tStatus.innerText = "Conectado e Vendendo!";
+                        areaQr.style.display = "none";
+                        areaBtn.innerHTML = `
+                            <button class="bg-emerald-100 text-emerald-700 px-4 py-2 rounded-xl text-xs font-bold border border-emerald-200" disabled><i class="fa-solid fa-check"></i> Operante</button>
+                            <button onclick="window.desconectarRoboAgua()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition"><i class="fa-solid fa-power-off"></i> Desconectar</button>
+                        `;
+                    } 
+                    else if (data.qrCode && data.qrCode !== "") {
+                        bStatus.className = "status-agua status-aguardando";
+                        tStatus.innerText = "Aguardando leitura...";
+                        areaQr.style.display = "block";
+                        
+                        QRCode.toDataURL(data.qrCode, { width: 250, margin: 2 }, function (err, url) { 
+                            if (!err) imgQr.src = url; 
+                        });
+                        
+                        areaBtn.innerHTML = `
+                            <button onclick="window.conectarRoboAgua()" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition"><i class="fa-solid fa-rotate"></i> Gerar Novo QR</button>
+                        `;
+                    } 
+                    else if (data.status === 'iniciando' || data.comando === 'conectar') {
+                        bStatus.className = "status-agua status-aguardando";
+                        tStatus.innerText = "Iniciando Motor na Oracle...";
+                        areaQr.style.display = "none";
+                        areaBtn.innerHTML = `
+                            <button class="bg-slate-100 text-slate-400 px-4 py-2 rounded-xl text-xs font-bold border border-slate-200" disabled><i class="fa-solid fa-spinner fa-spin"></i> Aguarde...</button>
+                        `;
+                    } 
+                    else {
+                        bStatus.className = "status-agua status-offline";
+                        tStatus.innerText = "Motor Desligado";
+                        areaQr.style.display = "none";
+                        areaBtn.innerHTML = `
+                            <button onclick="window.conectarRoboAgua()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-sm"><i class="fa-brands fa-whatsapp"></i> Ligar Robô</button>
+                        `;
+                    }
+                } else {
+                    areaBtn.innerHTML = `<button onclick="window.conectarRoboAgua()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-sm"><i class="fa-brands fa-whatsapp"></i> Ligar Robô</button>`;
+                }
+            });
+        };
+
+        window.conectarRoboAgua = async () => {
+            await setDoc(doc(db, "config","status_bot_agua"), { comando: "conectar" }, { merge: true });
+        };
+
+        window.desconectarRoboAgua = async () => {
+            if(confirm("🛑 Deseja desligar o robô? (Ele não fará mais envios automáticos)")) {
+                await setDoc(doc(db, "config", "status_bot_agua"), { comando: "desconectar" }, { merge: true });
+            }
+        };
+
+        // 4. MOTOR DE PDF
         window.gerarFaturaPDFBase64 = (nome, cpfOriginal, endereco, refDesc, venc, valorTotal, pixCopia, qrCodeBase64, consumo) => {
             try {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
 
-                // === CABEÇALHO (ESTILO PLACA AZUL SÃO LUIZ) ===
-                doc.setFillColor(0, 51, 204); // Azul vibrante idêntico ao da placa
-                doc.rect(10, 10, 95, 25, 'F'); // Desenha a placa no canto esquerdo
+                doc.setFillColor(0, 51, 204); 
+                doc.rect(10, 10, 95, 25, 'F'); 
                 
                 doc.setTextColor(255, 255, 255);
                 doc.setFont("helvetica", "bold");
@@ -339,8 +767,7 @@
                 doc.setFontSize(8);
                 doc.text("CAPANEMA - PR", 57, 31, null, null, "center");
 
-                // Info da Associação à direita (Padrão Sanepar)
-                doc.setTextColor(0, 51, 153); // Azul escuro
+                doc.setTextColor(0, 51, 153); 
                 doc.setFontSize(9);
                 doc.setFont("helvetica", "normal");
                 doc.text("Atendimento WhatsApp:", 195, 17, null, null, "right");
@@ -349,13 +776,12 @@
                 doc.setFont("helvetica", "normal");
                 doc.text("Documento Auxiliar de Cobrança", 195, 30, null, null, "right");
 
-                // === BLOCO 1: DADOS DO CLIENTE ===
-                doc.setDrawColor(0, 51, 153); // Cor das linhas da grade
-                doc.setLineWidth(0.3); // Linha fina igual Sanepar
+                doc.setDrawColor(0, 51, 153); 
+                doc.setLineWidth(0.3); 
                 
-                doc.rect(10, 40, 190, 20); // Retângulo principal
-                doc.line(140, 40, 140, 60); // Divisória vertical
-                doc.line(10, 50, 190, 50); // Divisória horizontal
+                doc.rect(10, 40, 190, 20); 
+                doc.line(140, 40, 140, 60); 
+                doc.line(10, 50, 190, 50); 
 
                 doc.setFontSize(7); doc.setTextColor(0, 51, 153); doc.setFont("helvetica", "normal");
                 doc.text("NOME DO CLIENTE", 12, 44);
@@ -369,7 +795,6 @@
                 doc.text(endereco || 'Não Informado', 12, 58);
                 doc.text("ÁGUA RESIDENCIAL", 142, 58);
 
-                // === BLOCO 2: LEITURAS E CONSUMO ===
                 doc.rect(10, 65, 190, 15);
                 doc.line(70, 65, 70, 80);
                 doc.line(130, 65, 130, 80);
@@ -384,11 +809,10 @@
                 doc.text(consumo ? "MENSAL" : "SERVIÇO AVULSO", 72, 76);
                 doc.text(consumo || '-', 132, 76);
 
-                // === BLOCO 3: VALORES (SEM ESGOTO) ===
                 doc.rect(10, 85, 190, 15);
-                doc.setFillColor(230, 240, 255); // Fundo azul bem clarinho para o Total
-                doc.rect(130, 85, 70, 15, 'F'); // Pinta o fundo do total
-                doc.rect(10, 85, 190, 15); // Redesenha o contorno por cima
+                doc.setFillColor(230, 240, 255); 
+                doc.rect(130, 85, 70, 15, 'F'); 
+                doc.rect(10, 85, 190, 15); 
                 doc.line(70, 85, 70, 100);
                 doc.line(130, 85, 130, 100);
 
@@ -399,12 +823,11 @@
 
                 doc.setFontSize(10); doc.setTextColor(0, 0, 0); doc.setFont("helvetica", "bold");
                 doc.text("SERVIÇO DE DISTRIBUIÇÃO DE ÁGUA", 12, 96);
-                doc.setTextColor(220, 38, 38); // Vencimento em vermelho
+                doc.setTextColor(220, 38, 38); 
                 doc.text(venc.split('-').reverse().join('/'), 72, 96);
                 doc.setTextColor(0, 0, 0); doc.setFontSize(12);
                 doc.text(`R$ ${parseFloat(valorTotal).toFixed(2).replace('.', ',')}`, 132, 96);
 
-                // === ÁREA DO PIX E QR CODE (Mantive intacto o seu gerador) ===
                 let yPix = 115;
                 doc.setDrawColor(200, 200, 200);
                 doc.line(10, yPix, 200, yPix);
@@ -458,8 +881,30 @@
             e.target.value = (parseInt(v, 10) / 100).toFixed(2).replace('.', ',');
         };
 
-        window.focarProximo = (e, nextId) => { if (e.key === "Enter") { e.preventDefault(); const n = document.getElementById(nextId); if(n) { n.focus(); if(n.tagName === 'INPUT') n.select(); } } };
-        window.pularLinhaGrelha = (e, atual) => { if (e.key === "Enter") { e.preventDefault(); const nR = atual.closest('tr').nextElementSibling; if(nR) { const nI = nR.querySelector('input[id^="atu-"]'); if(nI) { nI.focus(); nI.select(); } } } };
+        window.focarProximo = (e, nextId) => { 
+            if (e.key === "Enter") { 
+                e.preventDefault(); 
+                const n = document.getElementById(nextId); 
+                if(n) { 
+                    n.focus(); 
+                    if(n.tagName === 'INPUT') n.select(); 
+                } 
+            } 
+        };
+        
+        window.pularLinhaGrelha = (e, atual) => { 
+            if (e.key === "Enter") { 
+                e.preventDefault(); 
+                const nR = atual.closest('tr').nextElementSibling; 
+                if(nR) { 
+                    const nI = nR.querySelector('input[id^="atu-"]'); 
+                    if(nI) { 
+                        nI.focus(); 
+                        nI.select(); 
+                    } 
+                } 
+            } 
+        };
 
         window.renderizarSelectAvulso = (filtro = "") => {
             const select = document.getElementById("avulsoFamilia");
@@ -467,6 +912,7 @@
             let html = "<option value='TODOS'>🌟 RATEIO: COBRAR TODOS</option>";
             let matchCount = 0; let firstMatchId = null; let firstMatchName = null;
             const termo = filtro.toLowerCase().trim();
+            
             const moradores = Object.entries(window.familiasGlobal).map(([id, f]) => ({id, ...f})).sort((a,b) => (a.nome || "").localeCompare(b.nome || "", 'pt-BR'));
 
             moradores.forEach(f => {
@@ -480,11 +926,17 @@
             select.innerHTML = html;
 
             if (termo === "") {
-                select.value = 'TODOS'; displayNome.innerText = "🌟 RATEIO: COBRAR TODOS"; displayNome.className = "text-xs md:text-sm font-bold text-blue-700 bg-blue-50 p-2 md:p-3 rounded-xl mt-2";
+                select.value = 'TODOS'; 
+                displayNome.innerText = "🌟 RATEIO: COBRAR TODOS"; 
+                displayNome.className = "text-xs md:text-sm font-bold text-blue-700 bg-blue-50 p-2 md:p-3 rounded-xl mt-2";
             } else if (firstMatchId) {
-                select.value = firstMatchId; displayNome.innerText = `✅ Selecionado: ${firstMatchName}`; displayNome.className = "text-xs md:text-sm font-bold text-green-700 bg-green-50 p-2 md:p-3 rounded-xl mt-2 border border-green-200";
+                select.value = firstMatchId; 
+                displayNome.innerText = `✅ Selecionado: ${firstMatchName}`; 
+                displayNome.className = "text-xs md:text-sm font-bold text-green-700 bg-green-50 p-2 md:p-3 rounded-xl mt-2 border border-green-200";
             } else {
-                select.value = ""; displayNome.innerText = "❌ Nenhum cliente encontrado"; displayNome.className = "text-xs md:text-sm font-bold text-red-700 bg-red-50 p-2 md:p-3 rounded-xl mt-2";
+                select.value = ""; 
+                displayNome.innerText = "❌ Nenhum cliente encontrado"; 
+                displayNome.className = "text-xs md:text-sm font-bold text-red-700 bg-red-50 p-2 md:p-3 rounded-xl mt-2";
             }
             displayNome.classList.remove('hidden');
         };
@@ -504,42 +956,73 @@
             const txt = document.getElementById("avisoMensagem");
             const dicas = ["💧 Dica: Economizar água para um futuro melhor!", "💧 Lembre-se: Cada gota conta. Evite o desperdício!", "💧 Dica: Água é vida. Pequenas atitudes fazem a diferença!", "💧 Consciente: Racionar água é dever de todos nós."];
             const d = dicas[Math.floor(Math.random() * dicas.length)];
-            if (mod === 'manutencao') txt.value = "⚠️ *Aviso*\n\n*Esta é uma mensagem automática:* Programação de manutenção na rede. Possível falta d'água..\n\n" + d;
-            else if (mod === 'reuniao') txt.value = "📢 *Aviso*\n\n*Esta é uma mensagem automática:*\nReunião para a todos os usuários, você está convidado (a) a participar, na próxima semana data a ser definida e repassada.\n\n" + d;
-            else if (mod === 'livre') txt.value = "\n\n" + d; 
-            else txt.value = ""; 
+            
+            if (mod === 'manutencao') {
+                txt.value = "⚠️ *Aviso*\n\n*Esta é uma mensagem automática:* Programação de manutenção na rede. Possível falta d'água..\n\n" + d;
+            } else if (mod === 'reuniao') {
+                txt.value = "📢 *Aviso*\n\n*Esta é uma mensagem automática:*\nReunião para a todos os usuários, você está convidado (a) a participar, na próxima semana data a ser definida e repassada.\n\n" + d;
+            } else if (mod === 'livre') {
+                txt.value = "\n\n" + d; 
+            } else {
+                txt.value = ""; 
+            }
         };
 
         window.submitAviso = async (e) => {
             e.preventDefault();
             const msg = document.getElementById("avisoMensagem").value;
             if(!msg.trim() || !confirm(`🚨 Enviar esta mensagem para TODOS os moradores?`)) return;
+            
             window.mostrarLoading("A preparar envios...");
-            const loteId = Date.now().toString(); let cont = 0;
+            const loteId = Date.now().toString(); 
+            let cont = 0;
+            
             for(let [id, f] of Object.entries(window.familiasGlobal)) {
-                try { await addDoc(collection(db, "avisos"), { lote_id: loteId, familia_id: id, nome_morador: f.nome, telefone: f.telefone, mensagem: msg, status: "pendente", data_criacao: new Date().toISOString() }); cont++; } catch(err) {}
+                try { 
+                    await addDoc(collection(db, "avisos"), { 
+                        lote_id: loteId, 
+                        familia_id: id, 
+                        nome_morador: f.nome, 
+                        telefone: f.telefone, 
+                        mensagem: msg, 
+                        status: "pendente", 
+                        data_criacao: new Date().toISOString() 
+                    }); 
+                    cont++; 
+                } catch(err) {}
             }
-            window.esconderLoading(); alert(`✅ ${cont} mensagens na fila!`); document.getElementById("formAvisos").reset();
+            
+            window.esconderLoading(); 
+            alert(`✅ ${cont} mensagens na fila! O Robô irá enviar automaticamente.`); 
+            document.getElementById("formAvisos").reset();
         };
 
         window.iniciarListenerAvisos = async () => {
             if(unsubAvisos) unsubAvisos();
             const container = document.getElementById("listaAvisosArea");
             container.innerHTML = "<p class='text-center p-4 text-slate-400 font-bold'>A analisar fila...</p>";
+            
             unsubAvisos = onSnapshot(query(collection(db, "avisos")), (snap) => {
                 const lotes = {};
                 snap.forEach(d => {
-                    const av = d.data(); const id = av.lote_id; if(!id) return;
+                    const av = d.data(); 
+                    const id = av.lote_id; 
+                    if(!id) return;
+                    
                     if(!lotes[id]) lotes[id] = { msg: av.mensagem, data: av.data_criacao, total: 0, enviados: 0, erro: 0 };
                     lotes[id].total++;
+                    
                     if(av.status === 'enviado') lotes[id].enviados++;
                     if(av.status === 'erro' || av.status === 'cancelar') lotes[id].erro++; 
                 });
+                
                 let html = "";
                 Object.keys(lotes).sort((a,b) => b - a).forEach(id => {
-                    const lote = lotes[id]; const pendentes = lote.total - lote.enviados - lote.erro;
-                    let stBadge = pendentes > 0 ? `<span class="bg-amber-100 text-amber-700 px-2 py-1 rounded-lg text-[10px] font-black uppercase animate-pulse">Enviando...</span>` : `<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-lg text-[10px] font-black uppercase">Concluído</span>`;
+                    const lote = lotes[id]; 
+                    const pendentes = lote.total - lote.enviados - lote.erro;
+                    let stBadge = pendentes > 0 ? `<span class="bg-amber-100 text-amber-700 px-2 py-1 rounded-lg text-[10px] font-black uppercase animate-pulse">Na Fila</span>` : `<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-lg text-[10px] font-black uppercase">Concluído</span>`;
                     const pct = Math.round(((lote.enviados + lote.erro) / lote.total) * 100) || 0;
+                    
                     html += `
                     <div class="border-2 border-slate-200 rounded-2xl p-4 bg-slate-50 relative overflow-hidden mb-3">
                         <div class="absolute bottom-0 left-0 h-1 bg-emerald-500 transition-all duration-1000" style="width: ${pct}%;"></div>
@@ -547,22 +1030,26 @@
                         <p class="text-xs text-slate-700 mb-4 line-clamp-3 bg-white p-2 rounded-lg border border-slate-100">${lote.msg.replace(/\\n/g, '<br>')}</p>
                         <div class="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-200 mb-3 shadow-inner text-center">
                             <div class="flex-1 border-r"><div class="text-[9px] text-slate-400 font-black">Total</div><div class="font-black text-lg">${lote.total}</div></div>
-                            <div class="flex-1 border-r"><div class="text-[9px] text-emerald-500 font-black">Entregues</div><div class="font-black text-emerald-600 text-lg">${lote.enviados}</div></div>
-                            <div class="flex-1"><div class="text-[9px] text-amber-500 font-black">Na Fila</div><div class="font-black text-amber-600 text-lg">${pendentes}</div></div>
+                            <div class="flex-1 border-r"><div class="text-[9px] text-emerald-500 font-black">Enviados</div><div class="font-black text-emerald-600 text-lg">${lote.enviados}</div></div>
+                            <div class="flex-1"><div class="text-[9px] text-amber-500 font-black">Aguardando</div><div class="font-black text-amber-600 text-lg">${pendentes}</div></div>
                         </div>
-                        <button onclick="window.cancelarLoteAviso('${id}')" class="w-full bg-red-50 text-red-500 hover:bg-red-500 hover:text-white border border-red-200 py-2 rounded-xl text-xs font-black transition">🗑️ Abortar / Apagar</button>
+                        <button onclick="window.cancelarLoteAviso('${id}')" class="w-full bg-red-50 text-red-500 hover:bg-red-500 hover:text-white border border-red-200 py-2 rounded-xl text-xs font-black transition">🗑️ Abortar Restante</button>
                     </div>`;
                 });
-                container.innerHTML = html || "<p class='text-center p-6 text-slate-400 text-xs font-bold'>Nenhum disparo ativo</p>";
+                container.innerHTML = html || "<p class='text-center p-6 text-slate-400 text-xs font-bold'>Nenhuma campanha de aviso ativa</p>";
             });
         };
 
         window.cancelarLoteAviso = async (loteId) => {
-            if(confirm("🚨 ALERTA: Deseja cancelar este disparo e APAGAR as mensagens dos clientes?")) {
-                window.mostrarLoading("A enviar comando...");
+            if(confirm("🚨 ALERTA: Deseja cancelar este disparo e APAGAR as mensagens de quem ainda não recebeu?")) {
+                window.mostrarLoading("A enviar comando ao robô...");
                 const snap = await getDocs(query(collection(db, "avisos"), where("lote_id", "==", loteId)));
-                const p = []; snap.forEach(d => { p.push(updateDoc(doc(db, "avisos", d.id), { status: "cancelar" })); });
-                await Promise.all(p); window.esconderLoading();
+                const p = []; 
+                snap.forEach(d => { 
+                    p.push(updateDoc(doc(db, "avisos", d.id), { status: "cancelar" })); 
+                });
+                await Promise.all(p); 
+                window.esconderLoading();
             }
         };
 
@@ -571,10 +1058,15 @@
             document.getElementById("relDataInicio").value = new Date(d.getFullYear(), d.getMonth(), 1).toISOString().split('T')[0];
             document.getElementById("relDataFim").value = d.toISOString().split('T')[0];
             document.getElementById("dataVencimento").value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-20`;
+            
             if(localStorage.getItem("admin_saoluiz_logado") === "sim") {
-                document.getElementById("loginAdmin").style.display = "none"; document.getElementById("painelAdmin").classList.remove('tela-oculta');
-                await window.carregarValoresConfig(); window.carregarFamilias();
+                document.getElementById("loginAdmin").style.display = "none"; 
+                document.getElementById("painelAdmin").classList.remove('tela-oculta');
+                await window.carregarValoresConfig(); 
+                window.carregarFamilias();
+                window.iniciarListenerRobo(); // Inicia o Listener do Status do Robô
             }
+            
             document.getElementById("avulsoTipo").addEventListener('change', function() {
                 document.getElementById("divVencimentoAvulso").style.display = this.value === 'somar_proxima' ? 'none' : 'block';
                 document.getElementById("avulsoVencimento").required = this.value === 'pix_agora';
@@ -584,8 +1076,11 @@
         window.carregarValoresConfig = async () => {
             try {
                 const snap = await getDoc(doc(db, "config", "valores"));
-                if(snap.exists()) { window.valoresAguaGlobais = snap.data(); } 
-                else { await setDoc(doc(db, "config", "valores"), window.valoresAguaGlobais); }
+                if(snap.exists()) { 
+                    window.valoresAguaGlobais = snap.data(); 
+                } else { 
+                    await setDoc(doc(db, "config", "valores"), window.valoresAguaGlobais); 
+                }
                 document.getElementById('cfgVal1').value = window.valoresAguaGlobais.val1;
                 document.getElementById('cfgVal2').value = window.valoresAguaGlobais.val2;
                 document.getElementById('cfgVal3').value = window.valoresAguaGlobais.val3;
@@ -597,14 +1092,19 @@
             window.valoresAguaGlobais.val1 = parseFloat(document.getElementById('cfgVal1').value) || 25;
             window.valoresAguaGlobais.val2 = parseFloat(document.getElementById('cfgVal2').value) || 50;
             window.valoresAguaGlobais.val3 = parseFloat(document.getElementById('cfgVal3').value) || 100;
-            window.mostrarLoading("A salvar no banco..."); await setDoc(doc(db, "config", "valores"), window.valoresAguaGlobais);
-            window.esconderLoading(); alert("✅ Valores salvos!");
+            
+            window.mostrarLoading("A salvar no banco..."); 
+            await setDoc(doc(db, "config", "valores"), window.valoresAguaGlobais);
+            window.esconderLoading(); 
+            alert("✅ Valores salvos!");
         };
 
         window.salvarConfigMulta = async () => {
             window.valoresAguaGlobais.multa = parseFloat(document.getElementById('cfgMulta').value) || 25;
-            window.mostrarLoading("A salvar..."); await setDoc(doc(db, "config", "valores"), window.valoresAguaGlobais);
-            window.esconderLoading(); alert("✅ Multa salva!");
+            window.mostrarLoading("A salvar..."); 
+            await setDoc(doc(db, "config", "valores"), window.valoresAguaGlobais);
+            window.esconderLoading(); 
+            alert("✅ Multa salva!");
         };
 
         window.entrarAdmin = async (e) => {
@@ -617,9 +1117,14 @@
                 if(!snap.exists()) await setDoc(doc(db, "config", "admin"), { senha: sc });
                 if(s === sc) {
                     localStorage.setItem("admin_saoluiz_logado", "sim");
-                    document.getElementById("loginAdmin").style.display = "none"; document.getElementById("painelAdmin").classList.remove('tela-oculta');
-                    await window.carregarValoresConfig(); window.carregarFamilias();
-                } else { document.getElementById("erroLogin").classList.remove('hidden'); }
+                    document.getElementById("loginAdmin").style.display = "none"; 
+                    document.getElementById("painelAdmin").classList.remove('tela-oculta');
+                    await window.carregarValoresConfig(); 
+                    window.carregarFamilias();
+                    window.iniciarListenerRobo();
+                } else { 
+                    document.getElementById("erroLogin").classList.remove('hidden'); 
+                }
             } catch(err) {}
             window.esconderLoading();
         };
@@ -628,23 +1133,42 @@
             const n = document.getElementById("cfgSenhaAdmin").value;
             if(n.length < 4) return alert("Mínimo 4 caracteres.");
             window.mostrarLoading("A forçar senha...");
-            try { await setDoc(doc(db, "config", "admin"), { senha: n }); window.esconderLoading(); alert("✅ Senha do Painel alterada!"); document.getElementById("cfgSenhaAdmin").value = ""; } catch(e) { window.esconderLoading(); }
+            try { 
+                await setDoc(doc(db, "config", "admin"), { senha: n }); 
+                window.esconderLoading(); 
+                alert("✅ Senha do Painel alterada!"); 
+                document.getElementById("cfgSenhaAdmin").value = ""; 
+            } catch(e) { window.esconderLoading(); }
         };
 
         window.salvarSenhaAgente = async () => {
             const n = document.getElementById("cfgSenhaAgente").value;
             if(n.length < 4) return alert("Mínimo 4 caracteres.");
             window.mostrarLoading("A forçar senha...");
-            try { await setDoc(doc(db, "config", "agente"), { senha: n }); window.esconderLoading(); alert("✅ Senha do App Agente alterada!"); document.getElementById("cfgSenhaAgente").value = ""; } catch(e) { window.esconderLoading(); }
+            try { 
+                await setDoc(doc(db, "config", "agente"), { senha: n }); 
+                window.esconderLoading(); 
+                alert("✅ Senha do App Agente alterada!"); 
+                document.getElementById("cfgSenhaAgente").value = ""; 
+            } catch(e) { window.esconderLoading(); }
         };
 
-        window.sairAdmin = () => { localStorage.removeItem("admin_saoluiz_logado"); location.reload(); };
+        window.sairAdmin = () => { 
+            localStorage.removeItem("admin_saoluiz_logado"); 
+            location.reload(); 
+        };
 
         window.mudarAba = (id, el) => {
             document.querySelectorAll('.conteudo-aba').forEach(a => a.classList.add('tela-oculta'));
             document.getElementById(id).classList.remove('tela-oculta');
-            document.querySelectorAll('.menu-btn').forEach(b => { b.classList.remove('bg-blue-600', 'text-white'); b.classList.add('text-slate-400'); });
-            if(el) { el.classList.add('bg-blue-600', 'text-white'); el.classList.remove('text-slate-400'); }
+            document.querySelectorAll('.menu-btn').forEach(b => { 
+                b.classList.remove('bg-blue-600', 'text-white'); 
+                b.classList.add('text-slate-400'); 
+            });
+            if(el) { 
+                el.classList.add('bg-blue-600', 'text-white'); 
+                el.classList.remove('text-slate-400'); 
+            }
             if(id === 'aba-leituras') window.carregarLoteFaturas();
             if(id === 'aba-avulso') window.carregarSelectAvulso();
             if(id === 'aba-avisos') window.iniciarListenerAvisos();
@@ -654,38 +1178,80 @@
             if(id === 'aba-config') window.carregarLogsAgente();
         };
 
-        window.abrirModalCadastro = () => { document.getElementById("formMorador").reset(); document.getElementById("modId").value = ""; document.getElementById("modalMorador").style.display = "flex"; };
-        window.abrirModalEdicao = (id, n, c, t, l) => { document.getElementById("modId").value=id; document.getElementById("modNome").value=n; document.getElementById("modCpf").value=c; document.getElementById("modTel").value=t; document.getElementById("modLote").value=l; document.getElementById("modalMorador").style.display="flex"; };
+        window.abrirModalCadastro = () => { 
+            document.getElementById("formMorador").reset(); 
+            document.getElementById("modId").value = ""; 
+            document.getElementById("modalMorador").style.display = "flex"; 
+        };
+        
+        window.abrirModalEdicao = (id, n, c, t, l) => { 
+            document.getElementById("modId").value = id; 
+            document.getElementById("modNome").value = n; 
+            document.getElementById("modCpf").value = c; 
+            document.getElementById("modTel").value = t; 
+            document.getElementById("modLote").value = l; 
+            document.getElementById("modalMorador").style.display = "flex"; 
+        };
         
         window.filtrarTabela = (inputId, tabelaId) => {
             const f = document.getElementById(inputId).value.toLowerCase();
             const l = document.getElementById(tabelaId).getElementsByTagName('tr');
-            for (let i=0; i<l.length; i++) l[i].style.display = l[i].innerText.toLowerCase().includes(f) ? "" : "none";
+            for (let i=0; i<l.length; i++) {
+                l[i].style.display = l[i].innerText.toLowerCase().includes(f) ? "" : "none";
+            }
         };
 
         window.atualizarCacheFamilias = async () => {
             const snap = await getDocs(collection(db, "familias"));
-            window.familiasGlobal = {}; snap.forEach(d => { window.familiasGlobal[d.id] = d.data(); });
+            window.familiasGlobal = {}; 
+            snap.forEach(d => { window.familiasGlobal[d.id] = d.data(); });
         };
 
         window.submitMorador = async (e) => {
             e.preventDefault();
             const id = document.getElementById("modId").value;
-            const d = { nome: window.formatarNomeParaBanco(document.getElementById("modNome").value).trim(), cpf: document.getElementById("modCpf").value.replace(/\D/g, ''), telefone: document.getElementById("modTel").value, lote_endereco: document.getElementById("modLote").value };
+            const d = { 
+                nome: window.formatarNomeParaBanco(document.getElementById("modNome").value).trim(), 
+                cpf: document.getElementById("modCpf").value.replace(/\D/g, ''), 
+                telefone: document.getElementById("modTel").value, 
+                lote_endereco: document.getElementById("modLote").value 
+            };
+            
             window.mostrarLoading("A guardar...");
-            if(id) await updateDoc(doc(db, "familias", id), d); else await addDoc(collection(db, "familias"), {...d, senha: "123456", status_ativo: true, ultima_leitura: 0});
-            window.fecharModal(); window.carregarFamilias(); window.esconderLoading();
+            if(id) {
+                await updateDoc(doc(db, "familias", id), d); 
+            } else {
+                await addDoc(collection(db, "familias"), {...d, senha: "123456", status_ativo: true, ultima_leitura: 0});
+            }
+            window.fecharModal(); 
+            window.carregarFamilias(); 
+            window.esconderLoading();
         };
 
-        window.excluirMorador = async (id, nome) => { if(confirm(`Apagar ${nome}?`)) { window.mostrarLoading("A apagar..."); await deleteDoc(doc(db, "familias", id)); window.carregarFamilias(); window.esconderLoading(); } };
+        window.excluirMorador = async (id, nome) => { 
+            if(confirm(`Apagar ${nome}?`)) { 
+                window.mostrarLoading("A apagar..."); 
+                await deleteDoc(doc(db, "familias", id)); 
+                window.carregarFamilias(); 
+                window.esconderLoading(); 
+            } 
+        };
 
         window.carregarFamilias = async () => {
             const tbody = document.getElementById("tabelaMoradores");
             await window.atualizarCacheFamilias();
             const mor = Object.entries(window.familiasGlobal).map(([id, f]) => ({id, ...f})).sort((a,b) => (a.nome || "").localeCompare(b.nome || "", 'pt-BR'));
+            
             let html = "";
             mor.forEach(f => {
-                html += `<tr class="border-b hover:bg-slate-50"><td class="p-3"><strong>${f.nome}</strong><br><small>${f.lote_endereco}</small></td><td class="p-3 text-slate-500 font-mono">${f.cpf}</td><td class="p-3"><button onclick="window.abrirModalEdicao('${f.id}','${f.nome}','${f.cpf}','${f.telefone}','${f.lote_endereco}')" class="text-blue-600 bg-blue-50 px-3 py-2 rounded-lg font-bold mr-2">Editar</button><button onclick="window.excluirMorador('${f.id}','${f.nome}')" class="text-red-600 bg-red-50 px-3 py-2 rounded-lg font-bold">🗑️</button></td></tr>`;
+                html += `<tr class="border-b hover:bg-slate-50">
+                    <td class="p-3"><strong>${f.nome}</strong><br><small>${f.lote_endereco}</small></td>
+                    <td class="p-3 text-slate-500 font-mono">${f.cpf}</td>
+                    <td class="p-3">
+                        <button onclick="window.abrirModalEdicao('${f.id}','${f.nome}','${f.cpf}','${f.telefone}','${f.lote_endereco}')" class="text-blue-600 bg-blue-50 px-3 py-2 rounded-lg font-bold mr-2">Editar</button>
+                        <button onclick="window.excluirMorador('${f.id}','${f.nome}')" class="text-red-600 bg-red-50 px-3 py-2 rounded-lg font-bold">🗑️</button>
+                    </td>
+                </tr>`;
             });
             tbody.innerHTML = html;
         };
@@ -719,7 +1285,8 @@
             try {
                 await window.atualizarCacheFamilias();
                 const fatSnap = await getDocs(collection(db, "faturas"));
-                const faturas = []; fatSnap.forEach(d => faturas.push(d.data()));
+                const faturas = []; 
+                fatSnap.forEach(d => faturas.push(d.data()));
 
                 let html = "";
                 const hoje = new Date(); hoje.setHours(0,0,0,0);
@@ -747,8 +1314,12 @@
                     `;
                 });
                 corpo.innerHTML = html;
-                Object.keys(window.familiasGlobal).forEach(famId => { if(document.getElementById(`atu-${famId}`)) window.calcularLinha(famId); });
-            } catch (e) { corpo.innerHTML = "<tr><td colspan='7'>Erro ao carregar dados.</td></tr>"; }
+                Object.keys(window.familiasGlobal).forEach(famId => { 
+                    if(document.getElementById(`atu-${famId}`)) window.calcularLinha(famId); 
+                });
+            } catch (e) { 
+                corpo.innerHTML = "<tr><td colspan='7'>Erro ao carregar dados.</td></tr>"; 
+            }
         };
 
         window.gerarFaturasEmLote = async () => {
@@ -804,13 +1375,27 @@
                     const pdfEmBase64 = window.gerarFaturaPDFBase64(nome, cpfOriginal, endCliente, descFinal, venc, total, pixData.copiaECola, pixData.qrCodeBase64, consumoFinal + " m³");
 
                     await addDoc(collection(db, "faturas"), { 
-                        familia_id: id, mes_referencia: descFinal, leitura_anterior: l_ant, leitura_atual: l_atu, 
-                        consumo_m3: consumoFinal, consumo: consumoFinal + " m³", pdf_base64: pdfEmBase64,
-                        valor_agua: vAgua, valor_multa: vMulta, taxa_extra: taxaPendente, valor_total: total, 
-                        vencimento: venc, status: "pendente", whatsapp_enviado: false, 
-                        pix_copia_cola: pixData.copiaECola || "", qr_code_base64: pixData.qrCodeBase64 || "", 
-                        pix_txid: String(pixData.txid || ""), data_lancamento: new Date().toISOString(), 
-                        telefone: telCliente, nome_morador: nome, cpf: cpfLimpo 
+                        familia_id: id, 
+                        mes_referencia: descFinal, 
+                        leitura_anterior: l_ant, 
+                        leitura_atual: l_atu, 
+                        consumo_m3: consumoFinal, 
+                        consumo: consumoFinal + " m³", 
+                        pdf_base64: pdfEmBase64,
+                        valor_agua: vAgua, 
+                        valor_multa: vMulta, 
+                        taxa_extra: taxaPendente, 
+                        valor_total: total, 
+                        vencimento: venc, 
+                        status: "pendente", 
+                        whatsapp_enviado: false, 
+                        pix_copia_cola: pixData.copiaECola || "", 
+                        qr_code_base64: pixData.qrCodeBase64 || "", 
+                        pix_txid: String(pixData.txid || ""), 
+                        data_lancamento: new Date().toISOString(), 
+                        telefone: telCliente, 
+                        nome_morador: nome, 
+                        cpf: cpfLimpo 
                     });
 
                     await updateDoc(doc(db, "familias", id), { ultima_leitura: l_atu, taxa_pendente_valor: 0, taxa_pendente_desc: "" });
@@ -821,11 +1406,14 @@
                     const st = document.getElementById(`status-${id}`);
                     if(st) st.innerHTML = `<button onclick="window.enviarWhatsAppSemEmoji('normal', '${telCliente}', '${nomePZ}', '${mes}', '${total.toFixed(2)}', '${dataBr}')" class="bg-green-500 text-white font-bold px-3 py-1.5 rounded-xl text-[10px] shadow-sm">📲 ZAP</button>`;
                     
-                    document.getElementById(`atu-${id}`).disabled = true; document.getElementById(`multa-${id}`).disabled = true;
+                    document.getElementById(`atu-${id}`).disabled = true; 
+                    document.getElementById(`multa-${id}`).disabled = true;
                 } catch(err) {}
-                if (contadorProcessado < totalLinhas) { await new Promise(resolve => setTimeout(resolve, 800)); }
+                if (contadorProcessado < totalLinhas) { 
+                    await new Promise(resolve => setTimeout(resolve, 800)); 
+                }
             }
-            window.esconderLoading(); alert("✅ Lote Mensal Gerado com Sucesso!");
+            window.esconderLoading(); alert("✅ Lote Mensal Gerado! O Robô iniciará o envio das faturas automaticamente.");
         };
 
         window.submitAvulso = async (e) => {
@@ -846,10 +1434,18 @@
             if(tipo === 'somar_proxima') {
                 if(familiaId === 'TODOS') {
                     if(!confirm(`Somar R$ ${valor.toFixed(2).replace('.',',')} na conta de TODOS?`)) { window.esconderLoading(); return; }
-                    for(let id of Object.keys(window.familiasGlobal)) { await updateDoc(doc(db, "familias", id), { taxa_pendente_valor: valor, taxa_pendente_desc: descricao }); }
-                } else { await updateDoc(doc(db, "familias", familiaId), { taxa_pendente_valor: valor, taxa_pendente_desc: descricao }); }
-                window.esconderLoading(); alert("✅ Serviço agendado para a próxima fatura de água!"); 
-                document.getElementById("formAvulso").reset(); document.getElementById("buscaClienteAvulso").value = ""; document.getElementById("avulsoRepeticoes").value = 1; window.filtrarAvulsoESelecionar();
+                    for(let id of Object.keys(window.familiasGlobal)) { 
+                        await updateDoc(doc(db, "familias", id), { taxa_pendente_valor: valor, taxa_pendente_desc: descricao }); 
+                    }
+                } else { 
+                    await updateDoc(doc(db, "familias", familiaId), { taxa_pendente_valor: valor, taxa_pendente_desc: descricao }); 
+                }
+                window.esconderLoading(); 
+                alert("✅ Serviço agendado para a próxima fatura de água!"); 
+                document.getElementById("formAvulso").reset(); 
+                document.getElementById("buscaClienteAvulso").value = ""; 
+                document.getElementById("avulsoRepeticoes").value = 1; 
+                window.filtrarAvulsoESelecionar();
                 return;
             }
             
@@ -859,6 +1455,7 @@
                     const cpfOriginal = f.cpf && f.cpf !== "undefined" ? f.cpf : ""; 
                     const cpfLimpo = cpfOriginal.replace(/\D/g, ''); 
                     let pixData = { sucesso: false, copiaECola: "", qrCodeBase64: "" };
+                    
                     try {
                         const pixReq = fetch("/api/gerar-pix", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({valor, descricao, nome: f.nome}) });
                         const res = await Promise.race([pixReq, new Promise((_, r) => setTimeout(() => r(new Error("Timeout")), 12000))]);
@@ -867,7 +1464,14 @@
 
                     try {
                         const pdfEmBase64 = window.gerarFaturaPDFBase64(f.nome, cpfOriginal, f.lote_endereco, descricao, vencimento, valor, pixData.copiaECola, pixData.qrCodeBase64, null);
-                        await addDoc(collection(db, "faturas"), { familia_id: id, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, consumo: "N/A", pdf_base64: pdfEmBase64, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento: vencimento, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pixData.copiaECola || "", qr_code_base64: pixData.qrCodeBase64 || "", pix_txid: String(pixData.txid || ""), telefone: f.telefone || "", nome_morador: f.nome, cpf: cpfLimpo, data_lancamento: new Date().toISOString() }); 
+                        await addDoc(collection(db, "faturas"), { 
+                            familia_id: id, mes_referencia: descricao, leitura_anterior: 0, leitura_atual: 0, 
+                            consumo_m3: 0, consumo: "N/A", pdf_base64: pdfEmBase64, valor_agua: 0, valor_multa: 0, 
+                            taxa_extra: valor, valor_total: valor, vencimento: vencimento, status: "pendente", 
+                            whatsapp_enviado: false, pix_copia_cola: pixData.copiaECola || "", qr_code_base64: pixData.qrCodeBase64 || "", 
+                            pix_txid: String(pixData.txid || ""), telefone: f.telefone || "", nome_morador: f.nome, 
+                            cpf: cpfLimpo, data_lancamento: new Date().toISOString() 
+                        }); 
                     } catch(err) {}
                 }
                 window.esconderLoading(); alert(`✅ Faturas avulsas geradas.`);
@@ -889,12 +1493,25 @@
                     for(let i = 0; i < repeticoes; i++) {
                         let descFinal = repeticoes > 1 ? `${descricao} (Cópia ${i+1}/${repeticoes})` : descricao;
                         const pdfEmBase64 = window.gerarFaturaPDFBase64(nome, cpfOriginal, endCliente, descFinal, vencimento, valor, pixData.copiaECola, pixData.qrCodeBase64, null);
-                        await addDoc(collection(db, "faturas"), { familia_id: familiaId, mes_referencia: descFinal, leitura_anterior: 0, leitura_atual: 0, consumo_m3: 0, consumo: "N/A", pdf_base64: pdfEmBase64, valor_agua: 0, valor_multa: 0, taxa_extra: valor, valor_total: valor, vencimento: vencimento, status: "pendente", whatsapp_enviado: false, pix_copia_cola: pixData.copiaECola || "", qr_code_base64: pixData.qrCodeBase64 || "", pix_txid: String(pixData.txid || ""), telefone: telCliente, nome_morador: nome, cpf: cpfLimpo, data_lancamento: new Date().toISOString() }); 
+                        await addDoc(collection(db, "faturas"), { 
+                            familia_id: familiaId, mes_referencia: descFinal, leitura_anterior: 0, leitura_atual: 0, 
+                            consumo_m3: 0, consumo: "N/A", pdf_base64: pdfEmBase64, valor_agua: 0, valor_multa: 0, 
+                            taxa_extra: valor, valor_total: valor, vencimento: vencimento, status: "pendente", 
+                            whatsapp_enviado: false, pix_copia_cola: pixData.copiaECola || "", qr_code_base64: pixData.qrCodeBase64 || "", 
+                            pix_txid: String(pixData.txid || ""), telefone: telCliente, nome_morador: nome, 
+                            cpf: cpfLimpo, data_lancamento: new Date().toISOString() 
+                        }); 
                     }
                     window.esconderLoading(); alert(`✅ Serviço avulso gerado com sucesso! (PDF Salvo)`);
-                } catch(e) { window.esconderLoading(); alert("Erro ao salvar fatura."); }
+                } catch(e) { 
+                    window.esconderLoading(); 
+                    alert("Erro ao salvar fatura."); 
+                }
             }
-            document.getElementById("formAvulso").reset(); document.getElementById("buscaClienteAvulso").value = ""; document.getElementById("avulsoRepeticoes").value = 1; window.filtrarAvulsoESelecionar();
+            document.getElementById("formAvulso").reset(); 
+            document.getElementById("buscaClienteAvulso").value = ""; 
+            document.getElementById("avulsoRepeticoes").value = 1; 
+            window.filtrarAvulsoESelecionar();
         };
 
         window.iniciarListenerAbertas = async () => {
@@ -918,7 +1535,6 @@
                     const dataBr = f.vencimento.split('-').reverse().join('/');
                     const valorForm = f.valor_total.toFixed(2);
                     
-                    // --- LÓGICA EXATA DOS HORÁRIOS ---
                     let dtLanc = new Date(f.data_lancamento);
                     let hrCriacao = !isNaN(dtLanc) ? dtLanc.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit', second:'2-digit'}) : '--:--:--';
                     
@@ -941,7 +1557,6 @@
                         <span class="text-red-500 font-bold text-[10px]">Criado: ${hrCriacao}</span>
                         ${statusEnvio}
                     </button>`;
-                    // ------------------------------------
 
                     html += `<tr class="${rowClass} border-b">
                         <td class="p-3 md:p-4 font-mono text-[10px] md:text-sm">${isOverdue ? "🚨 " : "⏳ "}${dataBr}</td>
@@ -953,16 +1568,23 @@
                 tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center text-green-600 font-bold'>Tudo Pago!</td></tr>";
             });
         };
+        
         window.iniciarListenerPagos = async () => {
             if(unsubPagos) unsubPagos();
             const tbody = document.getElementById("tabelaPagos");
             unsubPagos = onSnapshot(query(collection(db, "faturas"), where("status", "==", "pago")), (snap) => {
-                const pagas = []; snap.forEach(d => pagas.push({id: d.id, ...d.data()}));
+                const pagas = []; 
+                snap.forEach(d => pagas.push({id: d.id, ...d.data()}));
                 pagas.sort((a,b) => new Date(b.data_pagamento) - new Date(a.data_pagamento));
                 let html = "";
                 for(let p of pagas) {
                     const dt = new Date(p.data_pagamento);
-                    html += `<tr class="border-b"><td class="p-3 text-[10px] font-mono text-gray-500">${dt.toLocaleDateString('pt-BR')} ${dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}</td><td class="p-3 font-bold text-sm">${p.nome_morador}</td><td class="p-3 text-right font-black text-green-600">R$ ${p.valor_total.toFixed(2)}</td><td class="p-3 text-center"><span class="bg-green-100 text-green-700 px-2 py-1 rounded-lg text-[9px] font-bold uppercase">Confirmado</span></td></tr>`;
+                    html += `<tr class="border-b">
+                        <td class="p-3 text-[10px] font-mono text-gray-500">${dt.toLocaleDateString('pt-BR')} ${dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}</td>
+                        <td class="p-3 font-bold text-sm">${p.nome_morador}</td>
+                        <td class="p-3 text-right font-black text-green-600">R$ ${p.valor_total.toFixed(2)}</td>
+                        <td class="p-3 text-center"><span class="bg-green-100 text-green-700 px-2 py-1 rounded-lg text-[9px] font-bold uppercase">Confirmado</span></td>
+                    </tr>`;
                 }
                 tbody.innerHTML = html || "<tr><td colspan='4' class='p-8 text-center text-gray-400'>Nenhum recebimento.</td></tr>";
             });
@@ -970,85 +1592,151 @@
 
         window.excluirFatura = async (id, nome, valor) => { 
             if(confirm(`Cancelar a fatura de ${nome}?`)) { 
-                window.mostrarLoading("A cancelar..."); await updateDoc(doc(db, "faturas", id), {status: "cancelar"}); await addDoc(collection(db, "logs_agente"), { data: new Date().toISOString(), acao: 'Cancelada', cliente: nome, valor: valor }); window.esconderLoading();
+                window.mostrarLoading("A cancelar..."); 
+                await updateDoc(doc(db, "faturas", id), {status: "cancelar"}); 
+                await addDoc(collection(db, "logs_agente"), { data: new Date().toISOString(), acao: 'Cancelada', cliente: nome, valor: valor }); 
+                window.esconderLoading();
             } 
         };
 
-        window.marcarPago = async (id) => { if(confirm("Confirmar baixa de pagamento manual?")) { await updateDoc(doc(db, "faturas", id), {status: "pago", data_pagamento: new Date().toISOString()}); } };
+        window.marcarPago = async (id) => { 
+            if(confirm("Confirmar baixa de pagamento manual?")) { 
+                await updateDoc(doc(db, "faturas", id), {status: "pago", data_pagamento: new Date().toISOString()}); 
+            } 
+        };
 
         let todasFaturasCache = [];
         window.carregarRelatorio = async () => {
-            window.mostrarLoading("A consultar..."); const snap = await getDocs(collection(db, "faturas"));
-            todasFaturasCache = []; snap.forEach(d => todasFaturasCache.push(d.data()));
-            window.esconderLoading(); window.gerarRelatorioFiltrado();
+            window.mostrarLoading("A consultar..."); 
+            const snap = await getDocs(collection(db, "faturas"));
+            todasFaturasCache = []; 
+            snap.forEach(d => todasFaturasCache.push(d.data()));
+            window.esconderLoading(); 
+            window.gerarRelatorioFiltrado();
         };
 
         window.gerarRelatorioFiltrado = () => {
-            const dtIni = document.getElementById("relDataInicio").value; const dtFim = document.getElementById("relDataFim").value;
-            const statusF = document.getElementById("relStatus").value; const termo = document.getElementById("relBusca").value.toLowerCase();
+            const dtIni = document.getElementById("relDataInicio").value; 
+            const dtFim = document.getElementById("relDataFim").value;
+            const statusF = document.getElementById("relStatus").value; 
+            const termo = document.getElementById("relBusca").value.toLowerCase();
             
             let filtradas = todasFaturasCache.filter(f => {
                 let matchD = true;
-                if(dtIni || dtFim) { const dtB = f.data_lancamento ? f.data_lancamento.split('T')[0] : f.vencimento; if(dtIni && dtB < dtIni) matchD = false; if(dtFim && dtB > dtFim) matchD = false; }
+                if(dtIni || dtFim) { 
+                    const dtB = f.data_lancamento ? f.data_lancamento.split('T')[0] : f.vencimento; 
+                    if(dtIni && dtB < dtIni) matchD = false; 
+                    if(dtFim && dtB > dtFim) matchD = false; 
+                }
                 return matchD && (statusF === "TODOS" || f.status === statusF) && (!termo || (f.nome_morador || "").toLowerCase().includes(termo)) && f.status !== "cancelar";
             }).sort((a,b) => new Date(b.vencimento) - new Date(a.vencimento));
 
-            let tPago = 0, tPend = 0, tInad = 0, tM3 = 0, html = ""; const hoje = new Date(); hoje.setHours(0,0,0,0);
+            let tPago = 0, tPend = 0, tInad = 0, tM3 = 0, html = ""; 
+            const hoje = new Date(); hoje.setHours(0,0,0,0);
 
             filtradas.forEach(f => {
                 let badge = 'bg-gray-100 text-gray-700'; let st = f.status;
-                if(f.status === "pago") { tPago += f.valor_total; st = "Recebido"; badge = 'bg-green-100 text-green-700'; } 
-                else if(new Date(f.vencimento + "T00:00:00") < hoje) { tInad += f.valor_total; st = "Inadimplente"; badge = 'bg-red-100 text-red-700'; } 
-                else { tPend += f.valor_total; st = "Pendente"; badge = 'bg-orange-100 text-orange-700'; }
+                if(f.status === "pago") { 
+                    tPago += f.valor_total; st = "Recebido"; badge = 'bg-green-100 text-green-700'; 
+                } else if(new Date(f.vencimento + "T00:00:00") < hoje) { 
+                    tInad += f.valor_total; st = "Inadimplente"; badge = 'bg-red-100 text-red-700'; 
+                } else { 
+                    tPend += f.valor_total; st = "Pendente"; badge = 'bg-orange-100 text-orange-700'; 
+                }
                 
                 tM3 += (f.consumo_m3 || 0);
-                html += `<tr class="border-b hover:bg-slate-50"><td class="p-3 pl-4 font-bold text-xs">${f.nome_morador}</td><td class="p-3 text-[10px]">${f.mes_referencia}<br>Venc: ${f.vencimento.split('-').reverse().join('/')}</td><td class="p-3 text-center font-bold text-blue-600 text-xs">${f.consumo_m3 || 0} m³</td><td class="p-3 text-center"><span class="px-2 py-1 rounded text-[9px] uppercase font-bold ${badge}">${st}</span></td><td class="p-3 text-right font-black pr-4">R$ ${f.valor_total.toFixed(2)}</td></tr>`;
+                html += `<tr class="border-b hover:bg-slate-50">
+                    <td class="p-3 pl-4 font-bold text-xs">${f.nome_morador}</td>
+                    <td class="p-3 text-[10px]">${f.mes_referencia}<br>Venc: ${f.vencimento.split('-').reverse().join('/')}</td>
+                    <td class="p-3 text-center font-bold text-blue-600 text-xs">${f.consumo_m3 || 0} m³</td>
+                    <td class="p-3 text-center"><span class="px-2 py-1 rounded text-[9px] uppercase font-bold ${badge}">${st}</span></td>
+                    <td class="p-3 text-right font-black pr-4">R$ ${f.valor_total.toFixed(2)}</td>
+                </tr>`;
             });
             
-            document.getElementById("relCardM3").innerText = tM3.toFixed(0); document.getElementById("relCardQtd").innerText = filtradas.length;
-            document.getElementById("relCardPendente").innerText = "R$ " + tPend.toFixed(2).replace('.',','); document.getElementById("relCardInadimplente").innerText = "R$ " + tInad.toFixed(2).replace('.',',');
-            document.getElementById("relCardPago").innerText = "R$ " + tPago.toFixed(2).replace('.',','); document.getElementById("tabelaRelatorio").innerHTML = html || "<tr><td colspan='5' class='p-8 text-center text-gray-400'>Sem resultados.</td></tr>";
+            document.getElementById("relCardM3").innerText = tM3.toFixed(0); 
+            document.getElementById("relCardQtd").innerText = filtradas.length;
+            document.getElementById("relCardPendente").innerText = "R$ " + tPend.toFixed(2).replace('.',','); 
+            document.getElementById("relCardInadimplente").innerText = "R$ " + tInad.toFixed(2).replace('.',',');
+            document.getElementById("relCardPago").innerText = "R$ " + tPago.toFixed(2).replace('.',','); 
+            document.getElementById("tabelaRelatorio").innerHTML = html || "<tr><td colspan='5' class='p-8 text-center text-gray-400'>Sem resultados.</td></tr>";
         };
 
         window.carregarLogsAgente = async () => {
             window.mostrarLoading("A procurar...");
             try {
-                const snap = await getDocs(collection(db, "logs_agente")); let logs = []; snap.forEach(d => logs.push(d.data())); 
-                logs.sort((a,b) => new Date(b.data) - new Date(a.data)); let html = "";
+                const snap = await getDocs(collection(db, "logs_agente")); 
+                let logs = []; 
+                snap.forEach(d => logs.push(d.data())); 
+                logs.sort((a,b) => new Date(b.data) - new Date(a.data)); 
+                let html = "";
+                
                 logs.forEach(l => {
-                    const dt = new Date(l.data); const dtF = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-                    if (l.mensagem) { html += `<tr class="hover:bg-slate-50 border-b"><td class="p-3 text-[10px] font-mono text-gray-500">${dtF}</td><td class="p-3 text-[10px]"><span class="bg-slate-200 px-2 py-1 rounded-md font-bold">Antigo</span></td><td class="p-3 text-xs font-bold" colspan="2">${l.mensagem}</td></tr>`; } 
-                    else {
-                        let cor = "bg-emerald-50 text-emerald-600"; if (l.acao === 'Cancelada') cor = "bg-red-50 text-red-600"; if (l.acao && l.acao.includes('Avulso')) cor = "bg-orange-50 text-orange-600"; if (l.acao && l.acao.includes('Disparo')) cor = "bg-amber-50 text-amber-600";
-                        html += `<tr class="hover:bg-slate-50 border-b"><td class="p-3 text-[10px] font-mono text-gray-500">${dtF}</td><td class="p-3 text-[10px]"><span class="${cor} px-2 py-1 rounded-md font-bold">${l.acao}</span></td><td class="p-3 text-[11px] font-bold max-w-[120px] truncate">${l.cliente}</td><td class="p-3 text-[11px] font-black text-right">${l.valor > 0 ? (l.acao==='Disparo Massa' ? l.valor + ' msg' : 'R$ ' + parseFloat(l.valor).toFixed(2).replace('.',',')) : '-'}</td></tr>`;
+                    const dt = new Date(l.data); 
+                    const dtF = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+                    
+                    if (l.mensagem) { 
+                        html += `<tr class="hover:bg-slate-50 border-b"><td class="p-3 text-[10px] font-mono text-gray-500">${dtF}</td><td class="p-3 text-[10px]"><span class="bg-slate-200 px-2 py-1 rounded-md font-bold">Antigo</span></td><td class="p-3 text-xs font-bold" colspan="2">${l.mensagem}</td></tr>`; 
+                    } else {
+                        let cor = "bg-emerald-50 text-emerald-600"; 
+                        if (l.acao === 'Cancelada') cor = "bg-red-50 text-red-600"; 
+                        if (l.acao && l.acao.includes('Avulso')) cor = "bg-orange-50 text-orange-600"; 
+                        if (l.acao && l.acao.includes('Disparo')) cor = "bg-amber-50 text-amber-600";
+                        
+                        html += `<tr class="hover:bg-slate-50 border-b">
+                            <td class="p-3 text-[10px] font-mono text-gray-500">${dtF}</td>
+                            <td class="p-3 text-[10px]"><span class="${cor} px-2 py-1 rounded-md font-bold">${l.acao}</span></td>
+                            <td class="p-3 text-[11px] font-bold max-w-[120px] truncate">${l.cliente}</td>
+                            <td class="p-3 text-[11px] font-black text-right">${l.valor > 0 ? (l.acao==='Disparo Massa' ? l.valor + ' msg' : 'R$ ' + parseFloat(l.valor).toFixed(2).replace('.',',')) : '-'}</td>
+                        </tr>`;
                     }
                 });
                 document.getElementById("tabelaLogsAgente").innerHTML = html || "<tr><td colspan='4' class='p-6 text-center text-gray-400'>Sem histórico.</td></tr>";
-            } catch(e) { } window.esconderLoading();
+            } catch(e) { } 
+            window.esconderLoading();
         };
 
         window.exportarBase = async () => {
-            window.mostrarLoading("Backup..."); const famSnap = await getDocs(collection(db, "familias")); const fatSnap = await getDocs(collection(db, "faturas"));
-            const data = { familias: [], faturas: [] }; famSnap.forEach(d => data.familias.push({id: d.id, ...d.data()})); fatSnap.forEach(d => data.faturas.push({id: d.id, ...d.data()}));
-            const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], {type: "application/json"})); a.download = `backup_saoluiz_${new Date().toISOString().split('T')[0]}.json`; a.click(); window.esconderLoading();
+            window.mostrarLoading("Backup..."); 
+            const famSnap = await getDocs(collection(db, "familias")); 
+            const fatSnap = await getDocs(collection(db, "faturas"));
+            
+            const data = { familias: [], faturas: [] }; 
+            famSnap.forEach(d => data.familias.push({id: d.id, ...d.data()})); 
+            fatSnap.forEach(d => data.faturas.push({id: d.id, ...d.data()}));
+            
+            const a = document.createElement("a"); 
+            a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], {type: "application/json"})); 
+            a.download = `backup_saoluiz_${new Date().toISOString().split('T')[0]}.json`; 
+            a.click(); 
+            window.esconderLoading();
         };
 
         window.importarBase = async () => {
-            const file = document.getElementById("fileImport").files[0]; if(!file || !confirm("Adicionar dados?")) return;
-            window.mostrarLoading("Importando..."); const reader = new FileReader();
+            const file = document.getElementById("fileImport").files[0]; 
+            if(!file || !confirm("Adicionar dados?")) return;
+            
+            window.mostrarLoading("Importando..."); 
+            const reader = new FileReader();
             reader.onload = async (e) => {
                 const data = JSON.parse(e.target.result);
                 if(data.familias) for(let f of data.familias) { const {id, ...rest} = f; await setDoc(doc(db, "familias", id), rest); }
                 if(data.faturas) for(let f of data.faturas) { const {id, ...rest} = f; await setDoc(doc(db, "faturas", id), rest); }
-                alert("Sucesso!"); window.carregarFamilias(); window.esconderLoading();
-            }; reader.readAsText(file);
+                alert("Sucesso!"); 
+                window.carregarFamilias(); 
+                window.esconderLoading();
+            }; 
+            reader.readAsText(file);
         };
 
         window.limparFaturas = async () => {
             if(prompt("Digite CONFIRMO para prosseguir") !== "CONFIRMO") return;
-            window.mostrarLoading("Formatando..."); const snap = await getDocs(collection(db, "faturas"));
+            window.mostrarLoading("Formatando..."); 
+            const snap = await getDocs(collection(db, "faturas"));
             snap.forEach(async (d) => { await deleteDoc(doc(db, "faturas", d.id)); });
-            alert("Formatado!"); window.carregarLoteFaturas(); window.esconderLoading();
+            alert("Formatado!"); 
+            window.carregarLoteFaturas(); 
+            window.esconderLoading();
         };
     </script>
 </body>
